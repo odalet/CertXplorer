@@ -1,17 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delta.CapiNet", "Delta.CapiNet\Delta.CapiNet.csproj", "{9D4B19CB-036A-4CB3-A76A-B28DE5EC431B}"
-EndProject
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AE1E81C6-7A1C-4B8C-A8FE-0FF8D74D72F4}"
 	ProjectSection(SolutionItems) = preProject
-		History.md = History.md
-		README.md = README.md
+		src\Delta.CapiNet\Credits.md = src\Delta.CapiNet\Credits.md
+		src\Delta.CapiNet\History.md = src\Delta.CapiNet\History.md
+		src\Delta.CapiNet\License.md = src\Delta.CapiNet\License.md
+		src\Delta.CapiNet\README.md = src\Delta.CapiNet\README.md
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B174F24F-6999-4795-8BA3-6F74F71C7594}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Delta.CapiNet", "src\Delta.CapiNet\Delta.CapiNet.csproj", "{9D4B19CB-036A-4CB3-A76A-B28DE5EC431B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCapiNet", "Tests\TestCapiNet\TestCapiNet.csproj", "{F74B1E2D-29DF-47CC-BFDF-93642541BA49}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCapiNet", "src\tests\TestCapiNet\TestCapiNet.csproj", "{F74B1E2D-29DF-47CC-BFDF-93642541BA49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,8 +32,5 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(NestedProjects) = preSolution
-		{F74B1E2D-29DF-47CC-BFDF-93642541BA49} = {B174F24F-6999-4795-8BA3-6F74F71C7594}
 	EndGlobalSection
 EndGlobal

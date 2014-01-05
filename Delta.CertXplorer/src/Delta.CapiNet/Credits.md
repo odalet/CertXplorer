@@ -1,0 +1,15 @@
+OpenSSL Project
+---------------
+* [http://www.openssl.org/](http://www.openssl.org/)
+* Definition of PEM kinds was grabbed from OpenSSL source code; more precisely from 
+`openssl/crypto/pem/pem.h`.
+* License: **OpenSSL License** (Apache-like) See [http://www.openssl.org/source/license.html](http://www.openssl.org/source/license.html)
+
+-----------------------------------------------------------------------------------------
+* License: [Ms-RL][msrl]
+* History page: [Here][history]
+* Credits page: [Here][credits]
+
+  [msrl]: License.md "MS-RL License"
+  [history]: History.md "History"
+  [credits]: Credits.md "Credits"

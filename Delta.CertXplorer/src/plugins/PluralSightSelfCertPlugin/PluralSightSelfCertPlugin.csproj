@@ -70,7 +70,7 @@
       <Project>{8283484E-906A-4403-919F-435AAB288117}</Project>
       <Name>Delta.CertXplorer.Extensibility</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\third-party\Pluralsight.Crypto\Pluralsight.Crypto.csproj">
+    <ProjectReference Include="..\..\third-party\Pluralsight.Crypto\Pluralsight.Crypto.csproj">
       <Project>{FC8E9D5F-3378-4C63-9B6C-5D567F8603B2}</Project>
       <Name>Pluralsight.Crypto</Name>
     </ProjectReference>

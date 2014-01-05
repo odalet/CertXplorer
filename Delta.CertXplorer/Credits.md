@@ -10,7 +10,7 @@ WeifenLuo's DockPanel library
 * License: **[MIT](https://github.com/dockpanelsuite/dockpanelsuite/blob/master/license.txt)**
 
 Apache Log4net
--------
+--------------
 * [http://logging.apache.org/log4net/](http://logging.apache.org/log4net/).
 * License: **[Apache Version 2.0](http://logging.apache.org/log4net/license.html)**
 
@@ -20,6 +20,11 @@ Apache Log4net
 * License: 
 > This code was written by Keith Brown, and may be freely used.
 > Want to learn more about .NET? Visit pluralsight.com today!
+
+Delta.CapiNet
+-------------
+* [Here](./src/Delta.CapiNet/)
+* License: **[Ms-RL](./src/Delta.CapiNet/License.md)**
 
 -----------------------------------------------------------------------------------------
 * License: [Ms-RL][msrl]

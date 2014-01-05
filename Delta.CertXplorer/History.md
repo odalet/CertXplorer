@@ -1,6 +1,11 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.8 (2014/01/05)
+--------------------------
+* No code change! Thus, no version change.
+* Reorganized code layout (in new **Delta.Cryptography** GitHub repository)
+
 Version 2.4.8 (2013/10/13)
 --------------------------
 * UI Fix in CryptoHelperPlugin (added a splitter)

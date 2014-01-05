@@ -107,7 +107,7 @@
     </ProjectReference>
     <ProjectReference Include="..\..\Delta.CertXplorer.Extensibility\Delta.CertXplorer.Extensibility.csproj">
       <Project>{8283484E-906A-4403-919F-435AAB288117}</Project>
-      <Name>CryptExplorer.Extensibility</Name>
+      <Name>Delta.CertXplorer.Extensibility</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

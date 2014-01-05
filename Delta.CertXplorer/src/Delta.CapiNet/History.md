@@ -1,3 +1,9 @@
+Version 1.1.1 (2014/01/05)
+--------------------------
+* No code change! Thus, no version change.
+* Reorganized code layout (in new **Delta.Cryptography** GitHub repository)
+* Added credit to OpenSSL in credits.md
+
 Version 1.1.1 (2013/09/21)
 --------------------------
 * Added a few properties to the Certificate class + renamed X509Certificate3 property to X509.
@@ -25,3 +31,12 @@ Some cleanup part of open-sourcing **CryptExplorer** (and renaming it **CertXplo
 Version 1.0.0
 -------------------------
 At this time **CapiNet** was part of a personal project called **CryptExplorer**.
+
+-----------------------------------------------------------------------------------------
+* License: [Ms-RL][msrl]
+* History page: [Here][history]
+* Credits page: [Here][credits]
+
+  [msrl]: License.md "MS-RL License"
+  [history]: History.md "History"
+  [credits]: Credits.md "Credits"
