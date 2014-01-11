@@ -1,8 +1,16 @@
-Version 1.1.1 (2014/01/05)
+Version 1.2.0 (2014/01/11)
+--------------------------
+* Added Luhn checksum computation and validation (in Delta.CapiNet.Cryptography.Luhn)
+
+Version 1.1.2 (2014/01/05)
 --------------------------
 * No code change! Thus, no version change.
 * Reorganized code layout (in new **Delta.Cryptography** GitHub repository)
 * Added credit to OpenSSL in credits.md
+
+Version 1.1.2 (2013/10/05)
+--------------------------
+* Issue #8 - Enhancement: Added support for Certificate Trust Lists
 
 Version 1.1.1 (2013/09/21)
 --------------------------
