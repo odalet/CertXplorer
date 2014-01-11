@@ -7,6 +7,7 @@ Version 2.4.10 (2014/01/05)
 
 Version 2.4.9 (2014/01/05)
 --------------------------
+* Delta.CapiNet: Version 1.2.0
 * Modified the Crypto Helper plugin: now provides an UI to validate & compute Luhn checksums.
 
 Version 2.4.8 (2014/01/05)
