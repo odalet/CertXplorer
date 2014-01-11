@@ -560,7 +560,7 @@ namespace Delta.CertXplorer.ApplicationModel.Design
             Control control = base.Control;
             if ((control != null) && control.IsHandleCreated)
             {
-                NativeMethods.SendMessage(control.Handle, NativeMethods.WM_NCACTIVATE, 1, 0);
+                NativeMethods.SendMessage(control.Handle, NativeMethods.WM_NCACTIVATE, (UIntPtr)1, IntPtr.Zero);
                 NativeMethods.RedrawWindow(control.Handle, null, IntPtr.Zero, NativeMethods.RDW_FRAME);
             }
         }
@@ -570,7 +570,7 @@ namespace Delta.CertXplorer.ApplicationModel.Design
             Control control = base.Control;
             if ((control != null) && control.IsHandleCreated)
             {
-                NativeMethods.SendMessage(control.Handle, NativeMethods.WM_NCACTIVATE, 0, 0);
+                NativeMethods.SendMessage(control.Handle, NativeMethods.WM_NCACTIVATE, UIntPtr.Zero, IntPtr.Zero);
                 NativeMethods.RedrawWindow(control.Handle, null, IntPtr.Zero, NativeMethods.RDW_FRAME);
             }
         }

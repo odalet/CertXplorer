@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 
 using Delta.CertXplorer.Resources;
 using Delta.CertXplorer.ComponentModel;
+using Delta.CertXplorer.Internals;
 
 namespace Delta.CertXplorer.UI
 {
@@ -243,8 +244,8 @@ namespace Delta.CertXplorer.UI
         private const int WM_MOUSEWHEEL = 0x020A;
         private const int WM_PAINT = 0x000F;
 
-        [DllImport("user32.dll")]
-        private static extern bool SendMessage(IntPtr hWnd, UInt32 m, int wParam, int lParam);
+        ////////[DllImport("user32.dll")]
+        ////////private static extern bool SendMessage(IntPtr hWnd, UInt32 m, int wParam, int lParam);
 
         #endregion
 
@@ -830,7 +831,7 @@ namespace Delta.CertXplorer.UI
         /// <param name="y">The amount of pixels to scroll vertically.</param>
         private void SendScrollMessage(int x, int y)
         {
-            SendMessage(base.Handle, LVM_SCROLL, x, y);
+            NativeMethods.SendMessage(base.Handle, LVM_SCROLL, (UIntPtr)x, (IntPtr)y);
         }
     }
 }

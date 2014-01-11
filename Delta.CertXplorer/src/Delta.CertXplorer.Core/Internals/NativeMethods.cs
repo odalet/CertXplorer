@@ -11,13 +11,13 @@ namespace Delta.CertXplorer.Internals
     {
         #region Windows Messages Constants
 
-        public const int WM_WINDOWPOSCHANGING = 0x0046;
+        public const uint WM_WINDOWPOSCHANGING = 0x0046;
 
-        public const int WM_NCACTIVATE = 0x0086;
+        public const uint WM_NCACTIVATE = 0x0086;
 
-        public const int WM_LBUTTONDOWN = 0x0201;
-        public const int WM_RBUTTONDOWN = 0x0204;
-        public const int WM_PARENTNOTIFY = 0x0210;
+        public const uint WM_LBUTTONDOWN = 0x0201;
+        public const uint WM_RBUTTONDOWN = 0x0204;
+        public const uint WM_PARENTNOTIFY = 0x0210;
 
         public const uint WM_USER = 0x400;
         public const uint EM_FORMATRANGE = WM_USER + 57;
@@ -125,7 +125,7 @@ namespace Delta.CertXplorer.Internals
         /// it depends on the message sent.
         /// </returns>
         [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hwnd, int msg, int wParam, int lParam);
+        public static extern int SendMessage(IntPtr hwnd, uint msg, UIntPtr wparam, IntPtr lparam);
 
         /// <summary>
         /// Voir http://msdn2.microsoft.com/en-us/library/ms633545.aspx.

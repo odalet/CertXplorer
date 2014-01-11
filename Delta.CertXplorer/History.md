@@ -1,6 +1,10 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.10 (2014/01/05)
+--------------------------
+* Issue #15: Fixed printing support failure (due to incorrect pointers handling in x64 mode).
+
 Version 2.4.9 (2014/01/05)
 --------------------------
 * Modified the Crypto Helper plugin: now provides an UI to validate & compute Luhn checksums.

@@ -96,17 +96,14 @@ namespace Delta.CertXplorer.UI
             fmtRange.hdcTarget = hdc;       //Point at printer hDC
             fmtRange.rc = rectToPrint;      //Indicate the area on page to print
             fmtRange.rcPage = rectPage;     //Indicate size of page
-
-            IntPtr wparam = IntPtr.Zero;
-            wparam = new IntPtr(1);
-
+            
             //Get the pointer to the FORMATRANGE structure in memory
-            IntPtr lparam = IntPtr.Zero;
+            var lparam = IntPtr.Zero;
             lparam = Marshal.AllocCoTaskMem(Marshal.SizeOf(fmtRange));
             Marshal.StructureToPtr(fmtRange, lparam, false);
 
             //Send the rendered data for printing 
-            var res = NativeMethods.SendMessage(Handle, (int)NativeMethods.EM_FORMATRANGE, (int)wparam, (int)lparam);
+            var res = NativeMethods.SendMessage(Handle, NativeMethods.EM_FORMATRANGE, (UIntPtr)1, lparam);
 
             //Free the block of memory allocated
             Marshal.FreeCoTaskMem(lparam);
