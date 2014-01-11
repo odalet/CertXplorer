@@ -56,9 +56,11 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\CommonAssemblyInfo.cs">
@@ -81,6 +83,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="UI\EncoderControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\EncoderControl.Designer.cs">
+      <DependentUpon>EncoderControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\LuhnTesterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\LuhnTesterControl.Designer.cs">
+      <DependentUpon>LuhnTesterControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\OperationSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -101,6 +115,10 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Delta.CapiNet\Delta.CapiNet.csproj">
+      <Project>{9d4b19cb-036a-4cb3-a76a-b28de5ec431b}</Project>
+      <Name>Delta.CapiNet</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Delta.CertXplorer.Core\Delta.CertXplorer.Core.csproj">
       <Project>{020815b8-50b8-4544-8e18-b8ea10ff20f4}</Project>
       <Name>Delta.CertXplorer.Core</Name>
@@ -117,6 +135,12 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\EncoderControl.resx">
+      <DependentUpon>EncoderControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\LuhnTesterControl.resx">
+      <DependentUpon>LuhnTesterControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\OperationSelector.resx">
       <DependentUpon>OperationSelector.cs</DependentUpon>

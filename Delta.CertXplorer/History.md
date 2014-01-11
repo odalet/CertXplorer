@@ -1,6 +1,10 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.9 (2014/01/05)
+--------------------------
+* Modified the Crypto Helper plugin: now provides an UI to validate & compute Luhn checksums.
+
 Version 2.4.8 (2014/01/05)
 --------------------------
 * No code change! Thus, no version change.

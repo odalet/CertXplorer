@@ -29,40 +29,22 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PluginMainForm));
-            this.lineControl1 = new Delta.CertXplorer.UI.LineControl();
             this.closeButton = new System.Windows.Forms.Button();
-            this.lineControl2 = new Delta.CertXplorer.UI.LineControl();
-            this.lineControl3 = new Delta.CertXplorer.UI.LineControl();
-            this.lineControl4 = new Delta.CertXplorer.UI.LineControl();
-            this.runButton = new System.Windows.Forms.Button();
-            this.split = new System.Windows.Forms.SplitContainer();
-            this.inbox = new CryptoHelperPlugin.UI.DataBox();
-            this.inputFormatSelector = new CryptoHelperPlugin.UI.DataFormatSelector();
-            this.operationSelector = new CryptoHelperPlugin.UI.OperationSelector();
-            this.outputFormatSelector = new CryptoHelperPlugin.UI.DataFormatSelector();
-            this.outbox = new CryptoHelperPlugin.UI.DataBox();
-            ((System.ComponentModel.ISupportInitialize)(this.split)).BeginInit();
-            this.split.Panel1.SuspendLayout();
-            this.split.Panel2.SuspendLayout();
-            this.split.SuspendLayout();
+            this.tabs = new System.Windows.Forms.TabControl();
+            this.encoderTab = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.encoderControl = new CryptoHelperPlugin.UI.EncoderControl();
+            this.luhnTesterControl = new CryptoHelperPlugin.UI.LuhnTesterControl();
+            this.tabs.SuspendLayout();
+            this.encoderTab.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lineControl1
-            // 
-            this.lineControl1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lineControl1.Location = new System.Drawing.Point(12, 388);
-            this.lineControl1.Name = "lineControl1";
-            this.lineControl1.Size = new System.Drawing.Size(600, 12);
-            this.lineControl1.TabIndex = 9;
-            this.lineControl1.TabStop = false;
-            this.lineControl1.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(128)))), ((int)(((byte)(186)))));
             // 
             // closeButton
             // 
             this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.closeButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.closeButton.Location = new System.Drawing.Point(537, 406);
+            this.closeButton.Location = new System.Drawing.Point(570, 438);
             this.closeButton.Name = "closeButton";
             this.closeButton.Size = new System.Drawing.Size(75, 23);
             this.closeButton.TabIndex = 10;
@@ -70,168 +52,87 @@
             this.closeButton.UseVisualStyleBackColor = true;
             this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
             // 
-            // lineControl2
+            // tabs
             // 
-            this.lineControl2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lineControl2.Location = new System.Drawing.Point(12, 12);
-            this.lineControl2.Name = "lineControl2";
-            this.lineControl2.Size = new System.Drawing.Size(600, 12);
-            this.lineControl2.TabIndex = 0;
-            this.lineControl2.TabStop = false;
-            this.lineControl2.Text = "Input";
-            this.lineControl2.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(128)))), ((int)(((byte)(186)))));
-            // 
-            // lineControl3
-            // 
-            this.lineControl3.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lineControl3.Location = new System.Drawing.Point(12, 3);
-            this.lineControl3.Name = "lineControl3";
-            this.lineControl3.Size = new System.Drawing.Size(600, 12);
-            this.lineControl3.TabIndex = 3;
-            this.lineControl3.TabStop = false;
-            this.lineControl3.Text = "Output";
-            this.lineControl3.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(128)))), ((int)(((byte)(186)))));
-            // 
-            // lineControl4
-            // 
-            this.lineControl4.Location = new System.Drawing.Point(12, 126);
-            this.lineControl4.Name = "lineControl4";
-            this.lineControl4.Size = new System.Drawing.Size(170, 12);
-            this.lineControl4.TabIndex = 6;
-            this.lineControl4.TabStop = false;
-            this.lineControl4.Text = "Operation";
-            this.lineControl4.TextColor = System.Drawing.Color.FromArgb(((int)(((byte)(96)))), ((int)(((byte)(128)))), ((int)(((byte)(186)))));
-            // 
-            // runButton
-            // 
-            this.runButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.runButton.Location = new System.Drawing.Point(12, 215);
-            this.runButton.Name = "runButton";
-            this.runButton.Size = new System.Drawing.Size(75, 23);
-            this.runButton.TabIndex = 8;
-            this.runButton.Text = "&Run";
-            this.runButton.UseVisualStyleBackColor = true;
-            this.runButton.Click += new System.EventHandler(this.runButton_Click);
-            // 
-            // split
-            // 
-            this.split.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            this.tabs.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.split.Location = new System.Drawing.Point(0, 0);
-            this.split.Margin = new System.Windows.Forms.Padding(0);
-            this.split.Name = "split";
-            this.split.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.tabs.Controls.Add(this.encoderTab);
+            this.tabs.Controls.Add(this.tabPage2);
+            this.tabs.Location = new System.Drawing.Point(12, 12);
+            this.tabs.Name = "tabs";
+            this.tabs.SelectedIndex = 0;
+            this.tabs.Size = new System.Drawing.Size(633, 420);
+            this.tabs.TabIndex = 11;
             // 
-            // split.Panel1
+            // encoderTab
             // 
-            this.split.Panel1.Controls.Add(this.inbox);
-            this.split.Panel1.Controls.Add(this.inputFormatSelector);
-            this.split.Panel1.Controls.Add(this.lineControl2);
+            this.encoderTab.Controls.Add(this.encoderControl);
+            this.encoderTab.Location = new System.Drawing.Point(4, 22);
+            this.encoderTab.Name = "encoderTab";
+            this.encoderTab.Padding = new System.Windows.Forms.Padding(3);
+            this.encoderTab.Size = new System.Drawing.Size(625, 394);
+            this.encoderTab.TabIndex = 0;
+            this.encoderTab.Text = "Data Encoder/Decoder";
+            this.encoderTab.UseVisualStyleBackColor = true;
             // 
-            // split.Panel2
+            // tabPage2
             // 
-            this.split.Panel2.Controls.Add(this.operationSelector);
-            this.split.Panel2.Controls.Add(this.runButton);
-            this.split.Panel2.Controls.Add(this.outputFormatSelector);
-            this.split.Panel2.Controls.Add(this.lineControl3);
-            this.split.Panel2.Controls.Add(this.outbox);
-            this.split.Panel2.Controls.Add(this.lineControl4);
-            this.split.Size = new System.Drawing.Size(625, 385);
-            this.split.SplitterDistance = 140;
-            this.split.TabIndex = 11;
+            this.tabPage2.Controls.Add(this.luhnTesterControl);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(625, 394);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Luhn Tester";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // inbox
+            // encoderControl
             // 
-            this.inbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.inbox.BackColor = System.Drawing.Color.White;
-            this.inbox.Location = new System.Drawing.Point(188, 30);
-            this.inbox.Name = "inbox";
-            this.inbox.Size = new System.Drawing.Size(424, 107);
-            this.inbox.TabIndex = 2;
+            this.encoderControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.encoderControl.Location = new System.Drawing.Point(3, 3);
+            this.encoderControl.Name = "encoderControl";
+            this.encoderControl.Size = new System.Drawing.Size(619, 388);
+            this.encoderControl.TabIndex = 0;
             // 
-            // inputFormatSelector
+            // luhnTesterControl
             // 
-            this.inputFormatSelector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.inputFormatSelector.DataFormat = CryptoHelperPlugin.DataFormat.Text;
-            this.inputFormatSelector.Location = new System.Drawing.Point(12, 30);
-            this.inputFormatSelector.Name = "inputFormatSelector";
-            this.inputFormatSelector.Size = new System.Drawing.Size(170, 107);
-            this.inputFormatSelector.TabIndex = 1;
-            // 
-            // operationSelector
-            // 
-            this.operationSelector.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.operationSelector.Location = new System.Drawing.Point(12, 144);
-            this.operationSelector.Name = "operationSelector";
-            this.operationSelector.Operation = CryptoHelperPlugin.Operation.Convert;
-            this.operationSelector.Size = new System.Drawing.Size(170, 65);
-            this.operationSelector.TabIndex = 7;
-            // 
-            // outputFormatSelector
-            // 
-            this.outputFormatSelector.DataFormat = CryptoHelperPlugin.DataFormat.Text;
-            this.outputFormatSelector.Location = new System.Drawing.Point(12, 21);
-            this.outputFormatSelector.Name = "outputFormatSelector";
-            this.outputFormatSelector.Size = new System.Drawing.Size(170, 99);
-            this.outputFormatSelector.TabIndex = 4;
-            // 
-            // outbox
-            // 
-            this.outbox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.outbox.BackColor = System.Drawing.Color.White;
-            this.outbox.Location = new System.Drawing.Point(187, 21);
-            this.outbox.Name = "outbox";
-            this.outbox.Size = new System.Drawing.Size(425, 217);
-            this.outbox.TabIndex = 5;
+            this.luhnTesterControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.luhnTesterControl.Location = new System.Drawing.Point(3, 3);
+            this.luhnTesterControl.Name = "luhnTesterControl";
+            this.luhnTesterControl.Size = new System.Drawing.Size(619, 388);
+            this.luhnTesterControl.TabIndex = 0;
             // 
             // PluginMainForm
             // 
-            this.AcceptButton = this.runButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.closeButton;
-            this.ClientSize = new System.Drawing.Size(624, 441);
-            this.Controls.Add(this.split);
+            this.ClientSize = new System.Drawing.Size(657, 473);
+            this.Controls.Add(this.tabs);
             this.Controls.Add(this.closeButton);
-            this.Controls.Add(this.lineControl1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.MinimumSize = new System.Drawing.Size(640, 480);
+            this.MinimumSize = new System.Drawing.Size(673, 512);
             this.Name = "PluginMainForm";
             this.ShowInTaskbar = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Crypto Helper";
-            this.split.Panel1.ResumeLayout(false);
-            this.split.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.split)).EndInit();
-            this.split.ResumeLayout(false);
+            this.tabs.ResumeLayout(false);
+            this.encoderTab.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private Delta.CertXplorer.UI.LineControl lineControl1;
         private System.Windows.Forms.Button closeButton;
-        private CryptoHelperPlugin.UI.DataFormatSelector inputFormatSelector;
-        private CryptoHelperPlugin.UI.DataFormatSelector outputFormatSelector;
-        private Delta.CertXplorer.UI.LineControl lineControl2;
-        private Delta.CertXplorer.UI.LineControl lineControl3;
-        private Delta.CertXplorer.UI.LineControl lineControl4;
-        private CryptoHelperPlugin.UI.DataBox outbox;
-        private CryptoHelperPlugin.UI.DataBox inbox;
-        private CryptoHelperPlugin.UI.OperationSelector operationSelector;
-        private System.Windows.Forms.Button runButton;
-        private System.Windows.Forms.SplitContainer split;
+        private System.Windows.Forms.TabControl tabs;
+        private System.Windows.Forms.TabPage encoderTab;
+        private System.Windows.Forms.TabPage tabPage2;
+        private UI.EncoderControl encoderControl;
+        private UI.LuhnTesterControl luhnTesterControl;
     }
 }

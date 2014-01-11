@@ -32,6 +32,18 @@ namespace CryptoHelperPlugin.UI
             get { return box.Text; }
             set { box.Text = value; }
         }
+
+        public void AppendText(string text)
+        {
+            box.AppendText(text);
+        }
+
+        public void Select(int start, int length)
+        {
+            box.Select(start, length);
+        }
+
+        public void Clear() { box.Clear(); }
         
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Control.Paint"/> event.
