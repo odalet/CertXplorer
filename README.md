@@ -19,3 +19,6 @@ Licensing
 [Ms-RL][msrl]
 
   [msrl]: License.md "MS-RL License"
+
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/302986f1e9abeb5e34973c9dd825a466 "githalytics.com")](http://githalytics.com/odalet/Delta.Cryptography)
