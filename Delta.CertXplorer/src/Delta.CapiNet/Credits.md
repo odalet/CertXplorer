@@ -1,3 +1,9 @@
+The Legion of the Bouncy Castle C#
+----------------------------------
+* [http://www.bouncycastle.org/csharp/](http://www.bouncycastle.org/csharp/)
+* Provided the implementaiton of the Adler-32 checksum algorithm
+* License: **MIT X11 License**. See http://opensource.org/licenses/mit-license.php
+
 OpenSSL Project
 ---------------
 * [http://www.openssl.org/](http://www.openssl.org/)

@@ -1,3 +1,7 @@
+Version 1.2.1 (2014/01/12)
+--------------------------
+* Added Adler32 checksum computation (in Delta.CapiNet.Cryptography.Adler32)
+
 Version 1.2.0 (2014/01/11)
 --------------------------
 * Added Luhn checksum computation and validation (in Delta.CapiNet.Cryptography.Luhn)

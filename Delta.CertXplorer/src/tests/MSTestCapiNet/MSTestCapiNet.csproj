@@ -53,6 +53,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Cryptography\Adler32Test.cs" />
     <Compile Include="Cryptography\LuhnTest.cs" />
     <Compile Include="helpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
