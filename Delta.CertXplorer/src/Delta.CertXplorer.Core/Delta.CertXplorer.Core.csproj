@@ -143,6 +143,7 @@
     <Compile Include="ComponentModel\BaseSupportCancellation.cs" />
     <Compile Include="ComponentModel\BaseSuspendable.cs" />
     <Compile Include="ComponentModel\DictionaryConverter.cs" />
+    <Compile Include="ComponentModel\DictionaryPropertyDescriptor.cs" />
     <Compile Include="ComponentModel\DirtyChangedEvent.cs" />
     <Compile Include="ComponentModel\IDirtyNotifier.cs" />
     <Compile Include="ComponentModel\IListableServiceProvider.cs" />
@@ -153,6 +154,7 @@
     <Compile Include="ComponentModel\ISuspendable.cs" />
     <Compile Include="ComponentModel\NameAttribute.cs" />
     <Compile Include="ComponentModel\ObservableServiceContainer.cs" />
+    <Compile Include="ComponentModel\ReadOnlyDictionaryConverter.cs" />
     <Compile Include="ComponentModel\ServiceNotFoundException.cs" />
     <Compile Include="ComponentModel\ServiceNotificationEvent.cs" />
     <Compile Include="ComponentModel\ServiceSelector.cs" />

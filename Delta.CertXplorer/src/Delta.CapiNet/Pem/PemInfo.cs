@@ -1,19 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+
 namespace Delta.CapiNet.Pem
 {
     public class PemInfo
     {
-        internal PemInfo(PemDecoder reader)
+        internal PemInfo(PemDecoder decoder)
         {
-            if (reader == null) throw new ArgumentNullException("reader");
+            if (decoder == null) throw new ArgumentNullException("reader");
 
-            TextData = reader.TextData;
-            Workload = reader.Workload;
-            Kind = reader.Kind;
-            FullHeader = reader.FullHeader;
-            FullFooter = reader.FullFooter;
-            AdditionalText = reader.AdditionalText;
-            Warnings = reader.Warnings ?? new string[0];
+            TextData = decoder.TextData;
+            Workload = decoder.Workload;
+            Kind = decoder.Kind;
+            FullHeader = decoder.FullHeader;
+            FullFooter = decoder.FullFooter;
+            AdditionalHeaders = decoder.AdditionalHeaders;
+            AdditionalText = decoder.AdditionalText;
+            Warnings = decoder.Warnings ?? new string[0];            
         }
 
         public string TextData { get; private set; }
@@ -23,5 +26,6 @@ namespace Delta.CapiNet.Pem
         public string FullFooter { get; private set; }
         public string AdditionalText { get; private set; }
         public string[] Warnings { get; private set; }
+        public IDictionary<string, string> AdditionalHeaders { get; private set; }
     }
 }

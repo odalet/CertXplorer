@@ -1,7 +1,15 @@
 CertXplorer Versions History
 ============================
 
-Version 2.4.10 (2014/01/05)
+Version 2.4.11 (2014/01/12)
+--------------------------
+* Delta.CapiNet: Version 1.2.1
+* PemPlugin: Version 1.0.1
+* Issue #16: Now handles correctly  **[RFC4716](http://www.ietf.org/rfc/rfc4716.txt)** kind of PEM files.
+* Also modified the Pem plugin so that it exposes **RFC4716** headers in the property grid.
+* Added a mention of the build being DEBUG in the About box.
+
+Version 2.4.10 (2014/01/11)
 --------------------------
 * Issue #15: Fixed printing support failure (due to incorrect pointers handling in x64 mode).
 

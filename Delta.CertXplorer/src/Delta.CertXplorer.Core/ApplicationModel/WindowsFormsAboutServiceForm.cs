@@ -42,6 +42,8 @@ namespace Delta.CertXplorer.ApplicationModel
             labelApplication.Text = AssemblyTitle;
             labelProductName.Text = AssemblyProduct;
             labelVersion.Text = string.Format(SR.VersionWithValue, AssemblyVersion);
+            if (IsDebugBuild)
+                labelVersion.Text += " (DEBUG Build)";
             labelCopyright.Text = AssemblyCopyright;
             labelCompanyName.Text = AssemblyCompany;
             textBoxDescription.Text = AssemblyDescription;
@@ -52,6 +54,18 @@ namespace Delta.CertXplorer.ApplicationModel
         public string AssemblyTitle { get { return aboutService.AssemblyTitle; } }
 
         public string AssemblyVersion { get { return aboutService.AssemblyVersion; } }
+
+        public bool IsDebugBuild
+        {
+            get
+            {
+#if DEBUG
+                return true;
+#else
+                return false;
+#endif
+            }
+        }
 
         public string AssemblyDescription { get { return aboutService.AssemblyDescription; } }
 

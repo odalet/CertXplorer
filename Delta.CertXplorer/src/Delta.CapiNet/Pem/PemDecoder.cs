@@ -5,6 +5,7 @@ using System.Collections.Generic;
 
 namespace Delta.CapiNet.Pem
 {
+    // See http://www.ietf.org/rfc/rfc4716.txt for reference.
     public class PemDecoder
     {
         private const string headerBegin = "-----BEGIN ";
@@ -16,7 +17,7 @@ namespace Delta.CapiNet.Pem
         private const string headerEndAlt = " ----";
         private const string footerBeginAlt = "---- END ";
         private const string footerEndAlt = " ----";
-
+        
         private static readonly Encoding pemEncoding = Encoding.ASCII;
 
         private List<String> errors = new List<string>();
@@ -34,13 +35,14 @@ namespace Delta.CapiNet.Pem
         internal PemKind Kind { get; private set; }
         internal string FullHeader { get; private set; }
         internal string FullFooter { get; private set; }
+        internal Dictionary<string, string> AdditionalHeaders { get; private set; }
         internal string AdditionalText { get; private set; }
 
         public string[] Errors { get { return errors.ToArray(); } }
         public string[] Warnings { get { return warnings.ToArray(); } }
 
         public static bool IsPemFile(string filename)
-        {            
+        {
             if (string.IsNullOrEmpty(filename)) throw new ArgumentNullException("filename");
             if (!File.Exists(filename)) throw new ArgumentException(string.Format(
                 "File {0} does not exist", filename), "filename");
@@ -83,10 +85,10 @@ namespace Delta.CapiNet.Pem
             return Decode();
         }
 
-        private PemInfo Decode() 
+        private PemInfo Decode()
         {
             if (dirty) throw new InvalidOperationException("A PemDecoder instance should only be used once.");
-            dirty = true; 
+            dirty = true;
 
             var strings = ReadAllLines(TextData);
             if (strings == null || strings.Length == 0)
@@ -110,7 +112,11 @@ namespace Delta.CapiNet.Pem
             while (index < strings.Length)
             {
                 var current = strings[index];
-                if (!IsFooter(current, out altFooter))
+                var tag = string.Empty;
+                var content = string.Empty;
+                if (IsAdditionalHeader(current, out tag, out content))
+                    AddAdditionalHeader(tag, content);
+                else if (!IsFooter(current, out altFooter))
                 {
                     if (string.IsNullOrEmpty(FullFooter))
                         base64Builder.Append(current);
@@ -182,6 +188,32 @@ namespace Delta.CapiNet.Pem
             return false;
         }
 
+        private bool IsAdditionalHeader(string input, out string tag, out string content)
+        {
+            tag = string.Empty;
+            content = string.Empty;            
+
+            const char separator = ':';
+            var splitIndex = input.IndexOf(separator);
+            if (splitIndex < 0) return false;
+            
+            // extract tag and value
+            tag = input.Substring(0, splitIndex);
+            content = input.Substring(splitIndex + 1);
+
+            return true;
+        }
+
+        private void AddAdditionalHeader(string tag, string content)
+        {
+            if (AdditionalHeaders == null)
+                AdditionalHeaders = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase); // headers are case-insensitive
+
+            if (AdditionalHeaders.ContainsKey(tag))
+                AdditionalHeaders[tag] += "\r\n" + content;
+            else AdditionalHeaders.Add(tag, content);
+        }
+
         private string ExtractHeader(string input, bool alt)
         {
             var prefix = alt ? headerBegin : headerBeginAlt;
@@ -218,17 +250,30 @@ namespace Delta.CapiNet.Pem
             Kind = null;
             FullHeader = null;
             FullFooter = null;
+            AdditionalHeaders = null;
         }
 
         private static string[] ReadAllLines(string data)
         {
+            const char continuationCharacter = '\\';
             var result = new List<string>();
 
             using (var reader = new StringReader(data))
             {
+                string buffer = string.Empty;
                 string str;
                 while ((str = reader.ReadLine()) != null)
-                    result.Add(str);
+                {
+                    // Let's handle the continuation character here (simpler than in the AdditionalHeaders code)
+                    var trimmed = str.Trim();
+                    if (!string.IsNullOrEmpty(trimmed) && trimmed[trimmed.Length - 1] == continuationCharacter)
+                        buffer += trimmed.Substring(0, trimmed.Length - 1);
+                    else
+                    {
+                        result.Add(buffer + str);
+                        buffer = string.Empty;
+                    }
+                }
 
                 reader.Close();
             }

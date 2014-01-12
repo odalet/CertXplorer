@@ -1,6 +1,8 @@
 Version 1.2.1 (2014/01/12)
 --------------------------
 * Added Adler32 checksum computation (in Delta.CapiNet.Cryptography.Adler32)
+* **Issue #16** - BUGFIX: PEM decoder could not handle lines starting with 'Comment:'.
+  Now it handles **[RFC4716](http://www.ietf.org/rfc/rfc4716.txt)** compliant files.
 
 Version 1.2.0 (2014/01/11)
 --------------------------
@@ -14,7 +16,7 @@ Version 1.1.2 (2014/01/05)
 
 Version 1.1.2 (2013/10/05)
 --------------------------
-* Issue #8 - Enhancement: Added support for Certificate Trust Lists
+* **Issue #8** - Enhancement: Added support for Certificate Trust Lists
 
 Version 1.1.1 (2013/09/21)
 --------------------------

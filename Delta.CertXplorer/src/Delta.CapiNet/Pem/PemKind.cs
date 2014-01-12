@@ -78,6 +78,9 @@ namespace Delta.CapiNet.Pem
         public static readonly PemKind X509CertificateOld;
         public static readonly PemKind X509CertificateRequestOld;
 
+        // Below are other common PEM Headers (but not grabbed from OpenSSL)
+        public static readonly PemKind Ssh2PublicKeyRfc4716;
+
         /// <summary>
         /// Initializes the <see cref="PemKind"/> class.
         /// </summary>
@@ -118,6 +121,9 @@ namespace Delta.CapiNet.Pem
 
             X509CertificateOld = new PemKind("X509 CERTIFICATE", "Stores a X509 Certificate; obsolete, prefer 'CERTIFICATE'", true);
             X509CertificateRequestOld = new PemKind("NEW CERTIFICATE REQUEST", "Stores a X509 Certificate Request; obsolete, prefer 'CERTIFICATE REQUEST'", true);
+            
+            // Below are other common PEM Headers (but not grabbed from OpenSSL)
+            Ssh2PublicKeyRfc4716 = new PemKind("SSH2 PUBLIC KEY", "Stores an SSH2 Public Key according to RFC 4716");
         }
 
         /// <summary>
