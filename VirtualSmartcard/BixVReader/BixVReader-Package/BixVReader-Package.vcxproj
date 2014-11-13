@@ -135,6 +135,10 @@
     <VerifyDrivers />
     <VerifyFlags>133563</VerifyFlags>
   </PropertyGroup>
+  <!-- We Test sign all builds (debug and release)-->
+  <PropertyGroup>
+    <SignMode>TestSign</SignMode>
+  </PropertyGroup>
   <ItemDefinitionGroup>
   </ItemDefinitionGroup>
   <ItemGroup>
