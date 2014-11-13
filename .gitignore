@@ -16,3 +16,6 @@ obj
 
 fr
 *.coverage
+/VirtualSmartcard/BixVReader/*.sdf
+/VirtualSmartcard/BixVReader/*.opensdf
+/VirtualSmartcard/BixVReader/*.log
