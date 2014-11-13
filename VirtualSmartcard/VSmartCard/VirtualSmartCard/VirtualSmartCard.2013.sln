@@ -1,0 +1,45 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualSmartCard.2013", "VirtualSmartCard.2013.csproj", "{959AD624-94E8-485B-AC68-3F427FAFC676}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ISO7816Card.2013", "..\ISO7816Card\ISO7816Card.2013.csproj", "{280410BF-C38E-43D3-93E2-3F2C35AB20E1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VirtualSmartCardInterfaces.2013", "VirtualSmartCardInterfaces\VirtualSmartCardInterfaces.2013.csproj", "{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x86 = Debug|x86
+		Release|Any CPU = Release|Any CPU
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Debug|x86.ActiveCfg = Debug|x86
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Debug|x86.Build.0 = Debug|x86
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Release|Any CPU.Build.0 = Release|Any CPU
+		{959AD624-94E8-485B-AC68-3F427FAFC676}.Release|x86.ActiveCfg = Release|Any CPU
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Debug|x86.ActiveCfg = Debug|x86
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Debug|x86.Build.0 = Debug|x86
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{280410BF-C38E-43D3-93E2-3F2C35AB20E1}.Release|x86.ActiveCfg = Release|Any CPU
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Debug|x86.ActiveCfg = Debug|x86
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Debug|x86.Build.0 = Debug|x86
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}.Release|x86.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

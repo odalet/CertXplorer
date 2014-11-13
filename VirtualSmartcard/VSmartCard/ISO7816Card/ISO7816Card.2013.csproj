@@ -1,0 +1,162 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{280410BF-C38E-43D3-93E2-3F2C35AB20E1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ISO7816Card</RootNamespace>
+    <AssemblyName>ISO7816Card</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>3.5</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\VirtualSmartCard\bin\Debug\cards\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\VirtualSmartCard\bin\Release\cards\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\VirtualSmartCard\bin\x86\Debug\cards\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BlobForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="BlobForm.Designer.cs">
+      <DependentUpon>BlobForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FileSystemUI.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FileSystemUI.Designer.cs">
+      <DependentUpon>FileSystemUI.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ISO7816\APDU.cs" />
+    <Compile Include="ISO7816\Card.cs" />
+    <Compile Include="ISO7816\Errors.cs" />
+    <Compile Include="ISO7816\FileSystem\AC.cs" />
+    <Compile Include="ISO7816\FileSystem\BSO.cs" />
+    <Compile Include="ISO7816\FileSystem\Card.cs" />
+    <Compile Include="ISO7816\FileSystem\DF.cs" />
+    <Compile Include="ISO7816\FileSystem\EF.cs" />
+    <Compile Include="ISO7816\FileSystem\SE.cs" />
+    <Compile Include="ISO7816\FileSystem\SM.cs" />
+    <Compile Include="ISO7816\FileSystem\TLV.cs" />
+    <Compile Include="ISO7816\Handler\BigInteger.cs" />
+    <Compile Include="ISO7816\Handler\CardHandler.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ActivateFile.cs" />
+    <Compile Include="ISO7816\Handler\Commands\AppendRecord.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ChangeKeyData.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ChangeReferenceData.cs" />
+    <Compile Include="ISO7816\Handler\Commands\CreateFile.cs" />
+    <Compile Include="ISO7816\Handler\Commands\DeactivateFile.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ExternalAuthenticate.cs" />
+    <Compile Include="ISO7816\Handler\Commands\GenerateKeyPair.cs" />
+    <Compile Include="ISO7816\Handler\Commands\GetChallenge.cs" />
+    <Compile Include="ISO7816\Handler\Commands\GiveRandom.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ManageSecurityEnvironment.cs" />
+    <Compile Include="ISO7816\Handler\Commands\PerformSecurityOperation.cs" />
+    <Compile Include="ISO7816\Handler\Commands\PutData.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ReadBinary.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ReadRecord.cs" />
+    <Compile Include="ISO7816\Handler\Commands\ResetRetryCounter.cs" />
+    <Compile Include="ISO7816\Handler\Commands\Select.cs" />
+    <Compile Include="ISO7816\Handler\Commands\UpdateBinary.cs" />
+    <Compile Include="ISO7816\Handler\Commands\UpdateRecord.cs" />
+    <Compile Include="ISO7816\Handler\Commands\Verify.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="BlobForm.resx">
+      <DependentUpon>BlobForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FileSystemUI.resx">
+      <DependentUpon>FileSystemUI.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Util.cs" />
+    <Compile Include="Wrappers.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VirtualSmartCard\VirtualSmartCardInterfaces\VirtualSmartCardInterfaces.2013.csproj">
+      <Project>{A8D5A37B-C4ED-4EAA-B9E6-750F5B50A4E7}</Project>
+      <Name>VirtualSmartCardInterfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
