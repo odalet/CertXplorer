@@ -16,7 +16,7 @@ namespace Delta.CapiNet.Asn1
             "yyMMddHHmmssz"
         };
 
-        internal Asn1UtcTime(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1UtcTime(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             var ascii = Encoding.ASCII.GetString(content.Workload);

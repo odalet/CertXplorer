@@ -427,6 +427,10 @@
       <Project>{8283484e-906a-4403-919f-435aab288117}</Project>
       <Name>Delta.CertXplorer.Extensibility</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Delta.Icao\Delta.Icao.csproj">
+      <Project>{a98b4d38-9f2d-417e-b4d0-f1064464fb19}</Project>
+      <Name>Delta.Icao</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

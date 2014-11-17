@@ -4,7 +4,7 @@ namespace Delta.CapiNet.Asn1
 {
     public class Asn1Set : Asn1StructuredObject
     {
-        internal Asn1Set(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Set(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject) { }
 
         /// <summary>

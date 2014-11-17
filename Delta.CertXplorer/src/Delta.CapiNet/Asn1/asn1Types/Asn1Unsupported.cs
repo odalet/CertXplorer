@@ -13,7 +13,7 @@ namespace Delta.CapiNet.Asn1
         /// <param name="document">The document.</param>
         /// <param name="content">The content.</param>
         /// <param name="parentObject">The parent object.</param>
-        internal Asn1Unsupported(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Unsupported(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : this(document, content, parentObject, null) { }
 
         /// <summary>
@@ -24,7 +24,7 @@ namespace Delta.CapiNet.Asn1
         /// <param name="parentObject">The parent object.</param>
         /// <param name="exception">The exception.</param>
         internal Asn1Unsupported(Asn1Document document, TaggedObject content, Asn1Object parentObject, Exception exception)
-            : base(document, content, parentObject) 
+            : base(document, content, parentObject)
         {
             Exception = exception;
         }
@@ -43,10 +43,18 @@ namespace Delta.CapiNet.Asn1
         /// </returns>
         public override string ToString()
         {
-            var baseMessage = string.Format("Unsupported tag: 0x{0:X2}", base.TaggedObject.Tag.Value);
+            var tagValue = base.TaggedObject.Tag.Value;
+
+            var kind = tagValue.IsPrimitiveKind() ? "Primitive" : "Constructed";
+            var cl = tagValue.GetAsn1ClassName();
+            var t = tagValue.GetAsn1TagName();
+
+            var baseMessage = string.Format("Unsupported tag: {0}/{1}/{2}", cl, kind, t);
+   
             if (Exception == null)
                 return baseMessage;
-            else return string.Format("{0}\r\n\r\nException:\r\n{1}", baseMessage, Exception);
+            
+            return string.Format("{0}\r\n\r\nException:\r\n{1}", baseMessage, Exception);
         }
     }
 }

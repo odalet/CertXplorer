@@ -5,7 +5,7 @@ namespace Delta.CapiNet.Asn1
 {
     public abstract class Asn1StructuredObject : Asn1Object
     {
-        internal Asn1StructuredObject(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1StructuredObject(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject) 
         {
             ParseContent();
@@ -15,6 +15,11 @@ namespace Delta.CapiNet.Asn1
         {
             get;
             protected set;
+        }
+
+        protected virtual Asn1ObjectFactory ObjectFactory
+        {
+            get { return base.Document.ObjectFactory; }
         }
 
         protected virtual void ParseContent()
@@ -28,7 +33,7 @@ namespace Delta.CapiNet.Asn1
                 var objects = new List<Asn1Object>();
                 foreach (var taggedObject in taggedObjects)
                 {
-                    var asn1 = Asn1Document.CreateAsn1Object(base.Document, taggedObject, this);
+                    var asn1 = ObjectFactory.CreateAsn1Object(base.Document, taggedObject, this);
                     if (asn1 != null) objects.Add(asn1);
                 }
 

@@ -6,14 +6,14 @@ using System.Collections.Generic;
 namespace Delta.CapiNet.Asn1
 {
     // This code is probably not mine... Though I can't remember where I grabbed it from.
-    internal static class Oid
+    internal static class OidUtils
     {
         private static Dictionary<string, string> oidRepository = new Dictionary<string,string>();
         
         /// <summary>
-        /// Initializes the <see cref="Oid"/> class.
+        /// Initializes the <see cref="OidUtils"/> class.
         /// </summary>
-        static Oid()
+        static OidUtils()
         {
             oidRepository.Add("0.9.2342.19200300.100.1.25", "domainComponent");
             oidRepository.Add("0.4.0.127.0.7.2.2.1.1", "PublicKey-DH");
@@ -609,7 +609,6 @@ namespace Delta.CapiNet.Asn1
             string result = string.Empty;
             using (var ms = new MemoryStream(data))
             {
-                ms.Position = 0;
                 result = Decode(ms);
                 ms.Close();
             }
@@ -639,7 +638,7 @@ namespace Delta.CapiNet.Asn1
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Failed to decode OID value: " + ex.Message, ex);
+                    throw new InvalidDataException("Failed to decode OID value: " + ex.Message, ex);
                 }
             }
 

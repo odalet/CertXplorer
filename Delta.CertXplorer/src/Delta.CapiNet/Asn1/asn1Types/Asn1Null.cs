@@ -6,7 +6,7 @@ namespace Delta.CapiNet.Asn1
     {
         private bool warning = false;
 
-        internal Asn1Null(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Null(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             warning = content.WorkloadLength != 0;

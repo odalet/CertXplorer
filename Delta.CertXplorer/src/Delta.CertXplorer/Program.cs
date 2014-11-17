@@ -14,6 +14,7 @@ using System.IO;
 using System.Reflection;
 using Delta.CertXplorer.Config;
 using Delta.CertXplorer.Configuration;
+using Delta.CapiNet.Logging;
 
 namespace Delta.CertXplorer
 {
@@ -22,6 +23,36 @@ namespace Delta.CertXplorer
     /// </summary>
     internal sealed class Program : BaseWindowsFormsApplication
     {
+        private class CapiNetLogServiceWrapper : CapiNetLogger.ILogService
+        {
+            private readonly ILogService originalLogService;
+
+            public CapiNetLogServiceWrapper(Type type, ILogService logService)
+            {
+                Type = type;
+                originalLogService = logService;
+            }
+
+            #region ILogService Members
+
+            public Type Type { get; private set; }
+
+            public void Log(string level, string message, Exception exception)
+            {
+                try
+                {
+                    var levels = Enums<LogLevel>.ValuesByName;                    
+                    var found = levels.FirstOrDefault(kvp => string.Compare(kvp.Key, level, true) == 0);
+                    var l = found.Key == null ? LogLevel.Info : found.Value;
+                    // multi-sources does not work well... Don't play with it
+                    originalLogService.Log(l, message, exception /*, Type == null ? null : Type.ToString()*/);
+                }
+                catch { }
+            }
+
+            #endregion
+        }
+
         public const string ApplicationName = "CertXplorer";
 
         /// <summary>
@@ -63,17 +94,8 @@ namespace Delta.CertXplorer
         {
             var logService = base.CreateLogService();
 
-            // Let's bind this to CapiNet
-            var defaultLogger = CapiNet.Globals.ExceptionLogger;
-            CapiNet.Globals.ExceptionLogger = ex =>
-            {
-                bool ok = true;
-                if (defaultLogger != null)
-                    ok = defaultLogger(ex);
-                logService.Log(LogLevel.Error, ex);
-                ok &= true;
-                return ok;
-            };
+            // Let's bind this to CapiNet and dependant libraries
+            CapiNetLogger.LogServiceBuilder = t => new CapiNetLogServiceWrapper(t, logService);
 
             return logService;
         }

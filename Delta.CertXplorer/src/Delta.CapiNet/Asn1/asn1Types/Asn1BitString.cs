@@ -8,7 +8,7 @@ namespace Delta.CapiNet.Asn1
         private byte unusedBytes = 0;
         private byte[] bitString = null;
 
-        internal Asn1BitString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1BitString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             unusedBytes = content.Workload[0];

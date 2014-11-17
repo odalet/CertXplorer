@@ -2,6 +2,8 @@
 using System.Linq;
 using System.Collections.Generic;
 
+using Delta.CapiNet.Logging;
+
 namespace Delta.CapiNet.Asn1
 {
     /// <summary>
@@ -9,9 +11,47 @@ namespace Delta.CapiNet.Asn1
     /// </summary>
     public class TaggedObject
     {
+        private static ILogService log = LogManager.GetLogger<TaggedObject>();
+
         public struct DataTag
         {
-            public ushort Value { get; set; }
+            private byte[] tagData;
+            private ushort? asn1Tag;
+
+            // The complete Tag; most tags will be ine byte long.
+            public byte[] FullTagValue 
+            {
+                get { return tagData; }
+                set 
+                {
+                    if (value == null)
+                        throw new ArgumentNullException("value");
+                    tagData = value; 
+                    asn1Tag = null; 
+                }
+            }
+
+            public ushort Value
+            {
+                get
+                {
+                    if (!asn1Tag.HasValue)
+                    {
+                        if (FullTagValue.Length == 1)
+                            asn1Tag = (ushort)FullTagValue[0];
+                        else
+                            asn1Tag = (ushort)(FullTagValue[0] << 8 | FullTagValue[1]);
+                    }
+
+                    return asn1Tag.Value;
+                }
+            }
+
+            public bool IsAsn1Tag
+            {
+                get { return FullTagValue.Length == 1; }
+            }
+
             public int Length { get; set; }
         }
 
@@ -95,7 +135,7 @@ namespace Delta.CapiNet.Asn1
             }
             catch (Exception ex)
             {
-                Globals.LogException(ex);
+                log.Error(ex);
             }
 
             count = length;
@@ -117,6 +157,7 @@ namespace Delta.CapiNet.Asn1
                 {
                     int count = 0;
                     var taggedObject = CreateObject(data, currentOffset, currentLength, out count);
+#if DEBUG
                     if (taggedObject is InvalidTaggedObject)
                     {
 #pragma warning disable 219
@@ -124,6 +165,7 @@ namespace Delta.CapiNet.Asn1
                         var foo = 42;
 #pragma warning restore 219
                     }
+#endif
 
                     if (taggedObject != null)
                     {
@@ -131,7 +173,8 @@ namespace Delta.CapiNet.Asn1
                         currentOffset += count;
                         currentLength -= count;
 
-                        if (count >= buffer.Length) buffer = new byte[0];
+                        if (count >= buffer.Length) 
+                            buffer = new byte[0];
                         else buffer = Skip(buffer, count);
                     }
                     else buffer = new byte[0];
@@ -141,7 +184,7 @@ namespace Delta.CapiNet.Asn1
             }
             catch (Exception ex)
             {
-                Globals.LogException(ex);
+                log.Error(ex);
             }
 
             return new TaggedObject[0];
@@ -153,45 +196,24 @@ namespace Delta.CapiNet.Asn1
         /// <returns>bytes count of the data used to build the tagged object.</returns>
         private int Parse()
         {
-            var data = RawData;
-
-            // Determine tag value and length
-            ushort tagValue = 0;
-            int tagLength = 0;
-            if (data[0] == 0x5F || data[0] == 0x7F || data[0] == 0x9F)
-            {
-                tagValue = (ushort)((data[0] << 8) + data[1]);
-                tagLength = 2;
-            }
-            else
-            {
-                tagValue = (ushort)data[0];
-                tagLength = 1;
-            }
-
-            workloadShift = tagLength;
+            var result = TlvDecoder.Decode(RawData);
             Tag = new DataTag()
             {
-                Value = tagValue,
-                Length = tagLength
+                FullTagValue = result.Tag,
+                Length = result.Tag.Length
             };
 
-            // Skip the tag
-            data = data.Skip(Tag.Length).ToArray();
+            workloadShift = Tag.Length;
+            workloadShift += result.LengthLength;
+            workloadLength = (int)result.Length;
 
-            // Determine data length            
-            int lengthLength = 0;
-            int length = data.LengthDecode(out lengthLength);
-
-            workloadShift += lengthLength;
-            workloadLength = length;
             Length = new DataLength()
             {
-                Value = length,
-                Length = lengthLength
+                Value = (int)result.Length,
+                Length = result.LengthLength
             };
 
-            return tagLength + lengthLength + length;
+            return Tag.Length + Length.Length + Length.Value;
         }
 
         private static byte[] Skip(byte[] buffer, int count)

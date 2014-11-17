@@ -6,10 +6,10 @@ namespace Delta.CapiNet.Asn1
     {
         private string oid = string.Empty;
 
-        internal Asn1Oid(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Oid(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
-            oid = Oid.Decode(content.Workload);
+            oid = OidUtils.Decode(content.Workload);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace Delta.CapiNet.Asn1
         {
             get 
             {
-                var name = Oid.GetOidName(oid);
+                var name = OidUtils.GetOidName(oid);
                 if (string.IsNullOrEmpty(name)) name = "Unknown";
                 return name;
             }

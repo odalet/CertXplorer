@@ -6,7 +6,7 @@ namespace Delta.CapiNet.Asn1
     {
         private bool boolean;
 
-        internal Asn1Boolean(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Boolean(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             boolean = content.Workload[0] == 0xFF;

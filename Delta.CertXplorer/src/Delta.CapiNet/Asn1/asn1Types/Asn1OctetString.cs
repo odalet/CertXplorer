@@ -6,7 +6,7 @@ namespace Delta.CapiNet.Asn1
     // This is why we try to find children in it.
     public class Asn1OctetString : Asn1StructuredObject
     {
-        internal Asn1OctetString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1OctetString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject) { } 
 
         protected override void ParseContent()

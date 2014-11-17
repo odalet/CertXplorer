@@ -14,7 +14,7 @@ namespace Delta.CertXplorer.Asn1Decoder
         private const int stringImageIndex = 6;
         private const int timestampImageIndex = 7;
         private const int unknownImageIndex = 8;
-        private const int specificImageIndex = 9;
+        private const int contextSpecificImageIndex = 9;
         private const int booleanImageIndex = 10;
         private const int invalidImageIndex = 11;
 
@@ -72,6 +72,7 @@ namespace Delta.CertXplorer.Asn1Decoder
 
         private int GetImageIndex(Asn1Object asn)
         {
+            // TODO: support icon sets by theme
             if (asn == null) return emptyImageIndex;
             if (asn is Asn1InvalidObject) return invalidImageIndex;
             if (asn is Asn1Sequence) return sequenceImageIndex;
@@ -84,7 +85,7 @@ namespace Delta.CertXplorer.Asn1Decoder
             if (asn is Asn1OctetString) return stringImageIndex;
             if (asn is Asn1UtcTime) return stringImageIndex;
             if (asn is Asn1Unsupported) return unknownImageIndex;
-            if (asn is Asn1ContextSpecific) return specificImageIndex;
+            if (asn is Asn1ContextSpecific) return contextSpecificImageIndex;
             if (asn is Asn1Boolean) return booleanImageIndex;
 
             return emptyImageIndex;

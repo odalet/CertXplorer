@@ -4,7 +4,7 @@ namespace Delta.CapiNet.Asn1
 {
     public class Asn1NumericString : Asn1Object
     {
-        internal Asn1NumericString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1NumericString(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject) { }
 
         /// <summary>

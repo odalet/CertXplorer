@@ -7,7 +7,7 @@ namespace Delta.CapiNet.Asn1
     {
         private string utf8 = string.Empty;
 
-        internal Asn1Utf8String(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Utf8String(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             utf8 = Encoding.UTF8.GetString(content.Workload); 

@@ -3,6 +3,7 @@ using System.Linq;
 using System.ComponentModel;
 
 using Delta.CapiNet.Asn1;
+using Delta.Icao.Asn1;
 
 using Delta.CertXplorer.UI;
 using Delta.CertXplorer.Services;
@@ -25,7 +26,10 @@ namespace Delta.CertXplorer.Asn1Decoder
         {
             InitializeComponent();
 
+            // Defaults
             ParseOctetStrings = false;
+            IsIcaoMrtd = true;
+            ShowInvalidTaggedObjects = true;
         }
 
         /// <summary>
@@ -41,6 +45,12 @@ namespace Delta.CertXplorer.Asn1Decoder
         /// <value><c>true</c> if we should show invalid tagged objects; otherwise, <c>false</c>.</value>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public bool ShowInvalidTaggedObjects { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether we are trying to parse an object belonging to an ICAO Mrtd.
+        /// </summary>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
+        public bool IsIcaoMrtd { get; set; }
 
         #region ISelectionSource Members
 
@@ -124,8 +134,17 @@ namespace Delta.CertXplorer.Asn1Decoder
                 asciiTextBox.Clear();
                 bytesTextBox.Clear();
 
-                var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                asnTreeView.CreateDocumentNodes(doc, "Document");
+                if(IsIcaoMrtd)
+                {
+                    var doc = new Asn1IcaoDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                    asnTreeView.CreateDocumentNodes(doc, "ICAO Document");
+                }
+                else
+                {
+                    var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                    asnTreeView.CreateDocumentNodes(doc, "Document");
+                }
+                
                 asnTreeView.ExpandAll();
             }
             catch (Exception ex)

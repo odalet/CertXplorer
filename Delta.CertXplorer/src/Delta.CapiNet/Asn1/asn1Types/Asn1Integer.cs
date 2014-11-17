@@ -4,7 +4,7 @@ namespace Delta.CapiNet.Asn1
 {
     public class Asn1Integer : Asn1Object
     {
-        internal Asn1Integer(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+        public Asn1Integer(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
             long value = 0L;

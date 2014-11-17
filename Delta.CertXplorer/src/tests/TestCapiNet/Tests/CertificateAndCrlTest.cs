@@ -1,23 +1,15 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Windows.Forms;
 using System.Security.Cryptography.X509Certificates;
 
 using Delta.CapiNet;
 
-namespace TestCapiNet
+namespace TestCapiNet.Tests
 {
-    public partial class Form1 : Form
+    internal static class CertificateAndCrlTest
     {
-        public Form1()
+        public static void Test()
         {
-            InitializeComponent();
-        }
-
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
             var systemStore = Capi32.GetSystemStores(CertificateStoreLocation.FromStoreLocation(StoreLocation.LocalMachine)).First();
             var store = systemStore.GetX509Store();
 

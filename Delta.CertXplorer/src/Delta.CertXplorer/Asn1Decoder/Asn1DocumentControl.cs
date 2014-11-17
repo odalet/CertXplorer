@@ -26,6 +26,7 @@ namespace Delta.CertXplorer.Asn1Decoder
             tstrip.SetRoundedEdges(false);
             parseOctetStringsToolStripButton.Checked = viewer.ParseOctetStrings;
             showInvalidTaggedObjectsToolStripButton.Checked = viewer.ShowInvalidTaggedObjects;
+            parseIcaoMrtdToolStripButton.Checked = viewer.IsIcaoMrtd;
         }
 
         public void SetData(byte[] bytes)
@@ -45,11 +46,17 @@ namespace Delta.CertXplorer.Asn1Decoder
         {
             base.OnLoad(e);
 
-            parseOctetStringsToolStripButton.Checked = false;
+            //parseOctetStringsToolStripButton.Checked = false;
             refreshToolStripButton.Click += (s, _) => viewer.ParseData();
             parseOctetStringsToolStripButton.CheckedChanged += (s, _) =>
             {
                 viewer.ParseOctetStrings = parseOctetStringsToolStripButton.Checked;
+                viewer.ParseData();
+            };
+
+            parseIcaoMrtdToolStripButton.CheckedChanged += (s, _) =>
+            {
+                viewer.IsIcaoMrtd = parseIcaoMrtdToolStripButton.Checked;
                 viewer.ParseData();
             };
 

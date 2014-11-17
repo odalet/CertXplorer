@@ -55,6 +55,9 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="pcsc-sharp">
+      <HintPath>..\..\packages\PCSC.3.1.0.2\lib\net35\pcsc-sharp.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
@@ -65,7 +68,8 @@
     <Compile Include="Asn1\Asn1Document.cs" />
     <Compile Include="Asn1\Asn1Helper.cs" />
     <Compile Include="Asn1\Asn1Object.cs" />
-    <Compile Include="Asn1\Asn1Tag.cs" />
+    <Compile Include="Asn1\Asn1ObjectFactory.cs" />
+    <Compile Include="Asn1\Asn1Tags.cs" />
     <Compile Include="Asn1\asn1Types\Asn1BitString.cs" />
     <Compile Include="Asn1\asn1Types\Asn1Boolean.cs" />
     <Compile Include="Asn1\asn1Types\Asn1ContextSpecific.cs" />
@@ -82,8 +86,10 @@
     <Compile Include="Asn1\asn1Types\Asn1UtcTime.cs" />
     <Compile Include="Asn1\asn1Types\Asn1Utf8String.cs" />
     <Compile Include="Asn1\invalidObjects.cs" />
-    <Compile Include="Asn1\Oid.cs" />
+    <Compile Include="Asn1\OidUtils.cs" />
     <Compile Include="Asn1\TaggedObject.cs" />
+    <Compile Include="Asn1\TlvDecoder.cs" />
+    <Compile Include="ByteUtils.cs" />
     <Compile Include="Capi32.cs" />
     <Compile Include="Certificate.cs" />
     <Compile Include="CertificateRevocationList.cs" />
@@ -91,11 +97,14 @@
     <Compile Include="Cryptography\Adler32.cs" />
     <Compile Include="Cryptography\Luhn.cs" />
     <Compile Include="Internals\CtlContextHandle.cs" />
+    <Compile Include="Logging\extensions.cs" />
+    <Compile Include="Logging\ILogService.cs" />
+    <Compile Include="Logging\LogManager.cs" />
     <Compile Include="Pem\PemInfo.cs" />
     <Compile Include="Pem\PemKind.cs" />
     <Compile Include="Pem\PemDecoder.cs" />
     <Compile Include="X509Extensions.cs" />
-    <Compile Include="Globals.cs" />
+    <Compile Include="Logging\CapiNetLogger.cs" />
     <Compile Include="Internals\LocalAllocHandle.cs" />
     <Compile Include="Internals\CertStoreHandle.cs" />
     <Compile Include="Internals\CertContextHandle.cs" />
@@ -130,6 +139,8 @@
     <None Include="Credits.md" />
     <None Include="History.md" />
     <None Include="License.md" />
+    <None Include="packages.config" />
+    <None Include="pcsc-sharp.dll.config" />
     <None Include="README.md" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

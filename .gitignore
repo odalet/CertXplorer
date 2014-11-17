@@ -19,3 +19,12 @@ fr
 /VirtualSmartcard/BixVReader/*.sdf
 /VirtualSmartcard/BixVReader/*.opensdf
 /VirtualSmartcard/BixVReader/*.log
+
+packages
+
+Win7Release
+
+Win8.1Release
+
+Win8Release
+x64

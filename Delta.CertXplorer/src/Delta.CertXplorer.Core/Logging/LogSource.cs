@@ -7,23 +7,22 @@ namespace Delta.CertXplorer.Logging
     /// </summary>
     public class LogSource : IEquatable<LogSource>
     {
-        private static readonly Func<LogSource, LogEntry, LogEntry> defaultProcessLogEntryFunction =
-            (source, entry) =>
+        private static readonly Func<LogSource, LogEntry, LogEntry> defaultProcessLogEntryFunction = (source, entry) =>
+        {
+            entry.Source = source;
+
+            // Modify message to display the source if not the root source
+            string formattedSourceName = FormatSourceName(source);
+            if (!string.IsNullOrEmpty(formattedSourceName))
             {
-                entry.Source = source;
+                if (string.IsNullOrEmpty(entry.Message)) entry.Message =
+                    formattedSourceName;
+                else entry.Message = string.Format("{0} {1}",
+                    formattedSourceName, entry.Message);
+            }
 
-                // Modify message to display the source if not the root source
-                string formattedSourceName = FormatSourceName(source);
-                if (!string.IsNullOrEmpty(formattedSourceName))
-                {
-                    if (string.IsNullOrEmpty(entry.Message)) entry.Message =
-                        formattedSourceName;
-                    else entry.Message = string.Format("{0} {1}",
-                        formattedSourceName, entry.Message);
-                }
-
-                return entry;
-            };
+            return entry;
+        };
 
         private static Func<LogSource, LogEntry, LogEntry> processLogEntryFunction = null;
 

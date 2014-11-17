@@ -32,8 +32,9 @@
             this.tstrip = new System.Windows.Forms.ToolStrip();
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.parseOctetStringsToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.viewer = new Delta.CertXplorer.Asn1Decoder.Asn1Viewer();
             this.showInvalidTaggedObjectsToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.parseIcaoMrtdToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.viewer = new Delta.CertXplorer.Asn1Decoder.Asn1Viewer();
             this.tstrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,6 +44,7 @@
             this.tstrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripButton,
             this.parseOctetStringsToolStripButton,
+            this.parseIcaoMrtdToolStripButton,
             this.showInvalidTaggedObjectsToolStripButton});
             this.tstrip.Location = new System.Drawing.Point(0, 0);
             this.tstrip.Name = "tstrip";
@@ -58,7 +60,7 @@
             this.refreshToolStripButton.ImageTransparentColor = System.Drawing.Color.Transparent;
             this.refreshToolStripButton.Name = "refreshToolStripButton";
             this.refreshToolStripButton.Size = new System.Drawing.Size(23, 22);
-            this.refreshToolStripButton.Text = "toolStripButton1";
+            this.refreshToolStripButton.Text = "Refresh";
             // 
             // parseOctetStringsToolStripButton
             // 
@@ -70,14 +72,6 @@
             this.parseOctetStringsToolStripButton.Size = new System.Drawing.Size(110, 22);
             this.parseOctetStringsToolStripButton.Text = "&Parse Octet Strings";
             // 
-            // viewer
-            // 
-            this.viewer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.viewer.Location = new System.Drawing.Point(0, 25);
-            this.viewer.Name = "viewer";
-            this.viewer.Size = new System.Drawing.Size(682, 601);
-            this.viewer.TabIndex = 3;
-            // 
             // showInvalidTaggedObjectsToolStripButton
             // 
             this.showInvalidTaggedObjectsToolStripButton.CheckOnClick = true;
@@ -87,6 +81,24 @@
             this.showInvalidTaggedObjectsToolStripButton.Name = "showInvalidTaggedObjectsToolStripButton";
             this.showInvalidTaggedObjectsToolStripButton.Size = new System.Drawing.Size(164, 22);
             this.showInvalidTaggedObjectsToolStripButton.Text = "&Show Invalid Tagged Objects";
+            // 
+            // parseIcaoMrtdToolStripButton
+            // 
+            this.parseIcaoMrtdToolStripButton.CheckOnClick = true;
+            this.parseIcaoMrtdToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.parseIcaoMrtdToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("parseIcaoMrtdToolStripButton.Image")));
+            this.parseIcaoMrtdToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.parseIcaoMrtdToolStripButton.Name = "parseIcaoMrtdToolStripButton";
+            this.parseIcaoMrtdToolStripButton.Size = new System.Drawing.Size(136, 22);
+            this.parseIcaoMrtdToolStripButton.Text = "Parse as an &ICAO MRTD";
+            // 
+            // viewer
+            // 
+            this.viewer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.viewer.Location = new System.Drawing.Point(0, 25);
+            this.viewer.Name = "viewer";
+            this.viewer.Size = new System.Drawing.Size(682, 601);
+            this.viewer.TabIndex = 3;
             // 
             // Asn1DocumentControl
             // 
@@ -110,5 +122,6 @@
         private System.Windows.Forms.ToolStripButton parseOctetStringsToolStripButton;
         private Asn1Viewer viewer;
         private System.Windows.Forms.ToolStripButton showInvalidTaggedObjectsToolStripButton;
+        private System.Windows.Forms.ToolStripButton parseIcaoMrtdToolStripButton;
     }
 }
