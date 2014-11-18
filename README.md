@@ -12,7 +12,7 @@ Third-party libraries or various persons to be credited are so in the _Credits.m
 
 Site
 ----
-[http://odalet.github.io/Delta](http://odalet.github.io/Delta)
+The CertXplorer application can be downloaded from [http://deltaapps.apphb.com/](http://deltaapps.apphb.com/).
 
 Licensing
 ---------
