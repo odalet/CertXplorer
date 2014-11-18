@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Delta.CertXplorer</RootNamespace>
-    <AssemblyName>CertXplorer.Core</AssemblyName>
+    <AssemblyName>Delta.CertXplorer.Core</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>

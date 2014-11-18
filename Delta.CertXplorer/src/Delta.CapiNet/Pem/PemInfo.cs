@@ -11,16 +11,18 @@ namespace Delta.CapiNet.Pem
 
             TextData = decoder.TextData;
             Workload = decoder.Workload;
+            PgpChecksum = decoder.PgpChecksum;
             Kind = decoder.Kind;
             FullHeader = decoder.FullHeader;
             FullFooter = decoder.FullFooter;
             AdditionalHeaders = decoder.AdditionalHeaders;
             AdditionalText = decoder.AdditionalText;
-            Warnings = decoder.Warnings ?? new string[0];            
+            Warnings = decoder.Warnings ?? new string[0];
         }
 
         public string TextData { get; private set; }
         public byte[] Workload { get; private set; }
+        public byte[] PgpChecksum { get; private set; }
         public PemKind Kind { get; private set; }
         public string FullHeader { get; private set; }
         public string FullFooter { get; private set; }

@@ -1,3 +1,12 @@
+Version 1.2.3 (2014/11/18)
+--------------------------
+* Modified the ASN.1 Decoding feature (so that it can be extended)
+* Modified the internal logging sub-system (to be more alike Log4Net API)
+
+Version 1.2.2 (2014/07/09)
+--------------------------
+* Added support for PGP ASCII-armored files (PEM-like) to the PEM decoder
+
 Version 1.2.1 (2014/01/12)
 --------------------------
 * Added Adler32 checksum computation (in Delta.CapiNet.Cryptography.Adler32)

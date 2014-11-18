@@ -1,6 +1,16 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.13 (2014/11/18)
+* Delta.CapiNet: Version 1.2.3
+* First code aimed at decoding ICAO/MRTD data 
+
+Version 2.4.12 (2014/07/09)
+--------------------------
+* Delta.CapiNet: Version 1.2.2
+* PemPlugin: Version 1.0.2
+* First support of PGP PEM-like files
+
 Version 2.4.11 (2014/01/12)
 --------------------------
 * Delta.CapiNet: Version 1.2.1

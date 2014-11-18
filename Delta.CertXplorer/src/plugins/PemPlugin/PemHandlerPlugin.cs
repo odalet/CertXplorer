@@ -19,7 +19,7 @@ namespace PemPlugin
                 plugin = parent;
             }
 
-            #region IDataHandler Members            
+            #region IDataHandler Members
 
             public bool CanHandleFile(string filename)
             {

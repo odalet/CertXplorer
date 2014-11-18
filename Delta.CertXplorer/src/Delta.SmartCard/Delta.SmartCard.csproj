@@ -53,8 +53,12 @@
     <Compile Include="SmartCardHelper.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Credits.md" />
+    <None Include="History.md" />
+    <None Include="License.md" />
     <None Include="packages.config" />
     <None Include="pcsc-sharp.dll.config" />
+    <None Include="README.md" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Delta.CapiNet\Delta.CapiNet.csproj">

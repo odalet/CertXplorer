@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Delta.CapiNet.Pem
@@ -17,7 +18,7 @@ namespace Delta.CapiNet.Pem
         private const string headerEndAlt = " ----";
         private const string footerBeginAlt = "---- END ";
         private const string footerEndAlt = " ----";
-        
+
         private static readonly Encoding pemEncoding = Encoding.ASCII;
 
         private List<String> errors = new List<string>();
@@ -32,6 +33,7 @@ namespace Delta.CapiNet.Pem
 
         internal string TextData { get; private set; }
         internal byte[] Workload { get; private set; }
+        internal byte[] PgpChecksum { get; private set; }
         internal PemKind Kind { get; private set; }
         internal string FullHeader { get; private set; }
         internal string FullFooter { get; private set; }
@@ -107,7 +109,7 @@ namespace Delta.CapiNet.Pem
 
             var altFooter = false;
             var index = 1;
-            var base64Builder = new StringBuilder();
+            var workloadLines = new List<string>();
             var additionalDataBuilder = new StringBuilder();
             while (index < strings.Length)
             {
@@ -116,10 +118,14 @@ namespace Delta.CapiNet.Pem
                 var content = string.Empty;
                 if (IsAdditionalHeader(current, out tag, out content))
                     AddAdditionalHeader(tag, content);
+                else if (string.IsNullOrWhiteSpace(current))
+                {
+                    // ignore white lines
+                }
                 else if (!IsFooter(current, out altFooter))
                 {
                     if (string.IsNullOrEmpty(FullFooter))
-                        base64Builder.Append(current);
+                        workloadLines.Add(current);
                     else additionalDataBuilder.AppendLine(current);
                 }
                 else FullFooter = current;
@@ -145,6 +151,30 @@ namespace Delta.CapiNet.Pem
                 Kind = PemKind.GetCustom(header, "Not a well-known PEM header.");
             }
 
+            // convert the lines list to a string builder.            
+            IEnumerable<string> lines = Kind.HasPgpChecksum ? // if PGP-like PEM, last line is a checksum, not part of the real workload
+                Enumerable.Range(0, workloadLines.Count - 1).Select(i => workloadLines[i]) :
+                workloadLines;
+
+            var base64Builder = new StringBuilder();
+            foreach (var line in lines)
+                base64Builder.Append(line);
+
+            if (Kind.HasPgpChecksum)
+            {
+                try
+                {
+                    // PGP Checksums starts with a '=' character
+                    var checksum = workloadLines[workloadLines.Count - 1];
+                    checksum = checksum.TrimStart('=');
+                    PgpChecksum = Convert.FromBase64String(checksum);
+                }
+                catch (Exception ex)
+                {
+                    AddWarning(string.Format("Could not decode PGP Checksum from input Base64 data: {0}", ex.Message));
+                }
+            }
+
             try
             {
                 Workload = Convert.FromBase64String(base64Builder.ToString());
@@ -152,8 +182,9 @@ namespace Delta.CapiNet.Pem
             catch (Exception ex)
             {
                 AddError(string.Format("Could not decode input Base64 data: {0}", ex.Message));
-                return null;
             }
+
+            // TODO: validates PGP checksums
 
             AdditionalText = additionalDataBuilder.ToString();
 
@@ -191,12 +222,12 @@ namespace Delta.CapiNet.Pem
         private bool IsAdditionalHeader(string input, out string tag, out string content)
         {
             tag = string.Empty;
-            content = string.Empty;            
+            content = string.Empty;
 
             const char separator = ':';
             var splitIndex = input.IndexOf(separator);
             if (splitIndex < 0) return false;
-            
+
             // extract tag and value
             tag = input.Substring(0, splitIndex);
             content = input.Substring(splitIndex + 1);

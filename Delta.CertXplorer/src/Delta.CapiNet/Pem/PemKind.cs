@@ -61,7 +61,7 @@ namespace Delta.CapiNet.Pem
         public static readonly PemKind EcdsaPublicKey;
         public static readonly PemKind EcdsaParameters;
         public static readonly PemKind Parameters;
-        
+
         public static readonly PemKind Pkcs7;
         public static readonly PemKind Pkcs7Signed;
 
@@ -80,6 +80,20 @@ namespace Delta.CapiNet.Pem
 
         // Below are other common PEM Headers (but not grabbed from OpenSSL)
         public static readonly PemKind Ssh2PublicKeyRfc4716;
+
+        // ASCII-armored PGP files (similar to PEM, but also contains a checksum after the Base64 data (which makes the pem decoder fail...)
+        // See http://stackoverflow.com/questions/10966256/erlang-importing-gpg-public-key
+        // See also:
+        // http://superuser.com/questions/415418/what-is-the-file-format-for-storing-pgp-private-keys
+        // http://tools.ietf.org/html/rfc4880#section-6.2
+        // http://en.wikipedia.org/wiki/Radix-64#OpenPGP
+
+        public static readonly PemKind PgpPublicKey;
+        public static readonly PemKind PgpPrivateKey;
+        public static readonly PemKind PgpSignature;
+        public static readonly PemKind PgpMessage;
+        public static readonly PemKind PgpMessagePartXY; // How to handle this?
+        public static readonly PemKind PgpMessagePartX; // How to handle this?
 
         /// <summary>
         /// Initializes the <see cref="PemKind"/> class.
@@ -121,9 +135,17 @@ namespace Delta.CapiNet.Pem
 
             X509CertificateOld = new PemKind("X509 CERTIFICATE", "Stores a X509 Certificate; obsolete, prefer 'CERTIFICATE'", true);
             X509CertificateRequestOld = new PemKind("NEW CERTIFICATE REQUEST", "Stores a X509 Certificate Request; obsolete, prefer 'CERTIFICATE REQUEST'", true);
-            
+
             // Below are other common PEM Headers (but not grabbed from OpenSSL)
             Ssh2PublicKeyRfc4716 = new PemKind("SSH2 PUBLIC KEY", "Stores an SSH2 Public Key according to RFC 4716");
+
+            // ASCII-armored PGP files
+            PgpPublicKey = new PemKind("PGP PUBLIC KEY BLOCK", "Stores a PGP Public Key and its checksum", hasPgpChecksum: true);
+            PgpPrivateKey = new PemKind("PGP PRIVATE KEY BLOCK", "Stores a PGP Private Key and its checksum", hasPgpChecksum: true);
+            PgpSignature = new PemKind("PGP SIGNATURE", "Stores a PGP Signature and its checksum", hasPgpChecksum: true);
+            PgpMessage = new PemKind("PGP MESSAGE", "Stores a PGP Public Key and its checksum", hasPgpChecksum: true);
+            PgpMessagePartXY = new PemKind("PGP MESSAGE, PART {0}/{1}", "Stores a PGP Public Key and its checksum", hasPgpChecksum: true); // how to handle this?
+            PgpMessagePartX = new PemKind("PGP MESSAGE, PART {0}", "Stores a PGP Public Key and its checksum", hasPgpChecksum: true); // how to handle this?
         }
 
         /// <summary>
@@ -133,12 +155,13 @@ namespace Delta.CapiNet.Pem
         /// <param name="description">The description.</param>
         /// <param name="obsolete">if set to <c>true</c> this header is obsolete.</param>
         /// <param name="custom">if set to <c>true</c> this header is custom.</param>
-        private PemKind(string header, string description, bool obsolete = false, bool custom = false)
+        private PemKind(string header, string description, bool obsolete = false, bool custom = false, bool hasPgpChecksum = false)
         {
             Header = header;
             Description = description;
             Obsolete = obsolete;
             Custom = custom;
+            HasPgpChecksum = hasPgpChecksum;
 
             registry.Add(header, this);
         }
@@ -184,5 +207,10 @@ namespace Delta.CapiNet.Pem
         /// Gets a value indicating whether this <see cref="PemKind"/> was custom built.
         /// </summary>
         public bool Custom { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the last data line is a checksum (needed to support PGP ASCII-armored files).
+        /// </summary>
+        public bool HasPgpChecksum { get; private set; }
     }
 }
