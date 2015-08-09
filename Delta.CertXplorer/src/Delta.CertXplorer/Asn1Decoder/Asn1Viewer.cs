@@ -9,6 +9,7 @@ using Delta.CertXplorer.UI;
 using Delta.CertXplorer.Services;
 using Delta.CertXplorer.CertManager;
 using Delta.CertXplorer.Diagnostics;
+using Delta.CapiNet.Asn1.CardVerifiable;
 
 namespace Delta.CertXplorer.Asn1Decoder
 {
@@ -22,13 +23,13 @@ namespace Delta.CertXplorer.Asn1Decoder
         /// <summary>
         /// Initializes a new instance of the <see cref="Asn1Viewer"/> class.
         /// </summary>
-        public Asn1Viewer() 
+        public Asn1Viewer()
         {
             InitializeComponent();
 
             // Defaults
             ParseOctetStrings = false;
-            IsIcaoMrtd = true;
+            ParseMode = Asn1ParseMode.Icao;
             ShowInvalidTaggedObjects = true;
         }
 
@@ -47,10 +48,10 @@ namespace Delta.CertXplorer.Asn1Decoder
         public bool ShowInvalidTaggedObjects { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether we are trying to parse an object belonging to an ICAO Mrtd.
+        /// Gets or sets a value indicating what specific ASN.1 parser to use.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool IsIcaoMrtd { get; set; }
+        public Asn1ParseMode ParseMode { get; set; }
 
         #region ISelectionSource Members
 
@@ -65,7 +66,7 @@ namespace Delta.CertXplorer.Asn1Decoder
         /// <value>The selected object.</value>
         public object SelectedObject
         {
-            get 
+            get
             {
                 var node = asnTreeView.SelectedNode;
                 if (node != null) return node.Tag;
@@ -93,7 +94,7 @@ namespace Delta.CertXplorer.Asn1Decoder
                 return;
             }
 
-            ParseData();            
+            ParseData();
         }
 
         /// <summary>
@@ -114,9 +115,9 @@ namespace Delta.CertXplorer.Asn1Decoder
                 if (SelectedObject != null && SelectionChanged != null)
                     SelectionChanged(this, EventArgs.Empty);
 
-                try 
+                try
                 {
-                    ShowSelection(); 
+                    ShowSelection();
                 }
                 catch (Exception ex)
                 {
@@ -134,17 +135,29 @@ namespace Delta.CertXplorer.Asn1Decoder
                 asciiTextBox.Clear();
                 bytesTextBox.Clear();
 
-                if(IsIcaoMrtd)
+                switch (ParseMode)
                 {
-                    var doc = new Asn1IcaoDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                    asnTreeView.CreateDocumentNodes(doc, "ICAO Document");
+                    case Asn1ParseMode.Icao:
+                        {
+                            var doc = new Asn1IcaoDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                            asnTreeView.CreateDocumentNodes(doc, "ICAO Document");
+                        }
+                        break;
+
+                    case Asn1ParseMode.CardVerifiable:
+                        {
+                            var doc = new CVDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                            asnTreeView.CreateDocumentNodes(doc, "Card Verifiable");
+                        }
+                        break;
+                    default:
+                        {
+                            var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                            asnTreeView.CreateDocumentNodes(doc, "Document");
+                        }
+                        break;
                 }
-                else
-                {
-                    var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                    asnTreeView.CreateDocumentNodes(doc, "Document");
-                }
-                
+
                 asnTreeView.ExpandAll();
             }
             catch (Exception ex)
@@ -182,7 +195,7 @@ namespace Delta.CertXplorer.Asn1Decoder
                 data = asn1Object.Workload;
                 index = asn1Object.WorkloadOffset;
                 This.Logger.Debug(string.Format("Node {0}: index={1}, length={2}, data={3}", asn1Object, index, data.Length, data.ToDebugString(5)));
-            }            
+            }
 
             ShowData(data);
             if (data.Length > 0) hexViewer.Select(index, data.Length);

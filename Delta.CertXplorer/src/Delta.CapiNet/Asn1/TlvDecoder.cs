@@ -128,6 +128,7 @@ namespace Delta.CapiNet.Asn1
                 return new byte[] { firstByte };
 
             var list = new List<byte>();
+
             list.Add(firstByte);
             // How many bytes should we read to complete the length array?
             var bytesToReadCount = (int)(firstByte & lengthMask);

@@ -33,7 +33,10 @@
             this.refreshToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.parseOctetStringsToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.showInvalidTaggedObjectsToolStripButton = new System.Windows.Forms.ToolStripButton();
-            this.parseIcaoMrtdToolStripButton = new System.Windows.Forms.ToolStripButton();
+            this.parseAsDropDownButton = new System.Windows.Forms.ToolStripDropDownButton();
+            this.standardToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.icaoToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cvToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.viewer = new Delta.CertXplorer.Asn1Decoder.Asn1Viewer();
             this.tstrip.SuspendLayout();
             this.SuspendLayout();
@@ -44,8 +47,8 @@
             this.tstrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.refreshToolStripButton,
             this.parseOctetStringsToolStripButton,
-            this.parseIcaoMrtdToolStripButton,
-            this.showInvalidTaggedObjectsToolStripButton});
+            this.showInvalidTaggedObjectsToolStripButton,
+            this.parseAsDropDownButton});
             this.tstrip.Location = new System.Drawing.Point(0, 0);
             this.tstrip.Name = "tstrip";
             this.tstrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -79,18 +82,42 @@
             this.showInvalidTaggedObjectsToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("showInvalidTaggedObjectsToolStripButton.Image")));
             this.showInvalidTaggedObjectsToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.showInvalidTaggedObjectsToolStripButton.Name = "showInvalidTaggedObjectsToolStripButton";
-            this.showInvalidTaggedObjectsToolStripButton.Size = new System.Drawing.Size(164, 22);
+            this.showInvalidTaggedObjectsToolStripButton.Size = new System.Drawing.Size(163, 22);
             this.showInvalidTaggedObjectsToolStripButton.Text = "&Show Invalid Tagged Objects";
             // 
-            // parseIcaoMrtdToolStripButton
+            // parseAsDropDownButton
             // 
-            this.parseIcaoMrtdToolStripButton.CheckOnClick = true;
-            this.parseIcaoMrtdToolStripButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.parseIcaoMrtdToolStripButton.Image = ((System.Drawing.Image)(resources.GetObject("parseIcaoMrtdToolStripButton.Image")));
-            this.parseIcaoMrtdToolStripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.parseIcaoMrtdToolStripButton.Name = "parseIcaoMrtdToolStripButton";
-            this.parseIcaoMrtdToolStripButton.Size = new System.Drawing.Size(136, 22);
-            this.parseIcaoMrtdToolStripButton.Text = "Parse as an &ICAO MRTD";
+            this.parseAsDropDownButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
+            this.parseAsDropDownButton.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.standardToolStripMenuItem,
+            this.icaoToolStripMenuItem,
+            this.cvToolStripMenuItem});
+            this.parseAsDropDownButton.Image = ((System.Drawing.Image)(resources.GetObject("parseAsDropDownButton.Image")));
+            this.parseAsDropDownButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.parseAsDropDownButton.Name = "parseAsDropDownButton";
+            this.parseAsDropDownButton.Size = new System.Drawing.Size(73, 22);
+            this.parseAsDropDownButton.Text = "Parse &As...";
+            // 
+            // standardToolStripMenuItem
+            // 
+            this.standardToolStripMenuItem.CheckOnClick = true;
+            this.standardToolStripMenuItem.Name = "standardToolStripMenuItem";
+            this.standardToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.standardToolStripMenuItem.Text = "Standard &ASN.1";
+            // 
+            // icaoToolStripMenuItem
+            // 
+            this.icaoToolStripMenuItem.CheckOnClick = true;
+            this.icaoToolStripMenuItem.Name = "icaoToolStripMenuItem";
+            this.icaoToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.icaoToolStripMenuItem.Text = "&ICAO MRTD";
+            // 
+            // cvToolStripMenuItem
+            // 
+            this.cvToolStripMenuItem.CheckOnClick = true;
+            this.cvToolStripMenuItem.Name = "cvToolStripMenuItem";
+            this.cvToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.cvToolStripMenuItem.Text = "&Card Verifiable";
             // 
             // viewer
             // 
@@ -122,6 +149,9 @@
         private System.Windows.Forms.ToolStripButton parseOctetStringsToolStripButton;
         private Asn1Viewer viewer;
         private System.Windows.Forms.ToolStripButton showInvalidTaggedObjectsToolStripButton;
-        private System.Windows.Forms.ToolStripButton parseIcaoMrtdToolStripButton;
+        private System.Windows.Forms.ToolStripDropDownButton parseAsDropDownButton;
+        private System.Windows.Forms.ToolStripMenuItem standardToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem icaoToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cvToolStripMenuItem;
     }
 }

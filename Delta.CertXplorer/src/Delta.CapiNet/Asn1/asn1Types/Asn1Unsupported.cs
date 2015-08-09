@@ -47,7 +47,7 @@ namespace Delta.CapiNet.Asn1
 
             var kind = tagValue.IsPrimitiveKind() ? "Primitive" : "Constructed";
             var cl = tagValue.GetAsn1ClassName();
-            var t = tagValue.GetAsn1TagName();
+            var t = string.Format("0x{0:X2}", tagValue); //tagValue.GetAsn1TagName();
 
             var baseMessage = string.Format("Unsupported tag: {0}/{1}/{2}", cl, kind, t);
    

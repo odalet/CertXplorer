@@ -17,7 +17,7 @@
     <ManifestCertificateThumbprint>E06023254E19BF88D0497C79362B85F73BF214E7</ManifestCertificateThumbprint>
     <ManifestKeyFile>deltaapps-certXplorer.p12</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
     <StartupObject>
     </StartupObject>
     <TargetZone>LocalIntranet</TargetZone>
@@ -133,6 +133,7 @@
     <Compile Include="Asn1Decoder\Asn1DocumentControl.Designer.cs">
       <DependentUpon>Asn1DocumentControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="Asn1Decoder\Asn1ParseMode.cs" />
     <Compile Include="Asn1Decoder\Asn1TreeView.cs">
       <SubType>Component</SubType>
     </Compile>

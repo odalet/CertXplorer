@@ -4,7 +4,7 @@ using System.Linq;
 namespace Delta.CapiNet.Asn1
 {
     // See http://en.wikipedia.org/wiki/X.690#Identifier_octets
-    internal enum Asn1Tags : byte
+    public enum Asn1Tag : byte
     {
         Eoc = 0x00, // Nothing to do: represents the end of a TLV value when length is indeterminate (this is only valid in BER, not DER encoding).
         Boolean = 0x01,
@@ -47,7 +47,7 @@ namespace Delta.CapiNet.Asn1
         ContextSpecific = 0x80,
         Private = 0xc0, // = 0x40 + 0x80
     }
-    
+
     // Masks
     internal enum Asn1TagMask : byte
     {
@@ -60,42 +60,42 @@ namespace Delta.CapiNet.Asn1
     {
         public static bool IsUniversalClass(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Class) == (ushort)Asn1TagClass.Universal;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Class) == (byte)Asn1TagClass.Universal;
         }
 
         public static bool IsAplicationClass(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Class) == (ushort)Asn1TagClass.Application;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Class) == (byte)Asn1TagClass.Application;
         }
 
         public static bool IsContextSpecificClass(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Class) == (ushort)Asn1TagClass.ContextSpecific;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Class) == (byte)Asn1TagClass.ContextSpecific;
         }
 
         public static bool IsPrivateClass(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Class) == (ushort)Asn1TagClass.Private;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Class) == (byte)Asn1TagClass.Private;
         }
 
         public static bool IsPrimitiveKind(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Kind) == (ushort)0;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Kind) == 0;
         }
 
         public static bool IsConstructedKind(this ushort tag)
         {
-            return (tag & (ushort)Asn1TagMask.Kind) == (ushort)1;
+            return (ExtractFirstByte(tag) & (byte)Asn1TagMask.Kind) == 1;
         }
 
         public static byte GetAsn1Class(this ushort tag)
         {
-            return (byte)(tag & (ushort)Asn1TagMask.Class);
+            return (byte)(ExtractFirstByte(tag) & (byte)Asn1TagMask.Class);
         }
-        
+
         public static byte GetAsn1TagValue(this ushort tag)
         {
-            return (byte)(tag & (ushort)Asn1TagMask.LongForm);
+            return (byte)(ExtractFirstByte(tag) & (byte)Asn1TagMask.LongForm);
         }
 
         // TODO: store the relationship between a tag and its class name
@@ -107,13 +107,20 @@ namespace Delta.CapiNet.Asn1
             return string.Format("0x{0:X2}", tagClass);
         }
 
-        // TODO: store the relationship between a tag and its tag name
-        public static string GetAsn1TagName(this ushort tag)
+        ////// TODO: store the relationship between a tag and its tag name
+        ////public static string GetAsn1TagName(this ushort tag)
+        ////{
+        ////    var tagValue = tag.GetAsn1TagValue();
+        ////    if (Enum.GetValues(typeof(Asn1Tags)).Cast<byte>().Contains(tagValue))
+        ////        return ((Asn1Tags)tagValue).ToString();
+        ////    return string.Format("0x{0:X2}", tag);
+        ////}
+
+        private static byte ExtractFirstByte(ushort tag)
         {
-            var tagValue = tag.GetAsn1TagValue();
-            if (Enum.GetValues(typeof(Asn1Tags)).Cast<byte>().Contains(tagValue))
-                return ((Asn1Tags)tagValue).ToString();
-            return string.Format("0x{0:X2}", tagValue);
+            if (tag <= byte.MaxValue)
+                return (byte)tag;
+            return (byte)(tag >> 8);
         }
     }
 }

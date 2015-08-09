@@ -1,3 +1,7 @@
+Version 1.2.4 (2015/08/10)
+--------------------------
+* Added first support for Card Verifiable documents (such as Certificates used in EAC)
+
 Version 1.2.3 (2014/11/18)
 --------------------------
 * Modified the ASN.1 Decoding feature (so that it can be extended)
