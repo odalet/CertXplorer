@@ -8,15 +8,16 @@ namespace Delta.CapiNet.Asn1
     {
         private static ILogService log = LogManager.GetLogger(typeof(Asn1ObjectFactory));
 
-        public Asn1Object CreateAsn1Object(
-            Asn1Document document,
-            TaggedObject content,
-            Asn1Object parent)
+        public Asn1Object CreateAsn1Object(Asn1Document document, TaggedObject content, Asn1Object parent)
         {
             try
             {
-                if (document.ShowInvalidTaggedObjects && IsInvalidTaggedObject(content))
-                    return new Asn1InvalidObject(document, (InvalidTaggedObject)content, parent);
+                if (IsInvalidTaggedObject(content))
+                {
+                    if (document.ShowInvalidTaggedObjects)
+                        return new Asn1InvalidObject(document, (InvalidTaggedObject)content, parent);
+                    return null;
+                }
 
                 var tagValue = content.Tag.Value;
                 if (!tagValue.IsUniversalClass())

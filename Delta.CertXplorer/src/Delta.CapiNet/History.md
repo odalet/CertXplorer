@@ -1,3 +1,7 @@
+Version 1.2.5 (2015/11/25)
+--------------------------
+* BUGFIX: Prevent ASN.1 Decoder from throwing when invalid tags are created with no data.
+
 Version 1.2.4 (2015/08/10)
 --------------------------
 * Added first support for Card Verifiable documents (such as Certificates used in EAC)

@@ -21,5 +21,31 @@ namespace CryptoHelperPlugin.UI
                 outputFormatSelector.DataFormat,
                 operationSelector.Operation);
         }
+
+        private void loadButton_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new OpenFileDialog())
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+                inbox.Text = ConversionEngine.Load(dialog.FileName, inputFormatSelector.DataFormat);
+            }
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            using (var dialog = new SaveFileDialog())
+            {
+                if (dialog.ShowDialog(this) != DialogResult.OK)
+                    return;
+
+                ConversionEngine.Save(outbox.Text, dialog.FileName, outputFormatSelector.DataFormat);
+            }
+        }
+
+        private void optionsButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -10,6 +10,6 @@ using System.Reflection;
 internal static partial class ThisAssembly
 {
     public const string Product = "Delta.CertXplorer";
-    public const string Version = "2.4.14.0";
+    public const string Version = "2.4.15.0";
     public const string Company = "Delta Apps";
 }

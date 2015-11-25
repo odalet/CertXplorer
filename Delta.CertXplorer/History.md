@@ -1,24 +1,31 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.15 (2015/11/25)
+---------------------------
+* Delta.CapiNet: Version 1.2.5
+* Crypto Helper plugin: Version 1.2.0
+  * Hexadecimal transformation (with formatting options) 
+  * Load/save bytes
+
 Version 2.4.14 (2015/08/10)
---------------------------
+---------------------------
 * Delta.CapiNet: Version 1.2.4
 * Added first support for Card Verifiable documents (such as Certificates used in EAC)
 
 Version 2.4.13 (2014/11/18)
---------------------------
+---------------------------
 * Delta.CapiNet: Version 1.2.3
 * First code aimed at decoding ICAO/MRTD data 
 
 Version 2.4.12 (2014/07/09)
---------------------------
+---------------------------
 * Delta.CapiNet: Version 1.2.2
 * PemPlugin: Version 1.0.2
 * First support of PGP PEM-like files
 
 Version 2.4.11 (2014/01/12)
---------------------------
+---------------------------
 * Delta.CapiNet: Version 1.2.1
 * PemPlugin: Version 1.0.1
 * Issue #16: Now handles correctly  **[RFC4716](http://www.ietf.org/rfc/rfc4716.txt)** kind of PEM files.
@@ -26,7 +33,7 @@ Version 2.4.11 (2014/01/12)
 * Added a mention of the build being DEBUG in the About box.
 
 Version 2.4.10 (2014/01/11)
---------------------------
+---------------------------
 * Issue #15: Fixed printing support failure (due to incorrect pointers handling in x64 mode).
 
 Version 2.4.9 (2014/01/05)

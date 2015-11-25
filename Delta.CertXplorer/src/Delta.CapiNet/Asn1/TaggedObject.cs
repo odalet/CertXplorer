@@ -35,8 +35,11 @@ namespace Delta.CapiNet.Asn1
             {
                 get
                 {
-                    if (!asn1Tag.HasValue)
+                    if (asn1Tag == null || !asn1Tag.HasValue)
                     {
+                        if (FullTagValue == null || FullTagValue.Length == 0)
+                            return 0xFFFF; // TODO: Provide a constant to represent invalid tags
+
                         if (FullTagValue.Length == 1)
                             asn1Tag = (ushort)FullTagValue[0];
                         else

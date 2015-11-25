@@ -3,6 +3,7 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using Delta.CertXplorer.Extensibility;
+using Delta.CertXplorer.Extensibility.Logging;
 using Delta.CertXplorer.Extensibility.UI;
 
 namespace CryptoHelperPlugin
@@ -22,6 +23,8 @@ namespace CryptoHelperPlugin
         {
             try
             {
+                LogService = base.Log;
+
                 base.Log.Verbose(string.Format("Running {0} plugin.", PluginName));
                 using (var form = new PluginMainForm())
                 {
@@ -40,6 +43,11 @@ namespace CryptoHelperPlugin
 
                 return false;
             }
+        }
+
+        public static ILogService LogService
+        {
+            get; private set;
         }
 
         /// <summary>

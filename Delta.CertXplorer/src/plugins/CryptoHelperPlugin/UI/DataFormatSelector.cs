@@ -18,6 +18,7 @@ namespace CryptoHelperPlugin.UI
 
             controlMapping = new Dictionary<DataFormat, RadioButton>();
             controlMapping.Add(DataFormat.Text, textRadioButton);
+            controlMapping.Add(DataFormat.Hexa, hexaRadioButton);
             controlMapping.Add(DataFormat.Base64, base64RadioButton);
             controlMapping.Add( DataFormat.UrlEncoded, urlEncodedRadioButton);
             controlMapping.Add(DataFormat.UrlEncodedBase64, urlEncodedBase64RadioButton);
