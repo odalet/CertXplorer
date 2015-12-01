@@ -9,6 +9,6 @@ using System.Runtime.InteropServices;
 
 partial class ThisAssembly
 {
-    public const string PluginVersion = "1.2.0.0";
+    public const string PluginVersion = "1.3.0.0";
     public const string Description = "A set of cryptography related tools.";
 }

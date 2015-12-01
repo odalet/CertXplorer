@@ -64,7 +64,7 @@ namespace CryptoHelperPlugin
             return null;
         }
 
-        private static byte[] GetBytes(string data, DataFormat format)
+        public static byte[] GetBytes(string data, DataFormat format)
         {
             switch (format)
             {

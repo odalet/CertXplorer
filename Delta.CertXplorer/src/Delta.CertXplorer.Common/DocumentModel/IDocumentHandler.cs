@@ -9,5 +9,7 @@
         IDocument Document { get; }
         
         IDocumentView CreateView();
+
+        string HandlerName { get; }
     }
 }

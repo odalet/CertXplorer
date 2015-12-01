@@ -68,6 +68,9 @@
     </Compile>
     <Compile Include="ConversionEngine.cs" />
     <Compile Include="DataFormat.cs" />
+    <Compile Include="DataHandlers\Base64HandlerPlugin.cs" />
+    <Compile Include="DataHandlers\Base64HandlerPluginInfo.cs" />
+    <Compile Include="DataHandlers\BinaryAsTextHandler.cs" />
     <Compile Include="HexaConverter.cs" />
     <Compile Include="Operation.cs" />
     <Compile Include="Plugin.cs" />
@@ -189,6 +192,7 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Delta.CertXplorer.DocumentModel
@@ -12,14 +13,19 @@ namespace Delta.CertXplorer.DocumentModel
 
         private Dictionary<string, IDocumentView> views = new Dictionary<string, IDocumentView>();
 
+        private Func<IDocumentBasedUI, IEnumerable<IDocumentHandler>, IDocumentHandler> chooseDocumentHandler;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="DocumentManagerService"/> class.
         /// </summary>
         /// <param name="owner">The owner.</param>
-        public DocumentManagerService(IDocumentBasedUI owner)
+        public DocumentManagerService(IDocumentBasedUI owner,
+            Func<IDocumentBasedUI, IEnumerable<IDocumentHandler>, IDocumentHandler> chooseDocumentHandlerFunction)
         {
             if (owner == null) throw new ArgumentNullException("owner");
             ownerUI = owner;
+
+            chooseDocumentHandler = chooseDocumentHandlerFunction;
 
             //TODO: is this useful? Or correctly placed?
             ownerUI.ActiveDocumentChanged += (s, e) =>
@@ -64,11 +70,11 @@ namespace Delta.CertXplorer.DocumentModel
                     "Document creation failed for source {0}", source.Uri));
                 return null;
             }
-            
+
             OnDocumentCreated(document);
             return document;
         }
-        
+
         /// <summary>
         /// Selects the specified document as the currently active document.
         /// </summary>
@@ -128,12 +134,44 @@ namespace Delta.CertXplorer.DocumentModel
         }
 
         #endregion
-                
+
         private IDocumentHandler FindDocumentHandler(IDocumentSource source)
         {
             var registry = This.GetService<IDocumentHandlerRegistryService>();
             var found = registry.Find(source);
-            return found[0]; // TODO: handle multiple results
+
+            if (found == null || found.Length == 0)
+            {
+                This.Logger.Warning(string.Format("Could not find a Document Handler for {0}", source.Uri));
+                return null;
+            }
+
+            if (found.Length > 1)
+            {
+                This.Logger.Info(string.Format(
+                    "Multiple Document Handlers are able to process Document {0}", source.Uri));
+
+                if (chooseDocumentHandler == null)
+                {
+                    This.Logger.Error(
+                        "No 'Choose Document Handler' function was provided to the Document Manager Service");
+                    return null;
+                }
+
+                IDocumentHandler chosen = null;
+                try { chosen = chooseDocumentHandler(ownerUI, found); }
+                catch (Exception ex)
+                {
+                    This.Logger.Error(string.Format(
+                        "'Choose Document Handler' function raised an error: {0}", ex.Message), ex);
+                }
+
+                if (chosen == null)
+                    This.Logger.Warning(string.Format("No Document Handler was chosen for {0}", source.Uri));
+                return chosen;
+            }
+
+            return found[0];
         }
 
         /// <summary>

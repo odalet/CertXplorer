@@ -27,6 +27,8 @@ namespace Delta.CertXplorer.DocumentModel
             Document = doc;
         }
 
+        public abstract string HandlerName { get; }
+
         public IDocument Document
         {
             get;

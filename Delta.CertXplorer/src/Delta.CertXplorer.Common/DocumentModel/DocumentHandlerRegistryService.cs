@@ -30,11 +30,16 @@ namespace Delta.CertXplorer.DocumentModel
 
         public IDocumentHandler[] Find(IDocumentSource source)
         {
-            List<IDocumentHandler> result = new List<IDocumentHandler>();
+            return Find(source, true);
+        }
 
-            foreach (var current in list.OrderByDescending(e => e.Priority).Select(e => e.Value))
+        public IDocumentHandler[] Find(IDocumentSource source, bool onlyKeepTopPriority)
+        {
+            int? foundPriority = null;
+            var result = new List<IDocumentHandler>();
+            foreach (var pair in list.OrderByDescending(e => e.Priority))
             {
-                var function = current;
+                var function = pair.Value;
                 IDocumentHandler handler = null;               
                 
                 try
@@ -56,9 +61,16 @@ namespace Delta.CertXplorer.DocumentModel
                 {
                     This.Logger.Error(string.Format("Handler.CanHandle invocation error: {0}", ex.Message), ex);
                 }
-                
+
                 if (canHandle)
+                {
+                    if (!foundPriority.HasValue)
+                        foundPriority = pair.Priority;
+                    else if (pair.Priority < foundPriority && onlyKeepTopPriority)
+                        break;
+
                     result.Add(handler);
+                }
             }
 
             if (result.Count == 0)

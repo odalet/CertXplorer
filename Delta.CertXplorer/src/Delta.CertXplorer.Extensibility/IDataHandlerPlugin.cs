@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.Composition;
+﻿using System;
+using System.ComponentModel.Composition;
 
 namespace Delta.CertXplorer.Extensibility
 {
@@ -33,5 +34,12 @@ namespace Delta.CertXplorer.Extensibility
     {
         byte[] MainData { get; }
         object AdditionalData { get; }
+    }
+
+    public class SimpleData : IData
+    {
+        public object AdditionalData { get; set; }
+
+        public byte[] MainData { get; set; }
     }
 }

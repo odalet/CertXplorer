@@ -6,6 +6,11 @@ namespace Delta.CertXplorer.DocumentModel
 {
     internal class Asn1DocumentHandler : BaseDocumentHandler<Asn1DocumentView>
     {
+        public override string HandlerName
+        {
+            get { return "ASN.1 Document Handler [Embedded]"; }
+        }
+
         protected override bool CanHandleSource(IDocumentSource source)
         {
             return source != null && source is X509DocumentSource || source is FileDocumentSource;

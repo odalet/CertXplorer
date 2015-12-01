@@ -1,6 +1,15 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.16 (2015/12/01)
+---------------------------
+* Crypto Helper plugin: Version 1.3.0 - Added Base64 Document Handler
+* Improved handling of document handlers
+
+Version 2.4.15.1 (2015/11/25)
+-----------------------------
+* Republished
+
 Version 2.4.15 (2015/11/25)
 ---------------------------
 * Delta.CapiNet: Version 1.2.5

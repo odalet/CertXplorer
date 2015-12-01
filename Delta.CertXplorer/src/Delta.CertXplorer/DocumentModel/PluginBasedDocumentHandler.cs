@@ -9,6 +9,10 @@ namespace Delta.CertXplorer.DocumentModel
         private IDataHandlerPlugin plugin = null;
 
         private IDataHandler handler = null;
+        public override string HandlerName
+        {
+            get { return string.Format("{0} Document Handler [Plugin]", plugin.PluginInfo.Name); }
+        }
 
         public PluginBasedDocumentHandler(IDataHandlerPlugin dataHandlerPlugin)
         {
@@ -25,7 +29,7 @@ namespace Delta.CertXplorer.DocumentModel
             var ok = handler.CanHandleFile(((FileDocumentSource)source).Uri);
 
             if (ok) This.Logger.Info(string.Format(
-                "This file will be handled by plugin [{0}]", plugin.PluginInfo.Name));
+                "This file can be handled by plugin [{0}]", plugin.PluginInfo.Name));
 
             return ok;
         }

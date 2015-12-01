@@ -135,6 +135,7 @@ namespace Delta.CertXplorer
         {
             var registry = This.GetService<IDocumentHandlerRegistryService>(true);
             registry.Register(() => new Asn1DocumentHandler());
+            This.Logger.Verbose("Registered ASN.1 Document Handler");
 
             foreach (var p in Globals.PluginsManager.DataHandlerPlugins)
             {
@@ -146,7 +147,8 @@ namespace Delta.CertXplorer
                 }
 
                 var documentHandler = new PluginBasedDocumentHandler(plugin);
-                registry.RegisterHandlerPlugin(documentHandler); 
+                registry.RegisterHandlerPlugin(documentHandler);
+                This.Logger.Verbose(string.Format("Registered {0} Document Handler", p.PluginInfo.Name));
             }
         }
 
