@@ -105,6 +105,12 @@
     <Compile Include="UI\LuhnTesterControl.Designer.cs">
       <DependentUpon>LuhnTesterControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="UI\OidInfoControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UI\OidInfoControl.Designer.cs">
+      <DependentUpon>OidInfoControl.cs</DependentUpon>
+    </Compile>
     <Compile Include="UI\OperationSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -160,6 +166,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UI\LuhnTesterControl.resx">
       <DependentUpon>LuhnTesterControl.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UI\OidInfoControl.resx">
+      <DependentUpon>OidInfoControl.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UI\OperationSelector.resx">
       <DependentUpon>OperationSelector.cs</DependentUpon>

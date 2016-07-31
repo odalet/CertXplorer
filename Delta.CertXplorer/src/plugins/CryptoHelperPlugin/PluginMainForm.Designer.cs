@@ -32,14 +32,17 @@
             this.closeButton = new System.Windows.Forms.Button();
             this.tabs = new System.Windows.Forms.TabControl();
             this.encoderTab = new System.Windows.Forms.TabPage();
-            this.encoderControl = new CryptoHelperPlugin.UI.EncoderControl();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.luhnTesterControl = new CryptoHelperPlugin.UI.LuhnTesterControl();
+            this.luhnTab = new System.Windows.Forms.TabPage();
+            this.oidTab = new System.Windows.Forms.TabPage();
             this.optionsTab = new System.Windows.Forms.TabPage();
+            this.encoderControl = new CryptoHelperPlugin.UI.EncoderControl();
+            this.luhnTesterControl = new CryptoHelperPlugin.UI.LuhnTesterControl();
             this.optionsControl = new CryptoHelperPlugin.UI.OptionsControl();
+            this.oidInfoControl = new CryptoHelperPlugin.UI.OidInfoControl();
             this.tabs.SuspendLayout();
             this.encoderTab.SuspendLayout();
-            this.tabPage2.SuspendLayout();
+            this.luhnTab.SuspendLayout();
+            this.oidTab.SuspendLayout();
             this.optionsTab.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -61,7 +64,8 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabs.Controls.Add(this.encoderTab);
-            this.tabs.Controls.Add(this.tabPage2);
+            this.tabs.Controls.Add(this.luhnTab);
+            this.tabs.Controls.Add(this.oidTab);
             this.tabs.Controls.Add(this.optionsTab);
             this.tabs.Location = new System.Drawing.Point(12, 12);
             this.tabs.Name = "tabs";
@@ -80,33 +84,27 @@
             this.encoderTab.Text = "Data Encoder/Decoder";
             this.encoderTab.UseVisualStyleBackColor = true;
             // 
-            // encoderControl
+            // luhnTab
             // 
-            this.encoderControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.encoderControl.Location = new System.Drawing.Point(3, 3);
-            this.encoderControl.MinimumSize = new System.Drawing.Size(607, 365);
-            this.encoderControl.Name = "encoderControl";
-            this.encoderControl.Size = new System.Drawing.Size(619, 388);
-            this.encoderControl.TabIndex = 0;
+            this.luhnTab.Controls.Add(this.luhnTesterControl);
+            this.luhnTab.Location = new System.Drawing.Point(4, 22);
+            this.luhnTab.Name = "luhnTab";
+            this.luhnTab.Padding = new System.Windows.Forms.Padding(3);
+            this.luhnTab.Size = new System.Drawing.Size(625, 394);
+            this.luhnTab.TabIndex = 1;
+            this.luhnTab.Text = "Luhn Tester";
+            this.luhnTab.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
+            // oidTab
             // 
-            this.tabPage2.Controls.Add(this.luhnTesterControl);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(625, 394);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Luhn Tester";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
-            // luhnTesterControl
-            // 
-            this.luhnTesterControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.luhnTesterControl.Location = new System.Drawing.Point(3, 3);
-            this.luhnTesterControl.Name = "luhnTesterControl";
-            this.luhnTesterControl.Size = new System.Drawing.Size(619, 388);
-            this.luhnTesterControl.TabIndex = 0;
+            this.oidTab.Controls.Add(this.oidInfoControl);
+            this.oidTab.Location = new System.Drawing.Point(4, 22);
+            this.oidTab.Name = "oidTab";
+            this.oidTab.Padding = new System.Windows.Forms.Padding(3);
+            this.oidTab.Size = new System.Drawing.Size(625, 394);
+            this.oidTab.TabIndex = 3;
+            this.oidTab.Text = "OID Info";
+            this.oidTab.UseVisualStyleBackColor = true;
             // 
             // optionsTab
             // 
@@ -119,6 +117,23 @@
             this.optionsTab.Text = "Options";
             this.optionsTab.UseVisualStyleBackColor = true;
             // 
+            // encoderControl
+            // 
+            this.encoderControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.encoderControl.Location = new System.Drawing.Point(3, 3);
+            this.encoderControl.MinimumSize = new System.Drawing.Size(607, 365);
+            this.encoderControl.Name = "encoderControl";
+            this.encoderControl.Size = new System.Drawing.Size(619, 388);
+            this.encoderControl.TabIndex = 0;
+            // 
+            // luhnTesterControl
+            // 
+            this.luhnTesterControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.luhnTesterControl.Location = new System.Drawing.Point(3, 3);
+            this.luhnTesterControl.Name = "luhnTesterControl";
+            this.luhnTesterControl.Size = new System.Drawing.Size(619, 388);
+            this.luhnTesterControl.TabIndex = 0;
+            // 
             // optionsControl
             // 
             this.optionsControl.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -126,6 +141,14 @@
             this.optionsControl.Name = "optionsControl";
             this.optionsControl.Size = new System.Drawing.Size(619, 388);
             this.optionsControl.TabIndex = 0;
+            // 
+            // oidInfoControl
+            // 
+            this.oidInfoControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.oidInfoControl.Location = new System.Drawing.Point(3, 3);
+            this.oidInfoControl.Name = "oidInfoControl";
+            this.oidInfoControl.Size = new System.Drawing.Size(619, 388);
+            this.oidInfoControl.TabIndex = 0;
             // 
             // PluginMainForm
             // 
@@ -145,7 +168,8 @@
             this.Text = "Crypto Helper";
             this.tabs.ResumeLayout(false);
             this.encoderTab.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
+            this.luhnTab.ResumeLayout(false);
+            this.oidTab.ResumeLayout(false);
             this.optionsTab.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -156,10 +180,12 @@
         private System.Windows.Forms.Button closeButton;
         private System.Windows.Forms.TabControl tabs;
         private System.Windows.Forms.TabPage encoderTab;
-        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage luhnTab;
         private UI.EncoderControl encoderControl;
         private UI.LuhnTesterControl luhnTesterControl;
         private System.Windows.Forms.TabPage optionsTab;
         private UI.OptionsControl optionsControl;
+        private System.Windows.Forms.TabPage oidTab;
+        private UI.OidInfoControl oidInfoControl;
     }
 }
