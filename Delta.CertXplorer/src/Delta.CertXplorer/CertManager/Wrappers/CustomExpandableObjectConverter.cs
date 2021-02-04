@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Globalization;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Delta.CertXplorer.CertManager.Wrappers
 {
@@ -9,16 +9,12 @@ namespace Delta.CertXplorer.CertManager.Wrappers
         string DisplayType { get; }
     }
 
-    internal class CustomExpandableObjectConverter : ExpandableObjectConverter
+    internal sealed class CustomExpandableObjectConverter : ExpandableObjectConverter
     {
-        public override object ConvertTo(
-            ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+        public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
         {
-            if (destinationType == typeof(string))
-            {
-                if (value is IDisplayTypeWrapper)
-                    return ((IDisplayTypeWrapper)value).DisplayType;
-            }
+            if (destinationType == typeof(string) && value is IDisplayTypeWrapper w)
+                    return w.DisplayType;
 
             return base.ConvertTo(context, culture, value, destinationType);
         }

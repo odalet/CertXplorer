@@ -2,13 +2,8 @@
 
 namespace Delta.CertXplorer.DocumentModel
 {
-    public class FileDocumentSource : IDocumentSource
+    public sealed class FileDocumentSource : IDocumentSource
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FileDocumentSource"/> class.
-        /// </summary>
-        /// <param name="filename">The filename.</param>
-        /// <exception cref="FileNotFoundException">Input file does not exist.</exception>
         public FileDocumentSource(string filename)
         {
             if (!File.Exists(filename))
@@ -16,24 +11,8 @@ namespace Delta.CertXplorer.DocumentModel
             FileName = filename;
         }
 
-        #region IDocumentSource Members
-
-        public string Uri
-        {
-            get { return FileName; }
-        }
-        
-        public bool IsReadOnly
-        {
-            get { return true; }
-        }
-        
-        #endregion
-
-        public string FileName
-        {
-            get;
-            private set;
-        }
+        public string FileName { get; }
+        public string Uri => FileName;
+        public bool IsReadOnly => true;
     }
 }

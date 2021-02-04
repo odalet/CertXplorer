@@ -3,27 +3,15 @@ using Delta.CapiNet;
 
 namespace Delta.CertXplorer.CertManager.Wrappers
 {
-    internal class CapiCtlWrapper : BaseWrapper
+    internal sealed class CapiCtlWrapper : BaseWrapper
     {
         private readonly CertificateTrustList ctl;
 
-        public CapiCtlWrapper(CertificateTrustList certificateTrustList)
-        {
-            ctl = certificateTrustList;
-        }
+        public CapiCtlWrapper(CertificateTrustList certificateTrustList) => ctl = certificateTrustList;
 
-        public string FriendlyName { get { return TryGet(() => ctl.FriendlyName); } }
-
-        /// <summary>
-        /// Gets this CTL's publication date.
-        /// </summary>
-        public DateTime PublicationDate { get { return TryGet(() => ctl.PublicationDate); } }
-
-        /// <summary>
-        /// Gets this CTL's next scheduled update.
-        /// </summary>
-        public DateTime NextUpdate { get { return TryGet(() => ctl.NextUpdate); } }
-
-        public bool IsValid { get { return TryGet(() => ctl.IsValid); } }
+        public string FriendlyName => TryGet(() => ctl.FriendlyName);
+        public DateTime PublicationDate => TryGet(() => ctl.PublicationDate);
+        public DateTime NextUpdate => TryGet(() => ctl.NextUpdate);
+        public bool IsValid => TryGet(() => ctl.IsValid);
     }
 }

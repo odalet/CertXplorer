@@ -20,7 +20,7 @@ namespace Delta.CertXplorer
                     var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
                     userConfigDirectory = Path.Combine(localAppData, ThisAssembly.Product);
                     if (File.Exists(userConfigDirectory)) File.Delete(userConfigDirectory);
-                    if (!Directory.Exists(userConfigDirectory)) Directory.CreateDirectory(userConfigDirectory);
+                    if (!Directory.Exists(userConfigDirectory)) _ = Directory.CreateDirectory(userConfigDirectory);
                 }
 
                 return userConfigDirectory;
@@ -39,7 +39,7 @@ namespace Delta.CertXplorer
                     var configDirectory = UserConfigDirectory;
                     userDataDirectory = Path.Combine(configDirectory, "data");
                     if (File.Exists(userDataDirectory)) File.Delete(userDataDirectory);
-                    if (!Directory.Exists(userDataDirectory)) Directory.CreateDirectory(userDataDirectory);
+                    if (!Directory.Exists(userDataDirectory)) _ = Directory.CreateDirectory(userDataDirectory);
                 }
 
                 return userDataDirectory;

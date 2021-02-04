@@ -4,32 +4,25 @@ using Delta.CertXplorer.Extensibility;
 
 namespace Delta.CertXplorer.DocumentModel
 {
-    internal class PluginBasedDocumentHandler : BaseDocumentHandler<Asn1DocumentView>
+    internal sealed class PluginBasedDocumentHandler : BaseDocumentHandler<Asn1DocumentView>
     {
-        private IDataHandlerPlugin plugin = null;
-
+        private readonly IDataHandlerPlugin plugin;
         private IDataHandler handler = null;
-        public override string HandlerName
-        {
-            get { return string.Format("{0} Document Handler [Plugin]", plugin.PluginInfo.Name); }
-        }
 
-        public PluginBasedDocumentHandler(IDataHandlerPlugin dataHandlerPlugin)
-        {
-            if (dataHandlerPlugin == null) throw new ArgumentNullException("dataHandlerPlugin");
-            plugin = dataHandlerPlugin;
-        }
+        public PluginBasedDocumentHandler(IDataHandlerPlugin dataHandlerPlugin) => 
+            plugin = dataHandlerPlugin ?? throw new ArgumentNullException("dataHandlerPlugin");
+
+        public override string HandlerName => $"{plugin.PluginInfo.Name} Document Handler [Plugin]";
 
         protected override bool CanHandleSource(IDocumentSource source)
         {
-            if (source == null || !(source is FileDocumentSource))
+            if (!(source is FileDocumentSource))
                 return false;
 
             handler = plugin.CreateHandler();
             var ok = handler.CanHandleFile(((FileDocumentSource)source).Uri);
 
-            if (ok) This.Logger.Info(string.Format(
-                "This file can be handled by plugin [{0}]", plugin.PluginInfo.Name));
+            if (ok) This.Logger.Info($"This file can be handled by plugin [{plugin.PluginInfo.Name}]");
 
             return ok;
         }
@@ -38,19 +31,17 @@ namespace Delta.CertXplorer.DocumentModel
         {
             if (handler == null) throw new InvalidOperationException("Inner data handler is null.");
             
-            This.Logger.Info(string.Format(
-                "Running plugin [{0}] on data source {1}", plugin.PluginInfo.Name, Source.Uri));
-            
-            IData result = null;
+            This.Logger.Info($"Running plugin [{plugin.PluginInfo.Name}] on data source {Source.Uri}");
+
+            IData result;
             try
             {
                 result = handler.ProcessFile();
             }
             catch (Exception ex)
             {
-                This.Logger.Error(string.Format(
-                    "Plugin [{0}] failed at processing data from source {1}: {2}",
-                    plugin.PluginInfo.Name, Source.Uri, ex.Message), ex);
+                This.Logger.Error(
+                    $"Plugin [{plugin.PluginInfo.Name}] failed at processing data from source {Source.Uri}: {ex.Message}", ex);
                 return null;
             }
 

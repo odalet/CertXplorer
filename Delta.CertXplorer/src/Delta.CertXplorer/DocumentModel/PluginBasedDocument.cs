@@ -12,11 +12,7 @@ namespace Delta.CertXplorer.DocumentModel
             AdditionalData = additionalData;
         }
 
-    [TypeConverter(typeof(ExpandableObjectConverter))]
-        public object AdditionalData
-        {
-            get;
-            private set;
-        }
+        [TypeConverter(typeof(ExpandableObjectConverter))]
+        public object AdditionalData { get; private set; }
     }
 }

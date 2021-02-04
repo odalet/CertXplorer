@@ -13,11 +13,11 @@ namespace Delta.CertXplorer.CertManager.Wrappers
         public static object Wrap(object item)
         {
             if (item == null) return null;
-            if (item is Certificate) return new CapiCertificateWrapper((Certificate)item);
-            if (item is CertificateRevocationList) return new CapiCrlWrapper((CertificateRevocationList)item);
-            if (item is CertificateTrustList) return new CapiCtlWrapper((CertificateTrustList)item);
-            if (item is X509Certificate2) return new X509CertificateWrapper2((X509Certificate2)item);
-            if (item is X509Certificate) return new X509CertificateWrapper((X509Certificate)item);
+            if (item is Certificate c) return new CapiCertificateWrapper(c);
+            if (item is CertificateRevocationList crl) return new CapiCrlWrapper(crl);
+            if (item is CertificateTrustList ctl) return new CapiCtlWrapper(ctl);
+            if (item is X509Certificate2 xc2) return new X509CertificateWrapper2(xc2);
+            if (item is X509Certificate xc) return new X509CertificateWrapper(xc);
             return item;
         }
     }
