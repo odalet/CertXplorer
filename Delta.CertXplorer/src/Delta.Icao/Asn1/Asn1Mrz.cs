@@ -3,11 +3,10 @@ using Delta.Icao.Logging;
 
 namespace Delta.Icao.Asn1
 {
-    public class Asn1Mrz : Asn1Utf8String
+    public sealed class Asn1Mrz : BaseAsn1String
     {
         private static readonly ILogService log = LogManager.GetLogger(typeof(MrzHelper));
-
-        private string[] mrz = null;
+        private string[] decoded = null;
 
         public Asn1Mrz(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject) { }
@@ -16,38 +15,38 @@ namespace Delta.Icao.Asn1
         {
             get
             {
-                if (mrz == null)
-                {
-                    mrz = new string[0]; // default
-
-                    if (string.IsNullOrEmpty(base.Value))
-                        return mrz;
-
-                    var mrzFormat = MrzFormat.FindByTotalLength(base.Value);
-                    if (mrzFormat == null)
-                    {
-                        log.Warning(string.Format("Invalid MRZ: {0}", base.Value));
-                        return mrz;
-                    }
-
-                    var parser = MrzParser.Create(base.Value);
-                    if (!parser.Parse())
-                    {
-                        log.Warning(string.Format("MRZ ({0}) could not be decoded.", mrzFormat));
-                        return mrz;
-                    }
-
-                    mrz = parser.MrzArray;
-                    log.Verbose(string.Format("MRZ ({0}) was successfully decoded: \r\n{1}", mrzFormat, string.Join("\r\n", Mrz)));
-                }
-
-                return mrz;
+                if (decoded == null) decoded = DecodeMrz(Value);
+                return decoded;
             }
         }
 
-        public override string ToString()
+        public override string ToString() => $"MRZ: \r\n{string.Join("\r\n", Mrz)}";
+
+        private string[] DecodeMrz(string input)
         {
-            return string.Format("MRZ: \r\n{0}", string.Join("\r\n", Mrz));
+            var mrz = new string[0]; // default
+
+            if (string.IsNullOrEmpty(input))
+                return mrz;
+
+            var mrzFormat = MrzFormat.FindByTotalLength(input);
+            if (mrzFormat == null)
+            {
+                log.Warning($"Invalid MRZ: {input}");
+                return mrz;
+            }
+
+            var parser = MrzParser.Create(input);
+            if (!parser.Parse())
+            {
+                log.Warning($"MRZ ({mrzFormat}) could not be decoded.");
+                return mrz;
+            }
+
+            mrz = parser.MrzArray;
+            log.Verbose($"MRZ ({mrzFormat}) was successfully decoded: \r\n{string.Join("\r\n", mrz)}");
+
+            return mrz;
         }
     }
 }

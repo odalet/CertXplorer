@@ -6,12 +6,9 @@ namespace Delta.CapiNet
 {
     public static class ByteUtils
     {
-        private static ILogService log = LogManager.GetLogger(typeof(ByteUtils));
+        private static readonly ILogService log = LogManager.GetLogger(typeof(ByteUtils));
 
-        public static string ToFormattedString(this byte[] array)
-        {
-            return string.Join(" ", array.Select(b => b.ToString("X2")).ToArray());
-        }
+        public static string ToFormattedString(this byte[] array) => string.Join(" ", array.Select(b => b.ToString("X2")).ToArray());
 
         /// <summary>
         /// Returns a copy of the specified array from which the <paramref name="count"/> leading bytes have been removed.
@@ -92,9 +89,7 @@ namespace Delta.CapiNet
         /// </remarks>
         public static byte[] CheckedSubArray(this byte[] data, int offset, int length)
         {
-            
-            Exception fooException;
-            var result = CheckedSubArray(data, offset, length, out fooException);
+            var result = CheckedSubArray(data, offset, length, out var fooException);
             if (fooException != null)
                 log.Error(fooException);
             return result;
@@ -129,28 +124,36 @@ namespace Delta.CapiNet
             if (offset < 0)
             {
                 error = new ArgumentOutOfRangeException(
-                    "offset", "Offset must be strictly greater than 0.");
+                    nameof(offset), "Offset must be strictly greater than 0.");
                 return new byte[0];
             }
 
             if (offset >= dataLength)
             {
                 error = new ArgumentOutOfRangeException(
-                    "offset", "Offset must be strictly lower than data length.");
+                    nameof(offset), "Offset must be strictly lower than data length.");
                 return new byte[0];
             }
 
-            if (length <= 0)
+            // Let's accept zero-length sub-arrays; not sure if this is legitimate, 
+            // but Digicert CSRs have such empty sub-arrays.
+            if (length == 0)
+            {
+                log.Warning("Encountered a 0-length sub-array");
+                return new byte[0];
+            }
+
+            if (length < 0)
             {
                 error = new ArgumentOutOfRangeException(
-                    "length", "Length must be greater than 0.");
+                    nameof(length), "Length must be greater than 0.");
                 return new byte[0];
             }
 
             if (offset + length > dataLength)
             {
                 error = new ArgumentOutOfRangeException(
-                    "offset + length", "Offset + Length must be lower than data length.");
+                    nameof(offset), "Offset + Length must be lower than data length.");
                 length = dataLength - offset; // let's retrieve what we can.
             }
 

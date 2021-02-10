@@ -1,6 +1,11 @@
 CertXplorer Versions History
 ============================
 
+Version 2.4.17 WIP
+---------------------------
+* Now using Windows-1252 encoding (instead of UTF-8) when decoding ASN.1 Printable String objects
+* Being less strict with empty ASN.1 sub-arrays (only dump awarning to the log)
+
 Version 2.4.16 (2015/12/01)
 ---------------------------
 * Crypto Helper plugin: Version 1.3.0 - Added Base64 Document Handler

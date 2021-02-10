@@ -1,3 +1,7 @@
+Version 1.2.6 WIP
+---------------------------
+* Now using Windows-1252 encoding (instead of UTF-8) when decoding ASN.1 Printable String objects
+
 Version 1.2.5 (2015/11/25)
 --------------------------
 * BUGFIX: Prevent ASN.1 Decoder from throwing when invalid tags are created with no data.

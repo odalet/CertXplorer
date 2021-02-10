@@ -1,15 +1,13 @@
 using System;
-using System.Linq;
 using System.ComponentModel;
-
+using System.Linq;
 using Delta.CapiNet.Asn1;
-using Delta.Icao.Asn1;
-
-using Delta.CertXplorer.UI;
-using Delta.CertXplorer.Services;
+using Delta.CapiNet.Asn1.CardVerifiable;
 using Delta.CertXplorer.CertManager;
 using Delta.CertXplorer.Diagnostics;
-using Delta.CapiNet.Asn1.CardVerifiable;
+using Delta.CertXplorer.Services;
+using Delta.CertXplorer.UI;
+using Delta.Icao.Asn1;
 
 namespace Delta.CertXplorer.Asn1Decoder
 {
@@ -138,23 +136,17 @@ namespace Delta.CertXplorer.Asn1Decoder
                 switch (ParseMode)
                 {
                     case Asn1ParseMode.Icao:
-                        {
-                            var doc = new Asn1IcaoDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                            asnTreeView.CreateDocumentNodes(doc, "ICAO Document");
-                        }
+                        var icao = new Asn1IcaoDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                        _ = asnTreeView.CreateDocumentNodes(icao, "ICAO Document");
                         break;
 
                     case Asn1ParseMode.CardVerifiable:
-                        {
-                            var doc = new CVDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                            asnTreeView.CreateDocumentNodes(doc, "Card Verifiable");
-                        }
+                        var cv = new CVDocument(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                        _ = asnTreeView.CreateDocumentNodes(cv, "Card Verifiable");
                         break;
                     default:
-                        {
-                            var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
-                            asnTreeView.CreateDocumentNodes(doc, "Document");
-                        }
+                        var doc = new Asn1Document(content, ParseOctetStrings, ShowInvalidTaggedObjects);
+                        _ = asnTreeView.CreateDocumentNodes(doc, "Document");
                         break;
                 }
 
@@ -182,26 +174,24 @@ namespace Delta.CertXplorer.Asn1Decoder
             var tag = asnTreeView.SelectedNode.Tag;
 
             byte[] data = null;
-            int index = 0;
+            var index = 0;
 
-            if (tag is Asn1Document)
-            {
-                var asn1Document = (Asn1Document)tag;
+            if (tag is Asn1Document asn1Document)
                 data = asn1Document.Data;
-            }
-            else if (tag is Asn1Object)
+            else if (tag is Asn1Object asn1Object)
             {
-                var asn1Object = (Asn1Object)tag;
                 data = asn1Object.Workload;
                 index = asn1Object.WorkloadOffset;
                 This.Logger.Debug(string.Format("Node {0}: index={1}, length={2}, data={3}", asn1Object, index, data.Length, data.ToDebugString(5)));
             }
 
-            ShowData(data);
-            if (data.Length > 0) hexViewer.Select(index, data.Length);
-            else This.Logger.Verbose("Empty node.");
+            if (data == null) data = new byte[0]; // Safety net
 
-            if (!hexViewer.Focused) hexViewer.Focus();
+            ShowData(data);
+            hexViewer.Select(index, data.Length);
+            if (data.Length == 0) This.Logger.Verbose("Empty node.");
+
+            if (!hexViewer.Focused) _ = hexViewer.Focus();
             hexViewer.Refresh();
         }
 
@@ -211,7 +201,7 @@ namespace Delta.CertXplorer.Asn1Decoder
         {
             var message = string.Format(format, ex.Message);
             This.Logger.Error(message);
-            ExceptionBox.Show(this, ex, message);
+            _ = ExceptionBox.Show(this, ex, message);
         }
     }
 }

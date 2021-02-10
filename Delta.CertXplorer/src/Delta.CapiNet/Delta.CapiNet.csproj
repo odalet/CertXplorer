@@ -86,6 +86,7 @@
     <Compile Include="Asn1\asn1Types\Asn1Unsupported.cs" />
     <Compile Include="Asn1\asn1Types\Asn1UtcTime.cs" />
     <Compile Include="Asn1\asn1Types\Asn1Utf8String.cs" />
+    <Compile Include="Asn1\asn1Types\BaseAsn1String.cs" />
     <Compile Include="Asn1\CardVerifiable\CVDocument.cs" />
     <Compile Include="Asn1\invalidObjects.cs" />
     <Compile Include="Asn1\OidUtils.cs" />

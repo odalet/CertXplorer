@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Delta.CapiNet.Asn1
+﻿namespace Delta.CapiNet.Asn1
 {
     public class Asn1NumericString : Asn1Object
     {

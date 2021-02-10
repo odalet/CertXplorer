@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Delta.CapiNet.Asn1
+﻿namespace Delta.CapiNet.Asn1
 {
     // According to PKCS, octet strings may be structures...
     // This is why we try to find children in it.
