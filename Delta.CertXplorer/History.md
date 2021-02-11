@@ -6,6 +6,12 @@ Version 2.4.17 WIP
 * Now using Windows-1252 encoding (instead of UTF-8) when decoding ASN.1 Printable String objects
 * Being less strict with empty ASN.1 sub-arrays (only dump awarning to the log)
 
+**NB: v2.4.16 will be the last version to target .NET 4.5 and build with Visual Studio 2015**
+
+Version 2.4.16 (2021/02/11)
+---------------------------
+* No version change, just fixed the build process
+
 Version 2.4.16 (2015/12/01)
 ---------------------------
 * Crypto Helper plugin: Version 1.3.0 - Added Base64 Document Handler
