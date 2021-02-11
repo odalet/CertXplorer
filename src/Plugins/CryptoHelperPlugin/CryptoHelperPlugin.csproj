@@ -63,7 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\CommonAssemblyInfo.cs">
+    <Compile Include="..\..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="ConversionEngine.cs" />
@@ -213,12 +213,12 @@
   <PropertyGroup>
     <PostBuildEvent>rem Copy the plugin &amp; its dependencies
 
-if not exist $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\ md $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
+if not exist $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\ md $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
 
-copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
-copy /y $(TargetDir)$(TargetName).pdb $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
+copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
+copy /y $(TargetDir)$(TargetName).pdb $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
 
 rem Copy for deployment
-copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)src\Delta.CertXplorer\Plugins\</PostBuildEvent>
+copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)Delta.CertXplorer\Plugins\</PostBuildEvent>
   </PropertyGroup>
 </Project>

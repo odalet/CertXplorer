@@ -37,7 +37,7 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\..\CommonAssemblyInfo.cs">
+    <Compile Include="..\..\Common\CommonAssemblyInfo.cs">
       <Link>Properties\CommonAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="CertCommandsPlugin.cs" />
@@ -79,16 +79,16 @@
   <PropertyGroup>
     <PostBuildEvent>rem Copy the plugin &amp; its dependencies
 
-if not exist $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\ md $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
-if not exist $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\fr\ md $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\fr\
+if not exist $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\ md $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
+if not exist $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\fr\ md $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\fr\
 
-copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
-copy /y $(TargetDir)$(TargetName).pdb $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\
-copy /y $(TargetDir)fr\$(TargetName).resources.dll $(SolutionDir)src\Delta.CertXplorer\$(OutDir)Plugins\fr\
+copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
+copy /y $(TargetDir)$(TargetName).pdb $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\
+copy /y $(TargetDir)fr\$(TargetName).resources.dll $(SolutionDir)Delta.CertXplorer\$(OutDir)Plugins\fr\
 
 rem Copy for deployment
-copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)src\Delta.CertXplorer\Plugins\
-copy /y $(TargetDir)fr\$(TargetName).resources.dll $(SolutionDir)src\Delta.CertXplorer\Plugins\fr\</PostBuildEvent>
+copy /y $(TargetDir)$(TargetName).dll $(SolutionDir)Delta.CertXplorer\Plugins\
+copy /y $(TargetDir)fr\$(TargetName).resources.dll $(SolutionDir)Delta.CertXplorer\Plugins\fr\</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

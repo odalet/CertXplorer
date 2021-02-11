@@ -1,24 +1,20 @@
-Delta
-=====
+# CertXplorer
 
-A set of cryptography and certificates related libraries and tools, all sharing the [Ms-RL][msrl] license.
-  
-* Delta.CapiNet: .NET wrapper around Microsoft's _crypt32.dll_.
-* Delta.CertXplorer: GUI allowing to explore the machine's certificate store as well as decoding any ASN.1 encoded file.
+**CertXplorer** is a GUI allowing to explore the machine's certificates stores as well as decoding **ASN.1/DER** encoded files.
 
-Credits
--------
-Third-party libraries or various persons to be credited are so in the _Credits.md_ file of each project.
+## History
 
-Site
-----
-The CertXplorer application can be downloaded from [http://deltaapps.apphb.com/](http://deltaapps.apphb.com/).
+### 3.0.0 - WIP
 
-Licensing
----------
-[Ms-RL][msrl]
+* Now using Windows-1252 encoding (instead of UTF-8) when decoding **ASN.1 Printable String** objects
+* Being less strict with empty **ASN.1** sub-arrays (only emits a warning to the log)
 
-  [msrl]: License.md "MS-RL License"
+### 2.4.16 - 2021/02/11
 
+* This is the last version that can be built with Visual Studio 2015 and that targets .NET 4.5
 
-[![githalytics.com alpha](https://cruel-carlota.gopagoda.com/302986f1e9abeb5e34973c9dd825a466 "githalytics.com")](http://githalytics.com/odalet/Delta.Cryptography)
+Versions older than 3.0 are described [here](legacy/history.md).
+
+## License
+
+This work is provided under the terms of the [MIT License](LICENSE).
