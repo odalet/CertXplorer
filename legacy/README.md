@@ -4,7 +4,7 @@ A set of cryptography and certificates related libraries and tools, all sharing 
 
 ## Delta.CapiNet
 
-This assembly is a .NET wrapper exposing Microsoft Crypto API directly. 
+This assembly is a .NET wrapper exposing Microsoft Crypto API directly.
 By directly, we intend no need to register/use **CAPICOM** (Microsoft COM wrapper around **crypt32.dll**).
 
 It also provides other cryptography related code, such as:

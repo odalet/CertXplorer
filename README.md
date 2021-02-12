@@ -11,7 +11,7 @@
 
 ### 2.4.16 - 2021/02/11
 
-* This is the last version that can be built with Visual Studio 2015 and that targets .NET 4.5
+* This is the last version that can be built with Visual Studio 2015 and that targets .NET 4.0
 
 Versions older than 3.0 are described [here](legacy/history.md).
 
