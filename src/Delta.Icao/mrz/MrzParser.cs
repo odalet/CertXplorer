@@ -6,40 +6,44 @@ namespace Delta.Icao
 {
     public abstract partial class MrzParser
     {
-        public class MrzComponentCode
+        public static class MrzComponentCode
         {
-            public const string DocumentCode = "DocumentCode";
-            public const string IssuingState = "IssuingState";
-            public const string Name = "Name";
-            public const string DocumentNumber = "DocumentNumber";
-            public const string DocumentNumberCheckDigit = "DocumentNumberCheckDigit";
-            public const string Nationality = "Nationality";
-            public const string DateOfBirth = "DateOfBirth";
-            public const string DateOfBirthCheckDigit = "DateOfBirthCheckDigit";
-            public const string Sex = "Sex";
-            public const string DateOfExpiry = "DateOfExpiry";
-            public const string DateOfExpiryCheckDigit = "DateOfExpiryCheckDigit";
-            public const string OptionalData = "OptionalData";
-            public const string OptionalDataCheckDigit = "OptionalDataCheckDigit";
-            public const string CompositeCheckDigit = "CompositeCheckDigit";
+            public static readonly string DocumentCode = nameof(DocumentCode);
+            public static readonly string IssuingState = nameof(IssuingState);
+            public static readonly string Name = nameof(Name);
+            public static readonly string DocumentNumber = nameof(DocumentNumber);
+            public static readonly string DocumentNumberCheckDigit = nameof(DocumentNumberCheckDigit);
+            public static readonly string Nationality = nameof(Nationality);
+            public static readonly string DateOfBirth = nameof(DateOfBirth);
+            public static readonly string DateOfBirthCheckDigit = nameof(DateOfBirthCheckDigit);
+            public static readonly string Sex = nameof(Sex);
+            public static readonly string DateOfExpiry = nameof(DateOfExpiry);
+            public static readonly string DateOfExpiryCheckDigit = nameof(DateOfExpiryCheckDigit);
+            public static readonly string OptionalData = nameof(OptionalData);
+            public static readonly string OptionalDataCheckDigit = nameof(OptionalDataCheckDigit);
+            public static readonly string CompositeCheckDigit = nameof(CompositeCheckDigit);
         }
+
+        private readonly Dictionary<string, string> mrzComponents = new Dictionary<string, string>();
 
         public static MrzParser Create(string[] mrz)
         {
-            if (mrz == null) throw new ArgumentNullException("mrz");
-            // Check lengths
-            if (mrz.Select(m => m.Length).Distinct().Count() != 1)
-                throw new ArgumentException("All lines of a Mrz must have the same length.", "mrz");
+            if (mrz == null) throw new ArgumentNullException(nameof(mrz));
+            
+            if (mrz.Select(m => m.Length).Distinct().Count() != 1) // Check lengths
+                throw new ArgumentException("All lines of a MRZ must have the same length.", "mrz");
 
             return Create(string.Join("", mrz));
         }
 
         public static MrzParser Create(string mrz)
         {
-            if (string.IsNullOrEmpty(mrz)) throw new ArgumentNullException("mrz");
+            if (string.IsNullOrEmpty(mrz)) throw new ArgumentNullException(nameof(mrz));
+
             var format = MrzFormat.FindByTotalLength(mrz);
-            if (format == null) throw new ArgumentException("Could not determine Mrz Format given the specified mrz value.", "mrz");
-            return Create(mrz, format);
+            return format == null
+                ? throw new ArgumentException("Could not determine MRZ Format given the specified mrz value.", "mrz")
+                : Create(mrz, format);
         }
 
         private static MrzParser Create(string mrz, MrzFormat format)
@@ -51,39 +55,21 @@ namespace Delta.Icao
                 case MrzFormat.Id3FormatName: return new Id3Parser(mrz);
             }
 
-            throw new ArgumentException(string.Format("Mrz Format '{0}' is unknown", format), "format");
+            throw new ArgumentException($"MRZ Format '{format}' is unknown");
         }
 
-        private Dictionary<string, string> mrzComponents = new Dictionary<string, string>();
+        protected MrzParser(string mrz) => Mrz = mrz;
 
-        protected MrzParser(string mrz)
-        {
-            Mrz = mrz;
-        }
-
-        public string Mrz { get; private set; }
-
+        public string Mrz { get; }
         public abstract string[] MrzArray { get; }
-
         protected abstract MrzFormat Format { get; }
 
         public abstract bool Parse();
 
-        public bool Contains(string code)
-        {
-            return mrzComponents.ContainsKey(code);
-        }
+        public bool Contains(string code) => mrzComponents.ContainsKey(code);
 
-        public string Get(string code)
-        {
-            if (mrzComponents.ContainsKey(code))
-                return mrzComponents[code];
-            return string.Empty;
-        }
+        public string Get(string code) => mrzComponents.ContainsKey(code) ? mrzComponents[code] : string.Empty;
 
-        protected void AddComponent(string componentCode, string componentValue)
-        {
-            mrzComponents.Add(componentCode, componentValue);
-        }
+        protected void AddComponent(string componentCode, string componentValue) => mrzComponents.Add(componentCode, componentValue);
     }
 }

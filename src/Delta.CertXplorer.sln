@@ -42,6 +42,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{B96ADFF4-A439-4846-8A29-5015E083B583}"
 	ProjectSection(SolutionItems) = preProject
 		Common\CommonAssemblyInfo.cs = Common\CommonAssemblyInfo.cs
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Global

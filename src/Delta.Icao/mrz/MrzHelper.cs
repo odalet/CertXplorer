@@ -2,208 +2,165 @@
 using System.Linq;
 using System.Collections.Generic;
 using Delta.Icao.Logging;
+using System.Text;
 
 namespace Delta.Icao
 {
     public static class MrzHelper
     {
         private static readonly ILogService log = LogManager.GetLogger(typeof(MrzHelper));
-        
-        private static readonly Dictionary<char, string> nationalToMrz;        
-        // List of caractères that are removed from the MRZ
-        private static readonly char[] eatenCharacters = new char[] { '\'', '.', ',', ';' };
-        // List of characters that are replaced by a filler in the MRZ
-        private static readonly char[] whiteCharacters = new char[] { '-', ',', ' ' };
-        
-        /// <summary>
-        /// The MRZ filler character: '&lt;'
-        /// </summary>
-        public static readonly char FillerCharacter = '<';
+                
+        private static readonly char[] eatenCharacters = new char[] { '\'', '.', ',', ';' }; // These characters are removed from the MRZ
+        private static readonly char[] whiteCharacters = new char[] { '-', ',', ' ' }; // These characters are replaced by a filler in the MRZ
+        private static readonly Dictionary<char, string> nationalToMrz;
+        private static readonly string FillerString = FillerCharacter.ToString();
+        private static readonly string DoubleFillerString = new string(FillerCharacter, 2);
 
-        /// <summary>
-        /// The MRZ filler character as a string: &quot;&lt;&quot;
-        /// </summary>
-        public static readonly string FillerString = FillerCharacter.ToString();
-
-        /// <summary>
-        /// Two MRZ filler characters: &quot;&lt;&lt;&quot;
-        /// </summary>
-        public static readonly string DoubleFillerString = new string(FillerCharacter, 2);
-
-        /// <summary>
-        /// List of the characters a MRZ can contain, and only those ones.
-        /// </summary>
-        public static readonly char[] MrzAuthorizedCharacters;
-
-        /// <summary>
-        /// Initializes the <see cref="MrzHelper"/> class.
-        /// </summary>
-        static MrzHelper()
+        // Initialize the transliteration dictionary based on ICAO Doc9303
+        static MrzHelper() => nationalToMrz = new Dictionary<char, string>
         {
-            // List of the only authorized characters in MRZ.
-            MrzAuthorizedCharacters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<".ToCharArray();
-
-            // Initialize the transliteration dictionary based on ICAO Doc9303
-            // TODO: this should be in a parameters table or config file...
-            nationalToMrz = new Dictionary<char, string>();
-
-            nationalToMrz.Add('Á', "A");
-            nationalToMrz.Add('À', "A");
-            nationalToMrz.Add('Â', "A");
-            nationalToMrz.Add('Ä', "AE");
-            nationalToMrz.Add('Ã', "A");
-            nationalToMrz.Add('Ă', "A");
-            nationalToMrz.Add('Å', "AA");
-            nationalToMrz.Add('Ā', "A");
-            nationalToMrz.Add('Ą', "A");
-            nationalToMrz.Add('Ć', "C");
-            nationalToMrz.Add('Ĉ', "C");
-            nationalToMrz.Add('Č', "C");
-            nationalToMrz.Add('Ċ', "C");
-            nationalToMrz.Add('Ç', "C");
-            nationalToMrz.Add('Đ', "D");
-            nationalToMrz.Add('Ď', "D");
-            nationalToMrz.Add('É', "E");
-            nationalToMrz.Add('È', "E");
-            nationalToMrz.Add('Ê', "E");
-            nationalToMrz.Add('Ë', "E");
-            nationalToMrz.Add('Ě', "E");
-            nationalToMrz.Add('Ė', "E");
-            nationalToMrz.Add('Ē', "E");
-            nationalToMrz.Add('Ę', "E");
-            nationalToMrz.Add('Ĕ', "E");
-            nationalToMrz.Add('Ĝ', "G");
-            nationalToMrz.Add('Ğ', "G");
-            nationalToMrz.Add('Ġ', "G");
-            nationalToMrz.Add('Ģ', "G");
-            nationalToMrz.Add('Ħ', "H");
-            nationalToMrz.Add('Ĥ', "H");
+            { 'Á', "A" },
+            { 'À', "A" },
+            { 'Â', "A" },
+            { 'Ä', "AE" },
+            { 'Ã', "A" },
+            { 'Ă', "A" },
+            { 'Å', "AA" },
+            { 'Ā', "A" },
+            { 'Ą', "A" },
+            { 'Ć', "C" },
+            { 'Ĉ', "C" },
+            { 'Č', "C" },
+            { 'Ċ', "C" },
+            { 'Ç', "C" },
+            { 'Đ', "D" },
+            { 'Ď', "D" },
+            { 'É', "E" },
+            { 'È', "E" },
+            { 'Ê', "E" },
+            { 'Ë', "E" },
+            { 'Ě', "E" },
+            { 'Ė', "E" },
+            { 'Ē', "E" },
+            { 'Ę', "E" },
+            { 'Ĕ', "E" },
+            { 'Ĝ', "G" },
+            { 'Ğ', "G" },
+            { 'Ġ', "G" },
+            { 'Ģ', "G" },
+            { 'Ħ', "H" },
+            { 'Ĥ', "H" },
             // I without a dot: no specific representation; it is the latin capital i (therefore, no dot), 
             // but still it is in this list to accomodate the turkish capital i-without-a-dot.
-            nationalToMrz.Add('I', "I"); 
-            nationalToMrz.Add('Í', "I");
-            nationalToMrz.Add('Ì', "I");
-            nationalToMrz.Add('Î', "I");
-            nationalToMrz.Add('Ï', "I");
-            nationalToMrz.Add('Ĩ', "I");
-            nationalToMrz.Add('İ', "I");
-            nationalToMrz.Add('Ī', "I");
-            nationalToMrz.Add('Į', "I");
-            nationalToMrz.Add('Ĭ', "I");
-            nationalToMrz.Add('Ĵ', "J");
-            nationalToMrz.Add('Ķ', "K");
-            nationalToMrz.Add('Ł', "L");
-            nationalToMrz.Add('Ĺ', "L");
-            nationalToMrz.Add('Ľ', "L ");
-            nationalToMrz.Add('Ļ', "L");
-            nationalToMrz.Add('Ŀ', "L");
-            nationalToMrz.Add('Ń', "N");
-            nationalToMrz.Add('Ñ', "N");
-            nationalToMrz.Add('Ň', "N");
-            nationalToMrz.Add('Ņ', "N");
-            nationalToMrz.Add('Ŋ', "N");
-            nationalToMrz.Add('Ø', "OE");
-            nationalToMrz.Add('Ó', "O");
-            nationalToMrz.Add('Ò', "O");
-            nationalToMrz.Add('Ô', "O");
-            nationalToMrz.Add('Ö', "OE");
-            nationalToMrz.Add('Õ', "O");
-            nationalToMrz.Add('Ő', "O");
-            nationalToMrz.Add('Ō', "O");
-            nationalToMrz.Add('Ŏ', "O");
-            nationalToMrz.Add('Ŕ', "R");
-            nationalToMrz.Add('Ř', "R");
-            nationalToMrz.Add('Ŗ', "R");
-            nationalToMrz.Add('Ś', "S");
-            nationalToMrz.Add('Ŝ', "S");
-            nationalToMrz.Add('Š', "S");
-            nationalToMrz.Add('Ş', "S");
-            nationalToMrz.Add('Ŧ', "T");
-            nationalToMrz.Add('Ť', "T");
-            nationalToMrz.Add('Ţ', "T");
-            nationalToMrz.Add('Ú', "U");
-            nationalToMrz.Add('Ù', "U");
-            nationalToMrz.Add('Û', "U");
-            nationalToMrz.Add('Ü', "UE");
-            nationalToMrz.Add('Ũ', "U");
-            nationalToMrz.Add('Ŭ', "U");
-            nationalToMrz.Add('Ű', "U");
-            nationalToMrz.Add('Ů', "U");
-            nationalToMrz.Add('Ū', "U");
-            nationalToMrz.Add('Ų', "U");
-            nationalToMrz.Add('Ŵ', "W");
-            nationalToMrz.Add('Ý', "Y");
-            nationalToMrz.Add('Ŷ', "Y");
-            nationalToMrz.Add('Ÿ', "Y");
-            nationalToMrz.Add('Ź', "Z");
-            nationalToMrz.Add('Ž', "Z");
-            nationalToMrz.Add('Ż', "Z");
-            nationalToMrz.Add('Þ', "TH");
-            nationalToMrz.Add('Æ', "AE");
-            nationalToMrz.Add('Ĳ', "IJ");
-            nationalToMrz.Add('Œ', "OE");
-            nationalToMrz.Add('ß', "SS");
-        }
-        
-        public static string ToMrzString(this string input)
-        {
-            return MrzHelper.Transliterate(input);
-        }
+            { 'I', "I" },
+            { 'Í', "I" },
+            { 'Ì', "I" },
+            { 'Î', "I" },
+            { 'Ï', "I" },
+            { 'Ĩ', "I" },
+            { 'İ', "I" },
+            { 'Ī', "I" },
+            { 'Į', "I" },
+            { 'Ĭ', "I" },
+            { 'Ĵ', "J" },
+            { 'Ķ', "K" },
+            { 'Ł', "L" },
+            { 'Ĺ', "L" },
+            { 'Ľ', "L " },
+            { 'Ļ', "L" },
+            { 'Ŀ', "L" },
+            { 'Ń', "N" },
+            { 'Ñ', "N" },
+            { 'Ň', "N" },
+            { 'Ņ', "N" },
+            { 'Ŋ', "N" },
+            { 'Ø', "OE" },
+            { 'Ó', "O" },
+            { 'Ò', "O" },
+            { 'Ô', "O" },
+            { 'Ö', "OE" },
+            { 'Õ', "O" },
+            { 'Ő', "O" },
+            { 'Ō', "O" },
+            { 'Ŏ', "O" },
+            { 'Ŕ', "R" },
+            { 'Ř', "R" },
+            { 'Ŗ', "R" },
+            { 'Ś', "S" },
+            { 'Ŝ', "S" },
+            { 'Š', "S" },
+            { 'Ş', "S" },
+            { 'Ŧ', "T" },
+            { 'Ť', "T" },
+            { 'Ţ', "T" },
+            { 'Ú', "U" },
+            { 'Ù', "U" },
+            { 'Û', "U" },
+            { 'Ü', "UE" },
+            { 'Ũ', "U" },
+            { 'Ŭ', "U" },
+            { 'Ű', "U" },
+            { 'Ů', "U" },
+            { 'Ū', "U" },
+            { 'Ų', "U" },
+            { 'Ŵ', "W" },
+            { 'Ý', "Y" },
+            { 'Ŷ', "Y" },
+            { 'Ÿ', "Y" },
+            { 'Ź', "Z" },
+            { 'Ž', "Z" },
+            { 'Ż', "Z" },
+            { 'Þ', "TH" },
+            { 'Æ', "AE" },
+            { 'Ĳ', "IJ" },
+            { 'Œ', "OE" },
+            { 'ß', "SS" }
+        };
+
+        /// <summary>
+        /// Gets the list of characters a MRZ can contain, and only those ones.
+        /// </summary>
+        public static char[] MrzAuthorizedCharacters { get; } = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ<".ToCharArray();
+
+        /// <summary>
+        /// Gets the MRZ filler character: '&lt;'
+        /// </summary>
+        public static char FillerCharacter { get; } = '<';
+
+        public static string ToMrzString(this string input) => MrzHelper.Transliterate(input);
 
         public static string Transliterate(string input)
         {
-            var result = string.Empty;
+            var builder = new StringBuilder();
             foreach (var ch in input)
-                result += TranslateChar(ch);
-
-            return result;
+                _ = builder.Append(TranslateChar(ch));
+            return builder.ToString();
         }
-        
-        #region DateTime & BirthDate Formatting
 
-        public static string GetFieldWithControl(this DateTime? date)
+        public static string GetFieldWithControl(this DateTime? date) => 
+            date.HasValue ? GetFieldWithControl(date.Value) : GetFieldWithControl(string.Empty, 6);
+
+        public static string GetFieldWithControl(this BirthDate? bdate) => 
+            bdate.HasValue ? GetFieldWithControl(bdate.Value) : GetFieldWithControl(string.Empty, 6);
+
+        public static string GetFieldWithControl(this DateTime date) => GetFieldWithControl(new BirthDate(date));
+
+        public static string GetFieldWithControl(this BirthDate bdate) => GetFieldWithControl(GetFieldWithoutControl(bdate), 6);
+
+        public static string GetFieldWithControl(this string text, int max)
         {
-            return date.HasValue ?
-                GetFieldWithControl(date.Value) : 
-                GetFieldWithControl(string.Empty, 6);
+            var without = GetFieldWithoutControl(text, max);
+            without += GetControlNumber(without);
+            return without;
         }
 
-        public static string GetFieldWithControl(this BirthDate? bdate)
-        {
-            return bdate.HasValue ? 
-                GetFieldWithControl(bdate.Value) : 
-                GetFieldWithControl(string.Empty, 6);
-        }
+        public static string GetFieldWithoutControl(this DateTime? date) => 
+            date.HasValue ? GetFieldWithoutControl(date.Value) : GetFieldWithoutControl(string.Empty, 6);
 
-        public static string GetFieldWithControl(this DateTime date)
-        {
-            return GetFieldWithControl(new BirthDate(date));
-        }
+        public static string GetFieldWithoutControl(this BirthDate? bdate) =>
+            bdate.HasValue ? GetFieldWithoutControl(bdate.Value) : GetFieldWithoutControl(string.Empty, 6);
 
-        public static string GetFieldWithControl(this BirthDate bdate)
-        {
-            var without = GetFieldWithoutControl(bdate);
-            return GetFieldWithControl(without, 6);
-        }
-
-        public static string GetFieldWithoutControl(this DateTime? date)
-        {
-            return date.HasValue ?
-                GetFieldWithoutControl(date.Value) :
-                GetFieldWithoutControl(string.Empty, 6);
-        }
-
-        public static string GetFieldWithoutControl(this BirthDate? bdate)
-        {
-            return bdate.HasValue ?
-                GetFieldWithoutControl(bdate.Value) : 
-                GetFieldWithoutControl(string.Empty, 6);
-        }
-
-        public static string GetFieldWithoutControl(this DateTime date)
-        {
-            return GetFieldWithoutControl(new BirthDate(date));
-        }
+        public static string GetFieldWithoutControl(this DateTime date) => GetFieldWithoutControl(new BirthDate(date));
 
         public static string GetFieldWithoutControl(this BirthDate bdate)
         {
@@ -216,26 +173,10 @@ namespace Delta.Icao
 
             var text = y + m + d;
             return GetFieldWithoutControl(text, max);
-        }
+        }        
 
-        #endregion
-
-        #region Text Formatting
-
-        public static string GetFieldWithControl(this string text, int max)
-        {
-            string without = GetFieldWithoutControl(text, max);
-            without += GetControlNumber(without);
-            return without;
-        }
-
-        public static string GetFieldWithoutControl(this string text, int max)
-        {
-            if (text == null) text = string.Empty;
-            return text.Trim().ToMrzString().PadRight(max, FillerCharacter);
-        }
-
-        #endregion
+        public static string GetFieldWithoutControl(this string text, int max) => 
+            text.Trim().ToMrzString().PadRight(max, FillerCharacter);
 
         public static string GetControlNumber(this string input)
         {
@@ -246,41 +187,30 @@ namespace Delta.Icao
             {
                 if (ch == FillerCharacter) return 0;
                 if (ch >= '0' && ch <= '9') return int.Parse(ch.ToString());
-                return 10 + ch.ToString().ToUpperInvariant().ToCharArray()[0] - 'A';			
+                return 10 + ch.ToString().ToUpperInvariant()[0] - 'A';			
             };
 
             var characters = input.ToCharArray();
-            for (int i = 0; i<characters.Length; i++)
+            for (var i = 0; i<characters.Length; i++)
                 checksum += getCharacterValue(characters[i]) * ponderations[i % 3];
 
             return (checksum % 10).ToString();
         }
 
-        public static bool IsValidLength(string mrzLine)
-        {
-            if (string.IsNullOrEmpty(mrzLine)) return false;
-            return MrzFormat.FindByLength(mrzLine) != null;
-        }
+        public static bool IsValidLength(string mrzLine) => !string.IsNullOrEmpty(mrzLine) && MrzFormat.FindByLength(mrzLine) != null;
 
-        public static bool IsValid(string mrzLine)
-        {
-            return IsValidLength(mrzLine) && !ContainsInvalidCharacters(mrzLine);
-        }
+        public static bool IsValid(string mrzLine) => IsValidLength(mrzLine) && !ContainsInvalidCharacters(mrzLine);
 
-        public static bool ContainsInvalidCharacters(string mrzLine)
-        {
-            return mrzLine.ToCharArray().Count(c => !MrzAuthorizedCharacters.Contains(c)) > 0;
-        }
-        
+        public static bool ContainsInvalidCharacters(string mrzLine) => mrzLine.Any(c => !MrzAuthorizedCharacters.Contains(c));
+
         private static string TranslateChar(char ch)
         {
             if (eatenCharacters.Contains(ch)) return string.Empty;
             if (whiteCharacters.Contains(ch)) return FillerString;
 
-            var result = string.Empty;
-            if (nationalToMrz.ContainsKey(ch))
-                result = nationalToMrz[ch];
-            else result = ch.ToString().ToUpperInvariant();
+            var result = nationalToMrz.ContainsKey(ch) ? 
+                nationalToMrz[ch] : 
+                ch.ToString().ToUpperInvariant();
 
             if (ContainsInvalidCharacters(result))
             {

@@ -1,5 +1,4 @@
-﻿using System;
-using Delta.CapiNet.Logging;
+﻿using Delta.CapiNet.Logging;
 
 namespace Delta.Icao.Logging
 {

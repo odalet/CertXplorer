@@ -1,24 +1,20 @@
 ﻿using System;
+using Delta.Icao.Logging;
 
 namespace Delta.Icao
 {
     partial class MrzParser
     {
-        private class Id1Parser : MrzParser // 3x30: Cards (Bank format)
+        private sealed class Id1Parser : MrzParser // 3x30: Cards (Bank format)
         {
+            private static readonly ILogService log = LogManager.GetLogger<Id1Parser>();
+
             private string[] array = null;
 
             public Id1Parser(string mrz) : base(mrz) { }
 
-            protected override MrzFormat Format
-            {
-                get { return MrzFormat.Id1; }
-            }
-
-            public override string[] MrzArray
-            {
-                get { return array; }
-            }
+            public override string[] MrzArray => array;
+            protected override MrzFormat Format => MrzFormat.Id1;
 
             public override bool Parse()
             {
@@ -46,7 +42,7 @@ namespace Delta.Icao
                 }
                 catch (Exception ex)
                 {
-                    var debugException = ex;
+                    log.Warning($"{Format} MRZ Parsing failed: {ex.Message}", ex);
                     return false;
                 }
 

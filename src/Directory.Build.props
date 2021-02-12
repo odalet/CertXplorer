@@ -1,0 +1,35 @@
+<Project>
+  <!-- Reference: https://docs.microsoft.com/en-us/visualstudio/msbuild/customize-your-build?view=vs-2017 -->
+  <PropertyGroup>
+    <Authors>Olivier DALET</Authors>
+    <Company>Delta Software</Company>
+    <Product>CertXplorer</Product>
+    <Copyright>Delta Software - 2021</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/odalet/CertXplorer</PackageProjectUrl>
+    <!--<PackageIcon>logo.png</PackageIcon>-->
+  </PropertyGroup>
+
+  <!-- Deterministic Builds -->
+  <!-- https://github.com/clairernovotny/DeterministicBuilds -->
+  <PropertyGroup>
+    <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <!-- Required by "deterministic" local builds: see https://github.com/dotnet/roslyn/issues/37379 -->
+  <ItemGroup Condition="'$(GITHUB_ACTIONS)' != 'true'">
+    <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- See https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#includesymbols -->
+    <IncludeSymbols>True</IncludeSymbols>
+    <IncludeSource>True</IncludeSource>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>portable</DebugType>
+    <!-- Source Link: https://github.com/dotnet/sourcelink/ -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+</Project>

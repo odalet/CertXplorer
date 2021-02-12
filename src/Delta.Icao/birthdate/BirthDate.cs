@@ -16,16 +16,11 @@ namespace Delta.Icao
     /// </remarks>
     public partial struct BirthDate : IEquatable<BirthDate>, IComparable<BirthDate>, IComparable
     {
-        private int year;
-        private int month;
-        private int day;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="BirthDate"/> struct.
         /// </summary>
         /// <param name="date">The date.</param>
-        public BirthDate(DateTime date) : 
-            this(date.Year, date.Month, date.Day) { }
+        public BirthDate(DateTime date) : this(date.Year, date.Month, date.Day) { }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BirthDate" /> struct.
@@ -49,18 +44,15 @@ namespace Delta.Icao
             var exception = EnsureAreValid(y, m, d);
             if (exception != null) throw exception;
 
-            year = y;
-            month = m;
-            day = d;
+            Year = y;
+            Month = m;
+            Day = d;
         }
 
         /// <summary>
         /// Gets a <see cref="BirthDate"/> object set to the current local date on this computer.
         /// </summary>
-        public static BirthDate Now
-        {
-            get { return new BirthDate(DateTime.Now); }
-        }
+        public static BirthDate Now => new BirthDate(DateTime.Now);
 
         public static readonly BirthDate Empty = new BirthDate(0, 0, 0);
 
@@ -77,17 +69,17 @@ namespace Delta.Icao
         /// <summary>
         /// Gets this BirthDate's Year.
         /// </summary>
-        public int Year { get { return year; } }
+        public int Year { get; }
 
         /// <summary>
         /// Gets this BirthDate's Month.
         /// </summary>
-        public int Month { get { return month; } }
+        public int Month { get; }
 
         /// <summary>
         /// Gets this BirthDate's Day.
         /// </summary>
-        public int Day { get { return day; } }
+        public int Day { get; }
 
         /// <summary>
         /// Returns a new <see cref="BirthDate" /> that adds the specified number of years to
@@ -104,12 +96,12 @@ namespace Delta.Icao
         /// </exception>
         public BirthDate AddYears(int count)
         {
-            if (year == 0) throw new InvalidOperationException("Can't add a number of years when Year is unknown.");
+            if (Year == 0) throw new InvalidOperationException("Can't add a number of years when Year is unknown.");
 
-            var y = year + count;
-            if (y < MinValue.Year || y > MaxValue.Year) throw new ArgumentOutOfRangeException("count",
-                "value of the resulting BirthDate is less than BirthDate.MinValue or greater than BirthDate.MaxValue.");
-            return new BirthDate(y, month, day);
+            var y = Year + count;
+            return y < MinValue.Year || y > MaxValue.Year ?
+                throw new ArgumentOutOfRangeException(nameof(count), "value of the resulting BirthDate is less than BirthDate.MinValue or greater than BirthDate.MaxValue.")
+                : new BirthDate(y, Month, Day);
         }
 
         /// <summary>
@@ -125,25 +117,25 @@ namespace Delta.Icao
         /// <exception cref="System.ArgumentOutOfRangeException">count;value of the resulting System.DateTime is less than BirthDate.MinValue or greater than BirthDate.MaxValue.</exception>
         public BirthDate AddMonths(int count)
         {
-            if (month == 0) throw new InvalidOperationException("Can't add a number of months when Month is unknown.");
+            if (Month == 0) throw new InvalidOperationException("Can't add a number of months when Month is unknown.");
 
-            var d = day;
-            var m = month;
-            var y = year;
+            var d = Day;
+            var m = Month;
+            var y = Year;
 
-            var toAdd = month - 1 + count;
+            var toAdd = Month - 1 + count;
             if (toAdd >= 0)
             {
-                m = 1 + (toAdd % 12);
+                m = 1 + toAdd % 12;
                 y += toAdd / 12;
             }
             else
             {
-                m = 12 + ((toAdd + 1) % 12);
+                m = 12 + (toAdd + 1) % 12;
                 y += (toAdd - 11) / 12;
             }
 
-            if (y < MinValue.Year || y > MaxValue.Year) throw new ArgumentOutOfRangeException("count",
+            if (y < MinValue.Year || y > MaxValue.Year) throw new ArgumentOutOfRangeException(nameof(count),
                "value of the resulting BirthDate is less than BirthDate.MinValue or greater than BirthDate.MaxValue.");
 
             // Make sure the value for day is not too high
@@ -164,7 +156,7 @@ namespace Delta.Icao
         /// </returns>
         public BirthDate AddDays(int count)
         {
-            if (day == 0) throw new InvalidOperationException("Can't add a number of days when Day is unknown.");
+            if (Day == 0) throw new InvalidOperationException("Can't add a number of days when Day is unknown.");
             var dt = ToDateTime();
             return new BirthDate(dt.AddDays(count));
         }
@@ -180,13 +172,11 @@ namespace Delta.Icao
         /// <exception cref="System.InvalidOperationException">A BirthDate with an unknown day can't be converted to a DateTime object.</exception>
         public DateTime ToDateTime()
         {
-            if (year == 0) throw new InvalidOperationException("A BirthDate with an unknown year can't be converted to a DateTime object.");
-            if (month == 0) throw new InvalidOperationException("A BirthDate with an unknown month can't be converted to a DateTime object.");
-            if (day == 0) throw new InvalidOperationException("A BirthDate with an unknown day can't be converted to a DateTime object.");
-            return new DateTime(year, month, day);
+            if (Year == 0) throw new InvalidOperationException("A BirthDate with an unknown year can't be converted to a DateTime object.");
+            if (Month == 0) throw new InvalidOperationException("A BirthDate with an unknown month can't be converted to a DateTime object.");
+            if (Day == 0) throw new InvalidOperationException("A BirthDate with an unknown day can't be converted to a DateTime object.");
+            return new DateTime(Year, Month, Day);
         }
-
-        #region Serialization/Deserialization
 
         /// <summary>
         /// Deserializes a BirthDate from a string; the expected format is YYYYMMDD or YYYY*MM*DD where * is a separator.
@@ -203,14 +193,12 @@ namespace Delta.Icao
             if (string.IsNullOrEmpty(serialized))
                 throw new ArgumentNullException("serialized");
 
-            int[] indices = null;
-
+            int[] indices;
             if (serialized.Length == 8)
                 indices = new int[] { 0, 4, 6 };
             else if (serialized.Length == 10) // We have 2 separators; whatever they are doesn't matter.
                 indices = new int[] { 0, 5, 8 };
-            else throw new FormatException(string.Format(
-                "Unable to parse input string '{0}' into a BirthDate type.", serialized));
+            else throw new FormatException($"Unable to parse input string '{serialized}' into a BirthDate type.");
             
             var ys = serialized.Substring(indices[0], 4);
             var y = ys.ToUpperInvariant() == "XXXX" ? 0 : int.Parse(ys, CultureInfo.InvariantCulture);
@@ -224,10 +212,10 @@ namespace Delta.Icao
 
         /// <summary>
         /// Similar to <see cref="DeserializeFromString"/> but accepts <c>null</c> and empty strings 
-        /// and returns a <see cref="System.Nullable{Siti.BirthDate}"/> object.
+        /// and returns a <see cref="Nullable{Siti.BirthDate}"/> object.
         /// </summary>
         /// <param name="serialized">The serialized form of the birth date.</param>
-        /// <returns>An instance of <see cref="System.Nullable{Siti.BirthDate}"/></returns>
+        /// <returns>An instance of <see cref="Nullable{Siti.BirthDate}"/></returns>
         public static BirthDate? DeserializeFromStringToNullable(string serialized)
         {
             if (string.IsNullOrEmpty(serialized)) return new BirthDate?();
@@ -235,18 +223,13 @@ namespace Delta.Icao
             var bdate = DeserializeFromString(serialized);
             return new BirthDate?(bdate);
         }
-        
+
         /// <summary>
         /// Serializes this instance to a string representation;
         /// the format is YYYYMMDD, with unknown values replaced by 00 or 0000.
         /// </summary>
         /// <returns>Serialized form of this birth date instance.</returns>
-        public string SerializeToString()
-        {
-            return string.Format("{0:D4}{1:D2}{2:D2}", year, month, day);
-        }
-
-        #endregion
+        public string SerializeToString() => string.Format("{0:D4}{1:D2}{2:D2}", Year, Month, Day);
 
         /// <summary>
         /// Returns a hash code for this instance.
@@ -254,27 +237,16 @@ namespace Delta.Icao
         /// <returns>
         /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
         /// </returns>
-        public override int GetHashCode()
-        {
-            return year ^ (month << 13 | month >> 19) ^ (day << 21 | day >> 11);
-        }
+        public override int GetHashCode() => Year ^ (Month << 13 | Month >> 19) ^ (Day << 21 | Day >> 11);
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object" /> is equal to this instance.
+        /// Determines whether the specified <see cref="object" /> is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object" /> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
         /// <returns>
-        ///   <c>true</c> if the specified <see cref="System.Object" /> is equal to this instance; otherwise, <c>false</c>.
+        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
-        {
-            if (obj is BirthDate)
-                return Equals((BirthDate)obj);
-
-            return false;
-        }
-
-        #region IEquatable<BirthDate> Members
+        public override bool Equals(object obj) => obj is BirthDate date && Equals(date);
 
         /// <summary>
         /// Determines whether the specified <see cref="BirthDate" /> is equal to this instance.
@@ -283,12 +255,7 @@ namespace Delta.Icao
         /// <returns>
         ///   <c>true</c> if the specified <see cref="BirthDate" /> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(BirthDate other)
-        {
-            return other.year == year && other.month == month && other.day == day;
-        }
-
-        #endregion
+        public bool Equals(BirthDate other) => other.Year == Year && other.Month == Month && other.Day == Day;
 
         /// <summary>
         /// Ensures the specified birth dates are equal.
@@ -296,10 +263,7 @@ namespace Delta.Icao
         /// <param name="d1">The first date to test for equality.</param>
         /// <param name="d2">The second date to test for equality.</param>
         /// <returns><c>true</c> if the specified dates are equal; otherwise, <c>false</c>.</returns>
-        public static bool operator ==(BirthDate d1, BirthDate d2)
-        {
-            return d1.Equals(d2);
-        }
+        public static bool operator ==(BirthDate d1, BirthDate d2) => d1.Equals(d2);
 
         /// <summary>
         /// Ensures the specified birth dates are different.
@@ -307,45 +271,7 @@ namespace Delta.Icao
         /// <param name="d1">The first date to test for inequality.</param>
         /// <param name="d2">The second date to test for inequality.</param>
         /// <returns><c>true</c> if the specified dates are different; otherwise, <c>false</c>.</returns>
-        public static bool operator !=(BirthDate d1, BirthDate d2)
-        {
-            return !d1.Equals(d2);
-        }
-
-        /// <summary>
-        /// Ensures the specified year, month and day are valid.
-        /// </summary>
-        /// <param name="y">The year.</param>
-        /// <param name="m">The month.</param>
-        /// <param name="d">The day.</param>
-        /// <returns>An <see cref="Exception" /> in case the specified values are not valid; otherwise, <c>null</c>.</returns>
-        private static Exception EnsureAreValid(int y, int m, int d)
-        {
-            if (y < 0 || y > 9999) return new ArgumentOutOfRangeException("y", "Year must be in the [0;9999]  interval.");
-            if (m < 0 || m > 12) return new ArgumentOutOfRangeException("m", "Month must be in the [0;12]  interval.");
-            if (d < 0 || d > 31) return new ArgumentOutOfRangeException("d", "Day must be in the [0;31]  interval.");
-
-            // Testing the input represents a valid birth date
-            var y2 = y == 0 ? 1 : y; // Year = 0 results in an invalid date!
-            var m2 = m == 0 ? 1 : m; // Month = 0 results in an invalid date!
-            var d2 = d == 0 ? 1 : d; // Day = 0 results in an invalid date!
-            try
-            {
-                var tempDate = new DateTime(y2, m2, d2);
-            }
-            catch (Exception ex)
-            {
-                return ex;
-            }
-
-            // Ensure day = 0 when month = 0 and month = 0 when year = 0
-            if (m == 0 && d != 0) return new FormatException("Day must be 0 when Month is 0.");
-            if (y == 0 && m != 0) return new FormatException("Month must be 0 when Year is 0.");
-
-            return null; // Everything is ok.
-        }
-
-        #region IComparable<BirthDate> Members
+        public static bool operator !=(BirthDate d1, BirthDate d2) => !d1.Equals(d2);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -362,20 +288,14 @@ namespace Delta.Icao
         /// </returns>
         public int CompareTo(BirthDate other)
         {
-            if (other == null) return 1;
-
-            var yc = year.CompareTo(other.year);
+            var yc = Year.CompareTo(other.Year);
             if (yc != 0) return yc;
 
-            var mc = month.CompareTo(other.month);
+            var mc = Month.CompareTo(other.Month);
             if (mc != 0) return mc;
 
-            return day.CompareTo(other.day);
+            return Day.CompareTo(other.Day);
         }
-
-        #endregion
-
-        #region IComparable Members
 
         /// <summary>
         /// Compares the current instance with another object of the same type and returns 
@@ -395,10 +315,34 @@ namespace Delta.Icao
         public int CompareTo(object obj)
         {
             if (obj == null) return 1;
-            if (obj is BirthDate) return CompareTo((BirthDate)obj);
+            if (obj is BirthDate date) return CompareTo(date);
             return 0;
         }
 
-        #endregion
+        private static Exception EnsureAreValid(int y, int m, int d)
+        {
+            if (y < 0 || y > 9999) return new ArgumentOutOfRangeException("y", "Year must be in the [0;9999]  interval.");
+            if (m < 0 || m > 12) return new ArgumentOutOfRangeException("m", "Month must be in the [0;12]  interval.");
+            if (d < 0 || d > 31) return new ArgumentOutOfRangeException("d", "Day must be in the [0;31]  interval.");
+
+            // Testing the input represents a valid birth date
+            var y2 = y == 0 ? 1 : y; // Year = 0 results in an invalid date!
+            var m2 = m == 0 ? 1 : m; // Month = 0 results in an invalid date!
+            var d2 = d == 0 ? 1 : d; // Day = 0 results in an invalid date!
+            try
+            {
+                _ = new DateTime(y2, m2, d2);
+            }
+            catch (Exception ex)
+            {
+                return ex;
+            }
+
+            // Ensure day = 0 when month = 0 and month = 0 when year = 0
+            if (m == 0 && d != 0) return new FormatException("Day must be 0 when Month is 0.");
+            if (y == 0 && m != 0) return new FormatException("Month must be 0 when Year is 0.");
+
+            return null; // Everything is ok.
+        }
     }
 }

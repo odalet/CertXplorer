@@ -1,24 +1,20 @@
 ﻿using System;
+using Delta.Icao.Logging;
 
 namespace Delta.Icao
 {
     partial class MrzParser
     {
-        private class Id2Parser : MrzParser // 2x36: French ID Card For instance
+        private sealed class Id2Parser : MrzParser // 2x36: French ID Card For instance
         {
+            private static readonly ILogService log = LogManager.GetLogger<Id2Parser>();
+
             private string[] array = null;
 
             public Id2Parser(string mrz) : base(mrz) { }
 
-            protected override MrzFormat Format
-            {
-                get { return MrzFormat.Id2; }
-            }
-
-            public override string[] MrzArray
-            {
-                get { return array; }
-            }
+            public override string[] MrzArray => array;
+            protected override MrzFormat Format => MrzFormat.Id2;
 
             public override bool Parse()
             {
@@ -31,7 +27,7 @@ namespace Delta.Icao
                 }
                 catch (Exception ex)
                 {
-                    var debugException = ex;
+                    log.Warning($"{Format} MRZ Parsing failed: {ex.Message}", ex);
                     return false;
                 }
 

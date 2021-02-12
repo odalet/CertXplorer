@@ -28,8 +28,10 @@ namespace Delta.Icao
                     return category != UnicodeCategory.NonSpacingMark;
                 });
 
-            builder.Append(characters.ToArray());
-            return (builder.ToString().Normalize(NormalizationForm.FormC));
+            return builder
+                .Append(characters.ToArray())
+                .ToString()
+                .Normalize(NormalizationForm.FormC);
         }
 
         /// <summary>
@@ -38,9 +40,6 @@ namespace Delta.Icao
         /// </summary>
         /// <param name="input">The input string.</param>
         /// <returns>The uppercase equivalent of the specified string.</returns>
-        public static string ToUpperInvariantNoDiacritics(this string input)
-        {
-            return input.RemoveDiacritics().ToUpperInvariant();
-        }
+        public static string ToUpperInvariantNoDiacritics(this string input) => input.RemoveDiacritics().ToUpperInvariant();
     }
 }

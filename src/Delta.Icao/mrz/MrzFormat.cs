@@ -3,11 +3,12 @@ using System.Collections.Generic;
 
 namespace Delta.Icao
 {
-    public class MrzFormat
+    public sealed class MrzFormat
     {
-        public const string Id1FormatName = "ID1"; // Cards (Bank format)
-        public const string Id2FormatName = "ID2"; // French ID Card
-        public const string Id3FormatName = "ID3"; // Passports
+        // internal because used in MrzParser
+        internal const string Id1FormatName = "ID1"; // Cards (Bank format)
+        internal const string Id2FormatName = "ID2"; // French ID Card
+        internal const string Id3FormatName = "ID3"; // Passports
 
         private static readonly List<MrzFormat> formats;
 
@@ -23,8 +24,7 @@ namespace Delta.Icao
             Id1 = new MrzFormat(Id1FormatName, 3, 30);
             Id2 = new MrzFormat(Id2FormatName, 2, 36);
             Id3 = new MrzFormat(Id3FormatName, 2, 44);
-            formats = new List<MrzFormat>();
-            formats.AddRange(new[] { Id1, Id2, Id3 });
+            formats = new List<MrzFormat> { Id1, Id2, Id3 };
         }
 
         /// <summary>
@@ -40,27 +40,18 @@ namespace Delta.Icao
             LineLength = length;
         }
 
-        public string Name { get; private set; }
-
-        public int LineLength { get; private set; }
-
-        public int LineCount { get; private set; }
+        public static MrzFormat[] Formats => formats.ToArray();
+        public string Name { get; }
+        public int LineLength { get; }
+        public int LineCount { get; }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Returns a <see cref="string" /> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String" /> that represents this instance.
+        /// A <see cref="string" /> that represents this instance.
         /// </returns>
-        public override string ToString()
-        {
-            return Name;
-        }
-
-        public static MrzFormat[] Formats
-        {
-            get { return formats.ToArray(); }
-        }
+        public override string ToString() => Name;
 
         public static MrzFormat FindByLength(string line)
         {
@@ -74,9 +65,7 @@ namespace Delta.Icao
             return formats.SingleOrDefault(f => f.LineLength * f.LineCount == length);
         }
 
-        public static MrzFormat FindByName(string name)
-        {
-            return formats.SingleOrDefault(f => string.Compare(f.Name, name, true) == 0);
-        }
+        public static MrzFormat FindByName(string name) => formats.SingleOrDefault(
+            f => string.Compare(f.Name, name, true) == 0);
     }
 }
