@@ -3,31 +3,20 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 using System.Collections.Generic;
+using Delta.Icao.Logging;
 
 namespace Delta.Icao
 {
     partial struct BirthDate
     {
-        private class Parser
+        private static class Parser
         {
             private const int defaultY2kPivot = 29;
-            private static readonly char[] patternCharacters;
-            private static readonly char[] numberCharacters;
-            private static readonly char[] separatorCharacters;
-            private static readonly char[] xCharacters;
-            private static readonly char[] zeroCharacters;
-
-            /// <summary>
-            /// Initializes the <see cref="Parser"/> class.
-            /// </summary>
-            static Parser()
-            {
-                patternCharacters = new char[] { 'y', 'M', 'd' };
-                numberCharacters = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', 'X' };
-                separatorCharacters = new char[] { '/', '-', '.' };
-                xCharacters = new char[] { 'x', 'X' };
-                zeroCharacters = new char[] { '0' };
-            }
+            private static readonly char[] patternCharacters = new char[] { 'y', 'M', 'd' };
+            private static readonly char[] numberCharacters = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'x', 'X' };
+            private static readonly char[] separatorCharacters = new char[] { '/', '-', '.' };
+            private static readonly char[] xCharacters = new char[] { 'x', 'X' };
+            private static readonly char[] zeroCharacters = new char[] { '0' };
 
             public static BirthDate Parse(string s, BirthDateFormatInfo info)
             {
@@ -42,7 +31,7 @@ namespace Delta.Icao
                 }
                 catch (Exception ex)
                 {
-                    var debugException = ex;
+                    log.Warning($"Could not parse a {nameof(BirthDate)} from '{s}': {ex.Message}");
                     // Well, this means we probably have 'missing' components
                 }
 
@@ -58,7 +47,7 @@ namespace Delta.Icao
                 var mlist = new List<char>();
                 var dlist = new List<char>();
 
-                Func<char, List<char>> getList = pc =>
+                List<char> getList(char pc)
                 {
                     switch (pc)
                     {
@@ -68,7 +57,7 @@ namespace Delta.Icao
                     }
 
                     return null; // problem!
-                };
+                }
 
                 var patternIndex = 0;
                 var list = getList(pattern[patternIndex]);
@@ -77,20 +66,21 @@ namespace Delta.Icao
                 {
                     if (numberCharacters.Contains(c)) // add the character to the corresponding queue (y/m/d)
                         list.Add(c);
-                    else if (separatorCharacters.Contains(c))// separator
+                    else if (separatorCharacters.Contains(c)) // separator
                     {
                         patternIndex++;
-                        if (patternIndex >= patternComponentsCount) throw new InvalidOperationException(string.Format(
-                            "This BirthDate representation is made of too many components (> {0}).", patternComponentsCount));
+                        if (patternIndex >= patternComponentsCount) throw new InvalidOperationException(
+                            $"This {nameof(BirthDate)} representation is made of too many components (> {patternComponentsCount}).");
 
                         list = getList(pattern[patternIndex]);
                     }
-                    else throw new InvalidOperationException(string.Format(
-                        "Character {0} can not be part of a BirthDate representation.", c));
+                    else throw new InvalidOperationException(
+                        $"Character '{c}' can not be part of a {nameof(BirthDate)} representation.");
                 }
 
                 // Now translate the lists into numbers
                 var y = GetNumber(ylist);
+
                 // Don't convert the year if it is unknown
                 y = IsUnknown(ylist) ? 0 : HandleY2k(y, y2kPivot);
 
@@ -100,14 +90,10 @@ namespace Delta.Icao
                 return new BirthDate(y, m, d);
             }
 
-            private static int GetY2kPivot(BirthDateFormatInfo info)
-            {
-                if (info == null ||
-                    info.DateTimeFormatInfo == null ||
-                    info.DateTimeFormatInfo.Calendar == null) return defaultY2kPivot;
-
-                return info.DateTimeFormatInfo.Calendar.TwoDigitYearMax - 2000;
-            }
+            private static int GetY2kPivot(BirthDateFormatInfo info) =>
+                info?.DateTimeFormatInfo?.Calendar == null ?
+                defaultY2kPivot :
+                info.DateTimeFormatInfo.Calendar.TwoDigitYearMax - 2000;
 
             private static int HandleY2k(int y, int y2kPivot)
             {
@@ -135,8 +121,7 @@ namespace Delta.Icao
             private static int GetNumber(List<char> list)
             {
                 var s = string.Join("", list.ToArray());
-                var n = 0;
-                int.TryParse(s, out n);
+                _ = int.TryParse(s, out var n);
                 return n;
             }
 
@@ -144,26 +129,17 @@ namespace Delta.Icao
             {
                 var normalized = new StringBuilder();
                 var lastPatternCharacter = '\0';
+
                 foreach (var c in pattern)
-                {
-                    if (patternCharacters.Contains(c))
+                    if (patternCharacters.Contains(c) && c != lastPatternCharacter)
                     {
-                        if (c == lastPatternCharacter)
-                            continue;
-                        else
-                        {
-                            normalized.Append(c);
-                            lastPatternCharacter = c;
-                        }
+                        _ = normalized.Append(c);
+                        lastPatternCharacter = c;
                     }
-                    else continue; // separator
-                }
 
                 return normalized.ToString();
             }
         }
-
-        #region Parsing
 
         /// <summary>
         /// Converts the string representation of a birth date to a <see cref="BirthDate" /> object.
@@ -181,15 +157,14 @@ namespace Delta.Icao
         /// </returns>
         public static bool TryParse(string text, out BirthDate result, CultureInfo culture = null)
         {
-            result = BirthDate.Empty;
+            result = Empty;
             try
             {
                 result = Parse(text, culture);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                var debugException = ex;
                 return false;
             }
         }
@@ -210,15 +185,14 @@ namespace Delta.Icao
         /// </returns>
         public static bool TryParse(string text, out BirthDate result, BirthDateFormatInfo info)
         {
-            result = BirthDate.Empty;
+            result = Empty;
             try
             {
                 result = Parse(text, info);
                 return true;
             }
-            catch (Exception ex)
+            catch
             {
-                var debugException = ex;
                 return false;
             }
         }
@@ -232,7 +206,8 @@ namespace Delta.Icao
         /// <exception cref="System.ArgumentNullException">text</exception>
         public static BirthDate Parse(string text, CultureInfo culture = null)
         {
-            if (string.IsNullOrEmpty(text)) throw new ArgumentNullException("text");
+            if (string.IsNullOrEmpty(text)) throw new ArgumentException(
+                $"{nameof(text)} cannot be null or empty", nameof(text));
 
             var formatInfo = new BirthDateFormatInfo(culture, true);
             return Parse(text, formatInfo);
@@ -246,7 +221,9 @@ namespace Delta.Icao
         /// <returns>A <see cref="BirthDate"/> object equivalent to the birth date specified in <paramref name="text"/>.</returns>
         public static BirthDate Parse(string text, BirthDateFormatInfo info)
         {
-            if (string.IsNullOrEmpty(text)) throw new ArgumentNullException("text");
+            if (string.IsNullOrEmpty(text)) throw new ArgumentException(
+                $"{nameof(text)} cannot be null or empty", nameof(text));
+
             return Parser.Parse(text, info ?? new BirthDateFormatInfo());
         }
 
@@ -283,7 +260,5 @@ namespace Delta.Icao
             var bdate = Parse(text, info);
             return new BirthDate?(bdate);
         }
-
-        #endregion
     }
 }

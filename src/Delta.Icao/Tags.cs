@@ -36,12 +36,7 @@ namespace Delta.Icao
             Mrz = 0x5F1F    // The MRZ tag inside DG1
         }
 
-        public static EF? FindEF(ushort tag)
-        {
-            if (Enum.GetValues(typeof(EF)).Cast<ushort>().Contains(tag))
-                return (EF)tag;
-            return null;
-        }
+        public static EF? FindEF(ushort tag) => Enum.GetValues(typeof(EF)).Cast<ushort>().Contains(tag) ? (EF?)(EF)tag : null;
     }
 }
 

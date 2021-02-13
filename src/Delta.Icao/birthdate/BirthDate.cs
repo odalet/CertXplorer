@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using Delta.Icao.Logging;
 
 namespace Delta.Icao
 {
@@ -16,6 +17,8 @@ namespace Delta.Icao
     /// </remarks>
     public partial struct BirthDate : IEquatable<BirthDate>, IComparable<BirthDate>, IComparable
     {
+        private static readonly ILogService log = LogManager.GetLogger<BirthDate>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="BirthDate"/> struct.
         /// </summary>
@@ -231,61 +234,16 @@ namespace Delta.Icao
         /// <returns>Serialized form of this birth date instance.</returns>
         public string SerializeToString() => string.Format("{0:D4}{1:D2}{2:D2}", Year, Month, Day);
 
-        /// <summary>
-        /// Returns a hash code for this instance.
-        /// </summary>
-        /// <returns>
-        /// A hash code for this instance, suitable for use in hashing algorithms and data structures like a hash table. 
-        /// </returns>
+        /// <inheritdoc />
         public override int GetHashCode() => Year ^ (Month << 13 | Month >> 19) ^ (Day << 21 | Day >> 11);
 
-        /// <summary>
-        /// Determines whether the specified <see cref="object" /> is equal to this instance.
-        /// </summary>
-        /// <param name="obj">The <see cref="object" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="object" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
+        /// <inheritdoc />
         public override bool Equals(object obj) => obj is BirthDate date && Equals(date);
 
-        /// <summary>
-        /// Determines whether the specified <see cref="BirthDate" /> is equal to this instance.
-        /// </summary>
-        /// <param name="other">The <see cref="BirthDate" /> to compare with this instance.</param>
-        /// <returns>
-        ///   <c>true</c> if the specified <see cref="BirthDate" /> is equal to this instance; otherwise, <c>false</c>.
-        /// </returns>
+        /// <inheritdoc />
         public bool Equals(BirthDate other) => other.Year == Year && other.Month == Month && other.Day == Day;
 
-        /// <summary>
-        /// Ensures the specified birth dates are equal.
-        /// </summary>
-        /// <param name="d1">The first date to test for equality.</param>
-        /// <param name="d2">The second date to test for equality.</param>
-        /// <returns><c>true</c> if the specified dates are equal; otherwise, <c>false</c>.</returns>
-        public static bool operator ==(BirthDate d1, BirthDate d2) => d1.Equals(d2);
-
-        /// <summary>
-        /// Ensures the specified birth dates are different.
-        /// </summary>
-        /// <param name="d1">The first date to test for inequality.</param>
-        /// <param name="d2">The second date to test for inequality.</param>
-        /// <returns><c>true</c> if the specified dates are different; otherwise, <c>false</c>.</returns>
-        public static bool operator !=(BirthDate d1, BirthDate d2) => !d1.Equals(d2);
-
-        /// <summary>
-        /// Compares the current object with another object of the same type.
-        /// </summary>
-        /// <param name="other">An object to compare with this object.</param>
-        /// <returns>
-        /// A 32-bit signed integer that indicates the relative order of the objects being compared. 
-        /// The return value has the following meanings: 
-        /// <list type="bullet">
-        /// <item>Less than zero: This object is less than the other parameter.</item>
-        /// <item>Zero: This object is equal to other.</item>
-        /// <item>Greater than zero: This object is greater than other.</item>
-        /// </list>
-        /// </returns>
+        /// <inheritdoc />
         public int CompareTo(BirthDate other)
         {
             var yc = Year.CompareTo(other.Year);
@@ -297,27 +255,31 @@ namespace Delta.Icao
             return Day.CompareTo(other.Day);
         }
 
-        /// <summary>
-        /// Compares the current instance with another object of the same type and returns 
-        /// an integer that indicates whether the current instance precedes, follows, or 
-        /// occurs in the same position in the sort order as the other object.
-        /// </summary>
-        /// <param name="obj">An object to compare with this instance.</param>
-        /// <returns>
-        /// A value that indicates the relative order of the objects being compared. 
-        /// The return value has these meanings: 
-        /// <list type="bullet">
-        /// <item>Less than zero: This instance precedes <paramref name="obj" /> in the sort order.</item>
-        /// <item>Zero: This instance occurs in the same position in the sort order as <paramref name="obj" />.</item>
-        /// <item>Greater than zero: This instance follows <paramref name="obj" /> in the sort order.</item>
-        /// </list>
-        /// </returns>
+        /// <inheritdoc />
         public int CompareTo(object obj)
         {
             if (obj == null) return 1;
             if (obj is BirthDate date) return CompareTo(date);
             return 0;
         }
+
+        /// <inheritdoc />
+        public static bool operator ==(BirthDate d1, BirthDate d2) => d1.Equals(d2);
+
+        /// <inheritdoc />
+        public static bool operator !=(BirthDate d1, BirthDate d2) => !d1.Equals(d2);
+
+        /// <inheritdoc />
+        public static bool operator <(BirthDate d1, BirthDate d2) => d1.CompareTo(d2) < 0;
+
+        /// <inheritdoc />
+        public static bool operator <=(BirthDate d1, BirthDate d2) => d1.CompareTo(d2) <= 0;
+
+        /// <inheritdoc />
+        public static bool operator >(BirthDate d1, BirthDate d2) => d1.CompareTo(d2) > 0;
+
+        /// <inheritdoc />
+        public static bool operator >=(BirthDate d1, BirthDate d2) => d1.CompareTo(d2) >= 0;
 
         private static Exception EnsureAreValid(int y, int m, int d)
         {

@@ -8,12 +8,12 @@
   <ItemGroup>
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
       <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Delta.SmartCard\Delta.SmartCard.csproj" />
+    <ProjectReference Include="..\Delta.CapiNet\Delta.CapiNet.csproj" />
   </ItemGroup>
 
 </Project>

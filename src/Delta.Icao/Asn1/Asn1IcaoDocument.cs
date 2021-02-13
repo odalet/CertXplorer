@@ -1,11 +1,10 @@
 ﻿using Delta.CapiNet.Asn1;
-using Delta.Icao.Lds;
 
 namespace Delta.Icao.Asn1
 {
-    public class Asn1IcaoDocument : Asn1Document
+    public sealed class Asn1IcaoDocument : Asn1Document
     {
-        public class Factory : Asn1ObjectFactory
+        private sealed class Factory : Asn1ObjectFactory
         {
             protected override Asn1Object CreateSpecificTaggedObject(Asn1Document document, TaggedObject content, Asn1Object parent)
             {

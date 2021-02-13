@@ -19,8 +19,7 @@
                 }
             }
 
-            const string sep = " ";
-            return string.Format("{0}{3}{1}{3}{2}", d, m, y, sep);
+            return $"{d} {m} {y}";
         }
 
         /// <summary>
@@ -31,10 +30,7 @@
         public static bool IsNullOrEmpty(this BirthDate? value)
         {
             if (value == null) return true;
-            if (!value.HasValue) return true;
-            if (value.Value == BirthDate.Empty) return true;
-
-            return false;
+            return value.Value == BirthDate.Empty;
         }
 
         /// <summary>
@@ -48,8 +44,7 @@
         /// <seealso cref="Siti.BirthDate.SerializeToString"/>
         public static string SerializeToString(this BirthDate? value, bool returnEmptyStringWhenNoValue = false)
         {
-            if (value == null || !value.HasValue)
-                return returnEmptyStringWhenNoValue ? string.Empty : null;
+            if (value == null) return returnEmptyStringWhenNoValue ? string.Empty : null;
             return value.Value.SerializeToString();
         }
     }

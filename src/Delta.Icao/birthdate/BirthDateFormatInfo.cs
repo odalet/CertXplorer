@@ -21,25 +21,16 @@ namespace Delta.Icao
             DateTimeFormatInfo = (DateTimeFormatInfo)culture.GetFormat(typeof(DateTimeFormatInfo));
         }
 
-        public CultureInfo Culture
-        {
-            get;
-            private set;
-        }
+        public CultureInfo Culture { get; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to represent missing components with X or 0.
+        /// Gets a value indicating whether to represent missing components with X or 0.
         /// </summary>
-        public bool RepresentMissingComponentsWithX { get; set; }
+        public bool RepresentMissingComponentsWithX { get; }
 
-        internal DateTimeFormatInfo DateTimeFormatInfo { get; private set; }
+        internal DateTimeFormatInfo DateTimeFormatInfo { get; }
 
-        public string Pattern
-        {
-            get { return DateTimeFormatInfo.ShortDatePattern; }
-        }
-
-        #region ICloneable Members
+        public string Pattern => DateTimeFormatInfo.ShortDatePattern;
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
@@ -47,14 +38,7 @@ namespace Delta.Icao
         /// <returns>
         /// A new object that is a copy of this instance.
         /// </returns>
-        public object Clone()
-        {
-            return new BirthDateFormatInfo(Culture, RepresentMissingComponentsWithX);
-        }
-
-        #endregion
-
-        #region IFormatProvider Members
+        public object Clone() => new BirthDateFormatInfo(Culture, RepresentMissingComponentsWithX);
 
         /// <summary>
         /// Returns an object that provides formatting services for the specified type.
@@ -67,12 +51,11 @@ namespace Delta.Icao
         {
             if (formatType == typeof(BirthDateFormatInfo))
                 return this;
+
             if (formatType == typeof(DateTimeFormatInfo))
                 return DateTimeFormatInfo;
 
             return null;
         }
-
-        #endregion
     }
 }

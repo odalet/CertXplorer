@@ -5,7 +5,7 @@ namespace Delta.Icao.Asn1
 {
     public sealed class Asn1Mrz : BaseAsn1String
     {
-        private static readonly ILogService log = LogManager.GetLogger(typeof(MrzHelper));
+        private static readonly ILogService log = LogManager.GetLogger(typeof(Asn1Mrz));
         private string[] decoded = null;
 
         public Asn1Mrz(Asn1Document document, TaggedObject content, Asn1Object parentObject)
