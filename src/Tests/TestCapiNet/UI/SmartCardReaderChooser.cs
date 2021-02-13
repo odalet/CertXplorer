@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows.Forms;
 using Delta.SmartCard;
 
@@ -6,6 +7,26 @@ namespace TestCapiNet.UI
 {
     public partial class SmartCardReaderChooser : UserControl
     {
+        // See https://stackoverflow.com/questions/34664/designmode-with-nested-controls
+        public bool IsInDesignMode
+        {
+            get
+            {
+                if (LicenseManager.UsageMode == LicenseUsageMode.Designtime) return true;
+
+                // IsDesignerHosted part
+                Control current = this;
+                while (current != null)
+                {
+                    if (current.Site != null && current.Site.DesignMode)
+                        return true;
+                    current = current.Parent;
+                }
+
+                return false;
+            }
+        }
+
         //private string curentReaderName = null;
         private PcscSmartCardReader reader = null;
 
@@ -15,6 +36,7 @@ namespace TestCapiNet.UI
         public SmartCardReaderChooser()
         {
             InitializeComponent();
+            if (IsInDesignMode) return;
 
             Application.ApplicationExit += (s, _) =>
             {
@@ -41,10 +63,7 @@ namespace TestCapiNet.UI
         public event EventHandler SmartCardReaderConnected;
         public event EventHandler SmartCardReaderDisconnected;
 
-        public PcscSmartCardReader SmartCardReader
-        {
-            get { return reader; }
-        }
+        public PcscSmartCardReader SmartCardReader => reader;
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
@@ -53,6 +72,8 @@ namespace TestCapiNet.UI
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
+            if (IsInDesignMode) return;
+
             FillReadersList();
             RefreshUI();
         }
