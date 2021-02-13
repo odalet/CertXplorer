@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
+using Delta.CapiNet.Internals;
 
 namespace Delta.CapiNet
 {
@@ -8,71 +11,60 @@ namespace Delta.CapiNet
     /// </summary>
     public class CertificateStoreLocation
     {
-        private SystemStoreLocationInfo locationInfo = new SystemStoreLocationInfo();
+        private readonly struct SystemStoreLocationInfo
+        {
+            public SystemStoreLocationInfo(string name, uint flags)
+            {
+                Name = name;
+                Flags = flags;
+            }
 
-        /// <summary>
-        /// Prevents a default instance of the <see cref="CertificateStoreLocation"/> class from being created.
-        /// </summary>
-        private CertificateStoreLocation() { }
+            public string Name { get; }
+            public uint Flags { get; }            
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CertificateStoreLocation"/> class.
         /// </summary>
         /// <param name="systemStoreLocationInfo">The system store location info.</param>
-        internal CertificateStoreLocation(SystemStoreLocationInfo systemStoreLocationInfo) 
+        private CertificateStoreLocation(SystemStoreLocationInfo systemStoreLocationInfo)
         {
-            locationInfo = systemStoreLocationInfo;
+            Name = systemStoreLocationInfo.Name;
+            Flags = systemStoreLocationInfo.Flags;
+            Id = FlagsToId(Flags);
+        }
+        
+        public string Name { get; }
+        public uint Id { get; }
+        internal uint Flags { get; }
+
+        public StoreLocation ToStoreLocation() => Enum.IsDefined(typeof(StoreLocation), Id) ?
+            (StoreLocation)Enum.ToObject(typeof(StoreLocation), Id) :
+            throw new InvalidOperationException($"This instance's current value can't be represented as a {nameof(StoreLocation)}.");
+
+        public override string ToString() => string.IsNullOrEmpty(Name) ? "?" : Name;
+
+        public static IEnumerable<CertificateStoreLocation> GetSystemStoreLocations()
+        {
+            var locations = new List<SystemStoreLocationInfo>();
+            var ok = NativeMethods.CertEnumSystemStoreLocation(0, IntPtr.Zero, (name, flags, _, _) =>
+            {
+                locations.Add(new SystemStoreLocationInfo(name, flags));
+                return true;
+            });
+
+            return ok ?
+                locations.Select(info => new CertificateStoreLocation(info)) :
+                new CertificateStoreLocation[0];
         }
 
-        internal static CertificateStoreLocation FromId(uint id)
-        {
-            return new CertificateStoreLocation(
-                new SystemStoreLocationInfo()
-                {
-                    Flags = (uint)id << 16,
-                    Name = id.ToString()
-                });
-        }
+        public static CertificateStoreLocation FromStoreLocation(StoreLocation location) => new CertificateStoreLocation(
+            new SystemStoreLocationInfo(location.ToString(), IdToFlags((uint)location)));
 
-        public static CertificateStoreLocation FromStoreLocation(StoreLocation location)
-        {
-            return new CertificateStoreLocation(
-                new SystemStoreLocationInfo()
-                {
-                    Flags = (uint)location << 16,
-                    Name = location.ToString()
-                });
-        }
+        internal static CertificateStoreLocation FromId(uint id) => new CertificateStoreLocation(
+            new SystemStoreLocationInfo(id.ToString(), IdToFlags(id)));
 
-        public StoreLocation ToStoreLocation()
-        {
-            int id = (int)locationInfo.GetStoreLocationId();
-            if (Enum.IsDefined(typeof(StoreLocation), id))
-                return (StoreLocation)Enum.ToObject(typeof(StoreLocation), id);
-            else throw new InvalidOperationException(string.Format(
-                "This instance's current value can't be represented as a {0}.",
-                typeof(StoreLocation)));
-        }
-
-        public string Name
-        {
-            get { return locationInfo.Name; }
-        }
-
-        public uint Id { get { return locationInfo.GetStoreLocationId(); } }
-
-        internal uint Flags { get { return locationInfo.Flags; } }
-
-        /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
-        /// </returns>
-        public override string ToString()
-        {
-            if (string.IsNullOrEmpty(Name)) return "?";
-            return Name;
-        }
+        private static uint IdToFlags(uint id) => id << (int)CapiConstants.CERT_SYSTEM_STORE_LOCATION_SHIFT;
+        private static uint FlagsToId(uint flags) => flags >> (int)CapiConstants.CERT_SYSTEM_STORE_LOCATION_SHIFT;
     }
 }

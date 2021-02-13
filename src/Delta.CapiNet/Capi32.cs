@@ -136,10 +136,8 @@ namespace Delta.CapiNet
         /// </summary>
         /// <param name="storeLocation">The System Stores Location.</param>
         /// <returns>An array of strings (never null).</returns>
-        public static IEnumerable<CertificateStore> GetSystemStores(StoreLocation storeLocation)
-        {
-            return GetSystemStores(CertificateStoreLocation.FromStoreLocation(storeLocation));
-        }
+        public static IEnumerable<CertificateStore> GetSystemStores(StoreLocation storeLocation) => 
+            GetSystemStores(CertificateStoreLocation.FromStoreLocation(storeLocation));
 
         /// <summary>
         /// Gets the system stores present in the specified Location.
@@ -152,47 +150,14 @@ namespace Delta.CapiNet
             return names.Select(name => new CertificateStore(name, systemStoreLocation));
         }
 
-        public static CertificateStore GetCertificateStore(string storeName, StoreLocation storeLocation)
-        {
-            return GetCertificateStore(storeName, CertificateStoreLocation.FromStoreLocation(storeLocation));
-        }
+        public static CertificateStore GetCertificateStore(string storeName, StoreLocation storeLocation) => 
+            GetCertificateStore(storeName, CertificateStoreLocation.FromStoreLocation(storeLocation));
 
-        public static CertificateStore GetCertificateStore(string storeName, CertificateStoreLocation systemStoreLocation)
-        {
-            return new CertificateStore(storeName, systemStoreLocation);
-        }
+        public static CertificateStore GetCertificateStore(string storeName, CertificateStoreLocation systemStoreLocation) => 
+            new CertificateStore(storeName, systemStoreLocation);
 
         #endregion
 
-        #region GetSystemStoreLocations
-        
-        /// <summary>
-        /// Gets the system stores locations.
-        /// </summary>
-        /// <returns>An enumeration of <see cref="SystemStoreLocationInfo"/> objects (never null).</returns>
-        public static IEnumerable<CertificateStoreLocation> GetSystemStoreLocations()
-        {
-            var locations = new List<SystemStoreLocationInfo>();
-            var ok = NativeMethods.CertEnumSystemStoreLocation((uint)0, IntPtr.Zero,
-                (pvszStoreLocations, dwFlags, pvReserved, pvArg) =>
-                {
-                    locations.Add(new SystemStoreLocationInfo()
-                    {
-                        Name = pvszStoreLocations,
-                        Flags = dwFlags
-                    });
-                    return true;
-                });
-
-            if (ok) return locations.Select(info => new CertificateStoreLocation(info));
-            else return new CertificateStoreLocation[] { };
-        }
-
-        #endregion
-                
-        public static string LocalizeName(string name)
-        {
-            return NativeMethods.CryptFindLocalizedName(name);
-        }
+        public static string LocalizeName(string name) => NativeMethods.CryptFindLocalizedName(name);
     }
 }

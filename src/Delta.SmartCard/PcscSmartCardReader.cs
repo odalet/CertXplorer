@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Text;
-using System.Linq;
 using System.Collections.Generic;
-
+using System.Linq;
+using System.Text;
 using Delta.SmartCard.Logging;
-
 using PCSC;
 using PCSC.Iso7816;
 
@@ -24,6 +22,7 @@ namespace Delta.SmartCard
 
         private SCardContext context = null;
         private IsoReader reader = null;
+        private SCardReader scReader = null;
 
         internal PcscSmartCardReader(string readerName, SCardScope scardScope = SCardScope.System)
         {
@@ -64,7 +63,7 @@ namespace Delta.SmartCard
             {
                 try
                 {
-                    reader.Reader.GetAttrib(enumValue, out result);
+                    scReader.GetAttrib(enumValue, out result);
                     if (result != null)
                         dictionary.Add(enumValue.ToString(), (byte[])result.Clone());
                 }
@@ -84,7 +83,7 @@ namespace Delta.SmartCard
                 SCardProtocol protocol;
                 byte[] atr;
 
-                reader.Reader.Status(out names, out state, out protocol, out atr);
+                scReader.Status(out names, out state, out protocol, out atr);
 
                 if (names != null && names.Length > 0) dictionary.Add("Name", Encoding.Default.GetBytes(
                     string.Join(", ", names.Where(n => !string.IsNullOrEmpty(n)).ToArray())));
@@ -193,7 +192,7 @@ namespace Delta.SmartCard
         {
             EnsureInitialized();
 
-            if (reader.Reader.IsConnected)
+            if (IsCardOpened)
                 return;
 
             TryPcsc(() =>
@@ -202,16 +201,13 @@ namespace Delta.SmartCard
 
         public void CloseCard()
         {
-            if (!reader.Reader.IsConnected)
+            if (!IsCardOpened)
                 return;
 
-            reader.Disconnect(disconnectAction);
+            scReader.Disconnect(disconnectAction);
         }
 
-        public bool IsCardOpened
-        {
-            get { return reader != null && reader.Reader.IsConnected; }
-        }
+        public bool IsCardOpened => scReader != null && scReader.IsConnected;
 
         #region IDisposable Members
 
@@ -230,6 +226,16 @@ namespace Delta.SmartCard
                         log.Error(ex);
                     }
                 }
+
+                try
+                {
+                    scReader.Dispose();
+                }
+                catch (Exception ex)
+                {
+                    log.Error(ex);
+                }
+                finally { scReader = null; }
 
                 try
                 {
@@ -265,6 +271,7 @@ namespace Delta.SmartCard
             context.EnsureOK();
 
             reader = new IsoReader(context);
+            scReader = new SCardReader(context);
         }
 
         private void EnsureInitialized()

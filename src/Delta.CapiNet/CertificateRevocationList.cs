@@ -13,8 +13,8 @@ namespace Delta.CapiNet
     public class CertificateRevocationList
     {
         private byte[] cachedData = null;
-        private DateTime thisUpdate = DateTime.MinValue;
-        private DateTime nextUpdate = DateTime.MinValue;
+        private DateTimeOffset thisUpdate = DateTimeOffset.MinValue;
+        private DateTimeOffset nextUpdate = DateTimeOffset.MinValue;
         private X500DistinguishedName issuerName = null; // cached Issuer Name
         private CrlContextHandle safeHandle = null;
 
@@ -92,16 +92,16 @@ namespace Delta.CapiNet
         /// <summary>
         /// Gets this CRL's publication date.
         /// </summary>
-        public DateTime PublicationDate
+        public DateTimeOffset PublicationDate
         {
             get
             {
                 if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-                if (thisUpdate == DateTime.MinValue)
+                if (thisUpdate == DateTimeOffset.MinValue)
                 {
                     var crlInfo = GetCrlInfo();
                     if (crlInfo.HasValue)
-                        thisUpdate = crlInfo.Value.ThisUpdate.ToDateTime();
+                        thisUpdate = crlInfo.Value.ThisUpdate.ToDateTimeOffset();
                 }
 
                 return thisUpdate;
@@ -111,16 +111,16 @@ namespace Delta.CapiNet
         /// <summary>
         /// Gets this CRL's next scheduled update.
         /// </summary>
-        public DateTime NextUpdate
+        public DateTimeOffset NextUpdate
         {
             get
             {
                 if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-                if (nextUpdate == DateTime.MinValue)
+                if (nextUpdate == DateTimeOffset.MinValue)
                 {
                     var crlInfo = GetCrlInfo();
                     if (crlInfo.HasValue)
-                        nextUpdate = crlInfo.Value.NextUpdate.ToDateTime();
+                        nextUpdate = crlInfo.Value.NextUpdate.ToDateTimeOffset();
                 }
 
                 return nextUpdate;

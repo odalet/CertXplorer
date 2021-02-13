@@ -1,10 +1,11 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
-
 using Delta.CapiNet.Internals;
+using Delta.CapiNet.Logging;
+using COM = System.Runtime.InteropServices.ComTypes;
 
 namespace Delta.CapiNet
 {
@@ -13,7 +14,7 @@ namespace Delta.CapiNet
     /// </summary>
     public static class X509Extensions
     {
-        #region X509Store extensions
+        private static readonly ILogService log = LogManager.GetLogger(typeof(X509Extensions));
 
         /// <summary>
         /// Gets the certificate revocation lists contained in the specified store.
@@ -23,18 +24,17 @@ namespace Delta.CapiNet
         public static IEnumerable<CertificateRevocationList> GetCertificateRevocationLists(this X509Store store)
         {
             var handle = CertStoreHandle.FromX509Store(store);
-            if (handle.IsInvalid || handle.IsClosed) 
+            if (handle.IsInvalid || handle.IsClosed)
                 return new CertificateRevocationList[0];  // Empty list
 
             var list = new List<CertificateRevocationList>();
-            for (var ptr = NativeMethods.CertEnumCRLsInStore(handle, IntPtr.Zero); 
-                ptr != IntPtr.Zero;
-                ptr = NativeMethods.CertEnumCRLsInStore(handle, ptr))
-                list.Add(new CertificateRevocationList(ptr));
+            for (
+                    var ptr = NativeMethods.CertEnumCRLsInStore(handle, IntPtr.Zero);
+                    ptr != IntPtr.Zero;
+                    ptr = NativeMethods.CertEnumCRLsInStore(handle, ptr)
+                ) list.Add(new CertificateRevocationList(ptr));
 
-            return list;
-            
-            // Don't free the handle: it is linked to the store object.
+            return list; // Don't free the handle: it is linked to the store object.
         }
 
         /// <summary>
@@ -49,14 +49,13 @@ namespace Delta.CapiNet
                 return new CertificateTrustList[0];  // Empty list
 
             var list = new List<CertificateTrustList>();
-            for (var ptr = NativeMethods.CertEnumCTLsInStore(handle, IntPtr.Zero);
-                ptr != IntPtr.Zero;
-                ptr = NativeMethods.CertEnumCTLsInStore(handle, ptr))
-                list.Add(new CertificateTrustList(ptr));
+            for (
+                    var ptr = NativeMethods.CertEnumCTLsInStore(handle, IntPtr.Zero);
+                    ptr != IntPtr.Zero;
+                    ptr = NativeMethods.CertEnumCTLsInStore(handle, ptr)
+                ) list.Add(new CertificateTrustList(ptr));
 
-            return list;
-
-            // Don't free the handle: it is linked to the store object.
+            return list; // Don't free the handle: it is linked to the store object.
         }
 
         /// <summary>
@@ -64,14 +63,8 @@ namespace Delta.CapiNet
         /// </summary>
         /// <param name="store">The X509 Certificates store.</param>
         /// <returns>A collection of <see cref="Certificate"/> objects.</returns>
-        public static IEnumerable<Certificate> GetCertificates(this X509Store store)
-        {
-            return store.Certificates.Cast<X509Certificate2>().Select(x509 => new Certificate(x509));
-        }
-
-        #endregion
-
-        #region DistinguishName
+        public static IEnumerable<Certificate> GetCertificates(this X509Store store) => 
+            store.Certificates.Cast<X509Certificate2>().Select(x509 => new Certificate(x509));
 
         /// <summary>
         /// Extracts the specified relative distinguished name from an X500 Distinguished Name.
@@ -88,10 +81,7 @@ namespace Delta.CapiNet
         /// <param name="distinguishedName">The X500 Distinguished Name.</param>
         /// <param name="rdn">The relative distinguished name.</param>
         /// <returns>The value of the specified relative distinguished name.</returns>
-        public static string ExtractRdn(this X500DistinguishedName distinguishedName, string rdn)
-        {
-            return ExtractRdn(distinguishedName.Name, rdn);
-        }
+        public static string ExtractRdn(this X500DistinguishedName distinguishedName, string rdn) => ExtractRdn(distinguishedName.Name, rdn);
 
         /// <summary>
         /// Extracts the specified relative distinguished name from an X500 Distinguished Name.
@@ -118,10 +108,11 @@ namespace Delta.CapiNet
 
             var rdnStart = distinguishedName.IndexOf(rdn);
             if (rdnStart == -1) return string.Empty;
+
             var start = rdnStart + rdn.Length;
             if (start >= len) return string.Empty;
 
-            char charToFind = ',';
+            var charToFind = ',';
             if (distinguishedName[start] == '"')
             {
                 charToFind = '"';
@@ -130,42 +121,35 @@ namespace Delta.CapiNet
 
             if (start >= len) return string.Empty;
 
-            int end = distinguishedName.IndexOf(charToFind, start);
-            if (end == -1) return distinguishedName.Substring(start);
-
-            return distinguishedName.Substring(start, end - start);
+            var end = distinguishedName.IndexOf(charToFind, start);
+            return end == -1 ?
+                distinguishedName.Substring(start) :
+                distinguishedName.Substring(start, end - start);
         }
-
-        #endregion
-
-        #region Interop related extensions
 
         internal static byte[] ToByteArray(this CRYPTOAPI_BLOB blob)
         {
             if (blob.cbData == 0) return new byte[0];
 
-            byte[] destination = new byte[blob.cbData];
+            var destination = new byte[blob.cbData];
             Marshal.Copy(blob.pbData, destination, 0, destination.Length);
             return destination;
         }
 
-        internal static DateTime ToDateTime(this System.Runtime.InteropServices.ComTypes.FILETIME fileTime)
+        internal static DateTimeOffset ToDateTimeOffset(this COM.FILETIME fileTime)
         {
             try
             {
                 var hi = (ulong)fileTime.dwHighDateTime;
                 var lo = (ulong)fileTime.dwLowDateTime;
                 var value = (long)((hi << 0x20) | lo);
-                return DateTime.FromFileTime(value);
+                return DateTimeOffset.FromFileTime(value);
             }
             catch (Exception ex)
             {
-                var debugException = ex;
-                // TODO: log exception
-                return DateTime.MinValue; // Means invalid.
+                log.Error($"Conversion to {nameof(ToDateTimeOffset)} of {nameof(COM.FILETIME)} object failed: {ex.Message}", ex);
+                return DateTimeOffset.MinValue; // Means invalid.
             }
         }
-
-        #endregion
     }
 }
