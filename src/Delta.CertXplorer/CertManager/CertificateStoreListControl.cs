@@ -116,7 +116,7 @@ namespace Delta.CertXplorer.CertManager
             // 1st level: locations
             IEnumerable<CertificateStoreLocation> locations = null;
             if (ShowOtherLocations)
-                locations = Capi32.GetSystemStoreLocations();
+                locations = CertificateStoreLocation.GetSystemStoreLocations();
             else locations = new StoreLocation[] 
             { 
                 StoreLocation.LocalMachine, 

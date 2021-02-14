@@ -355,45 +355,45 @@ namespace Delta.CertXplorer
 
         #region Static properties
 
-        /// <summary>
-        /// Gets a value indicating whether the current application is running in a web context.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the current application is running in a web context; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsWebContext
-        {
-            get { return System.Web.HttpContext.Current != null; }
-        }
+        /////////// <summary>
+        /////////// Gets a value indicating whether the current application is running in a web context.
+        /////////// </summary>
+        /////////// <value>
+        /////////// 	<c>true</c> if the current application is running in a web context; otherwise, <c>false</c>.
+        /////////// </value>
+        ////////public static bool IsWebContext
+        ////////{
+        ////////    get { return System.Web.HttpContext.Current != null; }
+        ////////}
 
-        /// <summary>
-        /// Gets a value indicating whether the current application is running in a WCF context.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the current application is running in a WCF context; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsWcfContext
-        {
-            get { return System.ServiceModel.OperationContext.Current != null; }
-        }
+        /////////// <summary>
+        /////////// Gets a value indicating whether the current application is running in a WCF context.
+        /////////// </summary>
+        /////////// <value>
+        /////////// 	<c>true</c> if the current application is running in a WCF context; otherwise, <c>false</c>.
+        /////////// </value>
+        ////////public static bool IsWcfContext
+        ////////{
+        ////////    get { return System.ServiceModel.OperationContext.Current != null; }
+        ////////}
 
-        /// <summary>
-        /// Sets the current application as a WCF service host.
-        /// </summary>
-        public static bool IsWcfService
-        {
-            get { return Application.IsWcfService; }
-            set
-            {
-                if (wcfServiceWasSet) throw new ApplicationException(
-                    "Property This.IsWcfService can only be set once.");
-                else
-                {
-                    Application.IsWcfService = value;
-                    wcfServiceWasSet = true;
-                }
-            }
-        }
+        /////////// <summary>
+        /////////// Sets the current application as a WCF service host.
+        /////////// </summary>
+        ////////public static bool IsWcfService
+        ////////{
+        ////////    get { return Application.IsWcfService; }
+        ////////    set
+        ////////    {
+        ////////        if (wcfServiceWasSet) throw new ApplicationException(
+        ////////            "Property This.IsWcfService can only be set once.");
+        ////////        else
+        ////////        {
+        ////////            Application.IsWcfService = value;
+        ////////            wcfServiceWasSet = true;
+        ////////        }
+        ////////    }
+        ////////}
 
         /// <summary>
         /// Gets the current user object.

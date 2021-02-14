@@ -5,7 +5,7 @@ using System.Threading;
 using System.Reflection;
 using System.Diagnostics;
 using System.Globalization;
-using System.Deployment.Application;
+////using System.Deployment.Application;
 using System.Collections.ObjectModel;
 
 using Delta.CertXplorer.ComponentModel;
@@ -36,30 +36,30 @@ namespace Delta.CertXplorer.ThisImplementation
             isWcfService = false;
             applicationType = ThisApplicationType.NotSet;
 
-            if (IsWebContext)
-                applicationType = ThisApplicationType.WebApplication;
-            else if (IsWcfContext)
-            {
-                applicationType = ThisApplicationType.WcfService;
-                isWcfService = true;
-            }
+            ////////if (IsWebContext)
+            ////////    applicationType = ThisApplicationType.WebApplication;
+            ////////else if (IsWcfContext)
+            ////////{
+            ////////    applicationType = ThisApplicationType.WcfService;
+            ////////    isWcfService = true;
+            ////////}
         }
 
-        /// <summary>
-        /// Gets a value indicating whether the current application is running in a web context.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the current application is running in a web context; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsWebContext { get { return This.IsWebContext; } }
+        /////////// <summary>
+        /////////// Gets a value indicating whether the current application is running in a web context.
+        /////////// </summary>
+        /////////// <value>
+        /////////// 	<c>true</c> if the current application is running in a web context; otherwise, <c>false</c>.
+        /////////// </value>
+        ////////public bool IsWebContext { get { return This.IsWebContext; } }
 
-        /// <summary>
-        /// Gets a value indicating whether the current application is running in a WCF context.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the current application is running in a WCF context; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsWcfContext { get { return This.IsWcfContext; } }
+        /////////// <summary>
+        /////////// Gets a value indicating whether the current application is running in a WCF context.
+        /////////// </summary>
+        /////////// <value>
+        /////////// 	<c>true</c> if the current application is running in a WCF context; otherwise, <c>false</c>.
+        /////////// </value>
+        ////////public bool IsWcfContext { get { return This.IsWcfContext; } }
 
         /// <summary>
         /// Gets a value indicating whether this application is hosting a WCF service.
@@ -250,27 +250,27 @@ namespace Delta.CertXplorer.ThisImplementation
             }
         }
 
-        /// <summary>
-        /// Gets the current application's ClickOnce deployment object, 
-        /// which provides support for updating the current deployment 
-        /// programmatically and support for the on-demand download of 
-        /// files.
-        /// </summary>
-        public ApplicationDeployment Deployment
-        {
-            get { return ApplicationDeployment.CurrentDeployment; }
-        }
+        /////////// <summary>
+        /////////// Gets the current application's ClickOnce deployment object, 
+        /////////// which provides support for updating the current deployment 
+        /////////// programmatically and support for the on-demand download of 
+        /////////// files.
+        /////////// </summary>
+        ////////public ApplicationDeployment Deployment
+        ////////{
+        ////////    get { return ApplicationDeployment.CurrentDeployment; }
+        ////////}
 
-        /// <summary>
-        /// Gets a value indicating whether the application was deployed from a network using ClickOnce.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if the current application was deployed from a network; otherwise, <c>false</c>.
-        /// </value>
-        public bool IsNetworkDeployed
-        {
-            get { return ApplicationDeployment.IsNetworkDeployed; }
-        }
+        /////////// <summary>
+        /////////// Gets a value indicating whether the application was deployed from a network using ClickOnce.
+        /////////// </summary>
+        /////////// <value>
+        /////////// 	<c>true</c> if the current application was deployed from a network; otherwise, <c>false</c>.
+        /////////// </value>
+        ////////public bool IsNetworkDeployed
+        ////////{
+        ////////    get { return ApplicationDeployment.IsNetworkDeployed; }
+        ////////}
 
         /// <summary>
         /// Returns the value of the specified environment variable.

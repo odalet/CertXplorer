@@ -10,8 +10,8 @@ namespace Delta.CertXplorer.CertManager.Wrappers
         public CapiCtlWrapper(CertificateTrustList certificateTrustList) => ctl = certificateTrustList;
 
         public string FriendlyName => TryGet(() => ctl.FriendlyName);
-        public DateTime PublicationDate => TryGet(() => ctl.PublicationDate);
-        public DateTime NextUpdate => TryGet(() => ctl.NextUpdate);
+        public DateTimeOffset PublicationDate => TryGet(() => ctl.PublicationDate);
+        public DateTimeOffset NextUpdate => TryGet(() => ctl.NextUpdate);
         public bool IsValid => TryGet(() => ctl.IsValid);
     }
 }

@@ -148,7 +148,6 @@
             dockPaneStripToolWindowGradient4.InactiveTabGradient = tabGradient28;
             dockPaneStripSkin4.ToolWindowGradient = dockPaneStripToolWindowGradient4;
             dockPanelSkin4.DockPaneStripSkin = dockPaneStripSkin4;
-            this.workspace.Skin = dockPanelSkin4;
             this.workspace.TabIndex = 5;
             // 
             // topToolStripPanel

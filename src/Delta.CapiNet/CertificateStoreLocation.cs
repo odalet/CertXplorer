@@ -9,7 +9,7 @@ namespace Delta.CapiNet
     /// <summary>
     /// Represents Locations of Certificate Stores.
     /// </summary>
-    public class CertificateStoreLocation
+    public sealed class CertificateStoreLocation
     {
         private readonly struct SystemStoreLocationInfo
         {

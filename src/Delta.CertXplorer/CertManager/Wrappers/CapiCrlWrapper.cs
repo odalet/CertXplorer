@@ -11,8 +11,8 @@ namespace Delta.CertXplorer.CertManager.Wrappers
 
         public string FriendlyName => TryGet(() => crl.FriendlyName);
         public string IssuerName => TryGet(() => crl.IssuerName.Name);
-        public DateTime PublicationDate => TryGet(() => crl.PublicationDate);
-        public DateTime NextUpdate => TryGet(() => crl.NextUpdate);
+        public DateTimeOffset PublicationDate => TryGet(() => crl.PublicationDate);
+        public DateTimeOffset NextUpdate => TryGet(() => crl.NextUpdate);
         public bool IsValid => TryGet(() => crl.IsValid);
     }
 }

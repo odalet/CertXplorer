@@ -334,10 +334,9 @@ namespace Delta.CertXplorer.CertManager
             return dn.Name;
         }
 
-        private string FormatDate(DateTime date)
-        {
-            return date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
-        }
+        private string FormatDate(DateTime date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
+
+        private string FormatDate(DateTimeOffset date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
     }
 }
 

@@ -4,6 +4,7 @@
     <TargetFramework>net48</TargetFramework>
     <AssemblyName>UnitTests.Delta.CapiNet</AssemblyName>
     <RootNamespace>Delta.CapiNet</RootNamespace>
+    <LangVersion>9.0</LangVersion>
     <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 

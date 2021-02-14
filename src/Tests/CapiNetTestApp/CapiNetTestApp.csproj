@@ -4,6 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net48</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
+    <LangVersion>9.0</LangVersion>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,38 +29,4 @@
     <ProjectReference Include="..\..\Delta.CapiNet\Delta.CapiNet.csproj" />
     <ProjectReference Include="..\..\Delta.SmartCard\Delta.SmartCard.csproj" />
   </ItemGroup>
-<!--
-  <ItemGroup>
-    <Compile Update="Tests\SmartCardsTestControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="Tests\SmartCardsTestControl.Designer.cs">
-      <DependentUpon>SmartCardsTestControl.cs</DependentUpon>
-    </Compile>
-    <Compile Update="UI\LogBox.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="UI\LogBox.Designer.cs">
-      <DependentUpon>LogBox.cs</DependentUpon>
-    </Compile>
-    <Compile Update="UI\SmartCardReaderChooser.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Update="UI\SmartCardReaderChooser.Designer.cs">
-      <DependentUpon>SmartCardReaderChooser.cs</DependentUpon>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Update="Tests\SmartCardsTestControl.resx">
-      <DependentUpon>SmartCardsTestControl.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="UI\LogBox.resx">
-      <DependentUpon>LogBox.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Update="UI\SmartCardReaderChooser.resx">
-      <DependentUpon>SmartCardReaderChooser.cs</DependentUpon>
-    </EmbeddedResource>
-  </ItemGroup>
--->
 </Project>
