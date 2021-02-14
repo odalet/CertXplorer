@@ -1,15 +1,14 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace TestCapiNet.UI
+namespace CapiNetTestApp.UI
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Windows Forms conventions")]
     public partial class LogBox : UserControl
     {
-        public LogBox()
-        {
-            InitializeComponent();
-        }
+        public LogBox() => InitializeComponent();
 
         public void LogException(Exception exception)
         {
@@ -49,7 +48,10 @@ namespace TestCapiNet.UI
 
         private void toolStripButton2_Click(object sender, EventArgs e)
         {
-            Clipboard.SetText(rtb.Text);
+            if (string.IsNullOrEmpty(rtb.Text))
+                Clipboard.Clear();
+            else
+                Clipboard.SetText(rtb.Text);
         }
     }
 }

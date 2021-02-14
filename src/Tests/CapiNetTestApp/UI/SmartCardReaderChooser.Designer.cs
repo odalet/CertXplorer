@@ -1,4 +1,4 @@
-﻿namespace TestCapiNet.UI
+﻿namespace CapiNetTestApp.UI
 {
     partial class SmartCardReaderChooser
     {

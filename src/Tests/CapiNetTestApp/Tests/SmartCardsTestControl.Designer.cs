@@ -1,4 +1,4 @@
-﻿namespace TestCapiNet.Tests
+﻿namespace CapiNetTestApp.Tests
 {
     partial class SmartCardsTestControl
     {
@@ -31,7 +31,7 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.testsPanel = new System.Windows.Forms.Panel();
             this.getChallengeButton = new System.Windows.Forms.Button();
-            this.smartCardReaderChooser = new TestCapiNet.UI.SmartCardReaderChooser();
+            this.smartCardReaderChooser = new CapiNetTestApp.UI.SmartCardReaderChooser();
             this.getReaderInformationButton = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.testsPanel.SuspendLayout();

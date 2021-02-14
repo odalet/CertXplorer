@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Windows.Forms;
-using Delta.CapiNet;
 using Delta.CapiNet.Logging;
-using TestCapiNet.Tests;
+using CapiNetTestApp.Tests;
+using System.Diagnostics.CodeAnalysis;
 
-namespace TestCapiNet
+namespace CapiNetTestApp
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Windows Forms conventions")]
     public partial class MainForm : Form
     {
         public class LogService : CapiNetLogger.ILogService
@@ -18,9 +19,7 @@ namespace TestCapiNet
                 owner = form;
             }
 
-            #region ILogService Members
-
-            public Type Type { get; private set; }
+            public Type Type { get; }
 
             public void Log(string level, string message, Exception exception)
             {
@@ -28,14 +27,9 @@ namespace TestCapiNet
                     owner.Log(string.Format("{0} - {1}", level, message));
                 else owner.LogException(exception);
             }
-
-            #endregion
         }
 
-        public MainForm()
-        {
-            InitializeComponent();
-        }
+        public MainForm() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
@@ -45,24 +39,10 @@ namespace TestCapiNet
             CapiNetLogger.LogServiceBuilder = t => new LogService(t, this);
         }
 
-        internal void LogException(Exception exception)
-        {
-            logbox.LogException(exception);
-        }
+        internal void LogException(Exception exception) => logbox.LogException(exception);
+        internal void Log(string message) => logbox.LogMessage(message);
 
-        internal void Log(string message)
-        {
-            logbox.LogMessage(message);
-        }
-
-        private void certificateAndCrlTestButton_Click(object sender, EventArgs e)
-        {
-            CertificateAndCrlTest.Test();
-        }
-
-        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
+        private void certificateAndCrlTestButton_Click(object sender, EventArgs e) => CertificateAndCrlTest.Test();
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e) => Close();
     }
 }

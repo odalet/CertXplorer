@@ -6,7 +6,7 @@ using System.Windows.Forms;
 using PCSC.Iso7816;
 using Delta.SmartCard;
 
-namespace TestCapiNet.Tests
+namespace CapiNetTestApp.Tests
 {
     public partial class SmartCardsTestControl : UserControl
     {

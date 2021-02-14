@@ -38,8 +38,8 @@ namespace Delta.CapiNet
         public uint Id { get; }
         internal uint Flags { get; }
 
-        public StoreLocation ToStoreLocation() => Enum.IsDefined(typeof(StoreLocation), Id) ?
-            (StoreLocation)Enum.ToObject(typeof(StoreLocation), Id) :
+        public StoreLocation ToStoreLocation() => Enum.IsDefined(typeof(StoreLocation), (int)Id) ?
+            (StoreLocation)Enum.ToObject(typeof(StoreLocation), (int)Id) :
             throw new InvalidOperationException($"This instance's current value can't be represented as a {nameof(StoreLocation)}.");
 
         public override string ToString() => string.IsNullOrEmpty(Name) ? "?" : Name;

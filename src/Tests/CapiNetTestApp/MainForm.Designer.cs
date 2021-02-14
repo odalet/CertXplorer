@@ -1,4 +1,5 @@
-﻿namespace TestCapiNet
+﻿
+namespace CapiNetTestApp
 {
     partial class MainForm
     {
@@ -65,8 +66,8 @@
             this.smartCardsPage = new System.Windows.Forms.TabPage();
             this.miscPage = new System.Windows.Forms.TabPage();
             this.split = new System.Windows.Forms.SplitContainer();
-            this.smartCardsTestControl = new TestCapiNet.Tests.SmartCardsTestControl();
-            this.logbox = new TestCapiNet.UI.LogBox();
+            this.smartCardsTestControl = new CapiNetTestApp.Tests.SmartCardsTestControl();
+            this.logbox = new CapiNetTestApp.UI.LogBox();
             this.menuStrip1.SuspendLayout();
             this.tc.SuspendLayout();
             this.smartCardsPage.SuspendLayout();

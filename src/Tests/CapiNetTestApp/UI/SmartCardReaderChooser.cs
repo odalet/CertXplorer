@@ -1,10 +1,12 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 using Delta.SmartCard;
 
-namespace TestCapiNet.UI
+namespace CapiNetTestApp.UI
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Windows Forms conventions")]
     public partial class SmartCardReaderChooser : UserControl
     {
         // See https://stackoverflow.com/questions/34664/designmode-with-nested-controls
@@ -27,12 +29,6 @@ namespace TestCapiNet.UI
             }
         }
 
-        //private string curentReaderName = null;
-        private PcscSmartCardReader reader = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SmartCardReaderChooser"/> class.
-        /// </summary>
         public SmartCardReaderChooser()
         {
             InitializeComponent();
@@ -40,17 +36,17 @@ namespace TestCapiNet.UI
 
             Application.ApplicationExit += (s, _) =>
             {
-                Action<Action> t = a =>
+                void @try(Action a)
                 {
                     try { a(); }
-                    catch { }
-                };
+                    catch { /* Nothing to do here */ }
+                }
 
-                if (reader != null)
+                if (SmartCardReader != null)
                 {
-                    t(() => reader.CloseCard());
-                    t(() => reader.Dispose());
-                    reader = null;
+                    @try(() => SmartCardReader.CloseCard());
+                    @try(() => SmartCardReader.Dispose());
+                    SmartCardReader = null;
                 }
             };
 
@@ -63,32 +59,27 @@ namespace TestCapiNet.UI
         public event EventHandler SmartCardReaderConnected;
         public event EventHandler SmartCardReaderDisconnected;
 
-        public PcscSmartCardReader SmartCardReader => reader;
+        public PcscSmartCardReader SmartCardReader { get; private set; }
 
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.UserControl.Load" /> event.
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             if (IsInDesignMode) return;
 
-            FillReadersList();
+            try
+            {
+                FillReadersList();
+            }
+            catch (Exception ex)
+            {
+                _ = MessageBox.Show(this, $"Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
             RefreshUI();
         }
-        
-        protected virtual void OnSmartCardReaderConnected()
-        {
-            if (SmartCardReaderConnected != null)
-                SmartCardReaderConnected(this, EventArgs.Empty);
-        }
 
-        protected virtual void OnSmartCardReaderDisconnected()
-        {
-            if (SmartCardReaderDisconnected != null)
-                SmartCardReaderDisconnected(this, EventArgs.Empty);
-        }
+        protected virtual void OnSmartCardReaderConnected() => SmartCardReaderConnected?.Invoke(this, EventArgs.Empty);
+        protected virtual void OnSmartCardReaderDisconnected() => SmartCardReaderDisconnected?.Invoke(this, EventArgs.Empty);
 
         private void OpenCard()
         {
@@ -96,25 +87,25 @@ namespace TestCapiNet.UI
             if (string.IsNullOrEmpty(name))
                 return;
 
-            if (reader != null)
+            if (SmartCardReader != null)
             {
-                reader.Dispose();
-                reader = null;
+                SmartCardReader.Dispose();
+                SmartCardReader = null;
             }
 
             try
             {
-                reader = PcscSmartCardReaderFactory.CreateDevice(name);
-                reader.OpenCard();
-                Program.Log(string.Format("Card Opened: {0}", reader.IsCardOpened));
+                SmartCardReader = PcscSmartCardReaderFactory.CreateDevice(name);
+                SmartCardReader.OpenCard();
+                Program.Log(string.Format("Card Opened: {0}", SmartCardReader.IsCardOpened));
                 OnSmartCardReaderConnected();
             }
             catch (Exception ex)
             {
                 Program.LogException(ex);
-                if (reader != null)
-                    reader.Dispose();
-                reader = null;
+                if (SmartCardReader != null)
+                    SmartCardReader.Dispose();
+                SmartCardReader = null;
             }
 
             RefreshUI();
@@ -124,8 +115,8 @@ namespace TestCapiNet.UI
         {
             try
             {
-                reader.CloseCard();
-                Program.Log(string.Format("Card Opened: {0}", reader.IsCardOpened));
+                SmartCardReader.CloseCard();
+                Program.Log(string.Format("Card Opened: {0}", SmartCardReader.IsCardOpened));
             }
             catch (Exception ex)
             {
@@ -133,9 +124,9 @@ namespace TestCapiNet.UI
             }
             finally
             {
-                if (reader != null)
-                    reader.Dispose();
-                reader = null;
+                if (SmartCardReader != null)
+                    SmartCardReader.Dispose();
+                SmartCardReader = null;
                 OnSmartCardReaderDisconnected();
             }
 
@@ -144,10 +135,10 @@ namespace TestCapiNet.UI
 
         private void RefreshUI()
         {
-            readersBox.Enabled = refreshReadersButton.Enabled = reader == null;
+            readersBox.Enabled = refreshReadersButton.Enabled = SmartCardReader == null;
 
-            openCardButton.Enabled = reader == null && readersBox.SelectedItem != null;
-            closeCardButton.Enabled = reader != null;
+            openCardButton.Enabled = SmartCardReader == null && readersBox.SelectedItem != null;
+            closeCardButton.Enabled = SmartCardReader != null;
         }
 
         private void FillReadersList()

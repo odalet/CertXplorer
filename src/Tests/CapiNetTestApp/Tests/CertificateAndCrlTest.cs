@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 
 using Delta.CapiNet;
 
-namespace TestCapiNet.Tests
+namespace CapiNetTestApp.Tests
 {
     internal static class CertificateAndCrlTest
     {

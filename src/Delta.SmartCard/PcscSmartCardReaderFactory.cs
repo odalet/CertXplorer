@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using PCSC;
+﻿using PCSC;
 
 namespace Delta.SmartCard
 {
@@ -7,13 +6,12 @@ namespace Delta.SmartCard
     {
         public static string[] EnumerateDevices()
         {
-            using (var context = new SCardContext())
-            {
-                context.Establish(SCardScope.System);
-                context.EnsureOK();
+            using var context = new SCardContext();
 
-                return context.GetReaders();
-            }            
+            context.Establish(SCardScope.System);
+            _ = context.EnsureOK();
+
+            return context.GetReaders();
         }
 
         public static PcscSmartCardReader CreateDevice(string readerName)
