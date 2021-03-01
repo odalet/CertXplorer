@@ -1,56 +1,37 @@
 ﻿using System;
-using System.IO;
-using System.Xml;
-using System.Text;
-using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
 using System.Collections.Generic;
-
-using WeifenLuo.WinFormsUI.Docking;
-
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using System.Xml;
 using Delta.CertXplorer.UI.ToolWindows;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Delta.CertXplorer.ApplicationModel
 {
     /// <summary>
     /// Default implementation of <see cref="ILayoutService"/>.
     /// </summary>
-    public class LayoutService : ILayoutService
+    public sealed class LayoutService : ILayoutService
     {
-        #region Events locking management
-
-        private class EventsLock : IDisposable
+        private sealed class EventsLock : IDisposable
         {
-            private LayoutService parent = null;
-            
+            private readonly LayoutService parent;
+
             public EventsLock(LayoutService layoutService)
             {
                 parent = layoutService;
-                parent.eventsAreLocked = true;
+                parent.EventsLocked = true;
             }
 
-            #region IDisposable Members
-
-            public void Dispose()
-            {
-                parent.eventsAreLocked = false;
-            }
-
-            #endregion
+            public void Dispose() => parent.EventsLocked = false;
         }
 
-        private IDisposable LockEvents() { return new EventsLock(this); }
-
-        private bool EventsLocked { get { return eventsAreLocked; } }
-
-        #endregion
-
-        #region Layout store
-
-        private class FormLayout
+        private sealed class FormLayout
         {
-            public FormLayout() { DockingInfo = string.Empty; }
+            public FormLayout() => DockingInfo = string.Empty;
 
             public Rectangle? Bounds { get; set; }
             public FormWindowState? WindowState { get; set; }
@@ -58,17 +39,13 @@ namespace Delta.CertXplorer.ApplicationModel
             public string AdditionalData { get; set; }
         }
 
-        #endregion
-
-        private bool eventsAreLocked = false;
         private Rectangle defaultBounds = Rectangle.Empty;
-        private string layoutSettingsFileName = string.Empty;
-
-        private List<string> loadedList = new List<string>();
-        private Dictionary<string, Form> forms = new Dictionary<string, Form>();
-        private Dictionary<string, FormLayout> layouts = new Dictionary<string, FormLayout>();
-        private Dictionary<string, DockPanel> workspaces = new Dictionary<string, DockPanel>();
-        private Dictionary<string, Dictionary<Guid, ToolWindow>> toolWindows = 
+        private readonly string layoutSettingsFileName;
+        private readonly List<string> loadedForms = new List<string>();
+        private readonly Dictionary<string, Form> formsByKey = new Dictionary<string, Form>();
+        private readonly Dictionary<string, FormLayout> layouts = new Dictionary<string, FormLayout>();
+        private readonly Dictionary<string, DockPanel> workspaces = new Dictionary<string, DockPanel>();
+        private readonly Dictionary<string, Dictionary<Guid, ToolWindow>> toolWindows =
             new Dictionary<string, Dictionary<Guid, ToolWindow>>();
 
         /// <summary>
@@ -81,25 +58,36 @@ namespace Delta.CertXplorer.ApplicationModel
             if (File.Exists(layoutSettingsFileName)) ReadLayouts();
         }
 
-        #region ILayoutService Members
+        private Rectangle DefaultBounds
+        {
+            get
+            {
+                if (defaultBounds.IsEmpty)
+                {
+                    var screen = This.Computer.Screen.WorkingArea;
+                    var wmargin = screen.Width / 10;
+                    var hmargin = screen.Height / 10;
 
-        /// <summary>
-        /// Registers a form with the service.
-        /// </summary>
-        /// <param name="key">The key identifying the form class.</param>
-        /// <param name="form">The form instance.</param>
-        public void RegisterForm(string key, Form form) { RegisterForm(key, form, null); }
+                    defaultBounds = new Rectangle(
+                        screen.Left + wmargin,
+                        screen.Top + hmargin,
+                        screen.Width - 2 * wmargin,
+                        screen.Height - 2 * hmargin);
+                }
 
-        /// <summary>
-        /// Registers a form and its dock panel with the service.
-        /// </summary>
-        /// <param name="key">The key identifying the form class.</param>
-        /// <param name="form">The form instance.</param>
-        /// <param name="workspace">The workspace.</param>
+                return defaultBounds;
+            }
+        }
+
+        private bool EventsLocked { get; set; } = false;
+
+        private IDisposable LockEvents() => new EventsLock(this);
+
+        /// <inheritdoc/>
         public void RegisterForm(string key, Form form, DockPanel workspace)
         {
-            if (forms.ContainsKey(key)) forms.Remove(key);
-            forms.Add(key, form);
+            if (formsByKey.ContainsKey(key)) formsByKey.Remove(key);
+            formsByKey.Add(key, form);
             LoadForm(key);
             form.Load += (s, e) => LoadForm(key);
 
@@ -110,11 +98,7 @@ namespace Delta.CertXplorer.ApplicationModel
             }
         }
 
-        /// <summary>
-        /// Registers a docking tool window with this service.
-        /// </summary>
-        /// <param name="key">The key identifying the containing form class.</param>
-        /// <param name="window">The tool window instance.</param>
+        /// <inheritdoc/>
         public void RegisterToolWindow(string key, ToolWindow window)
         {
             if (window == null) throw new ArgumentNullException("window");
@@ -133,18 +117,11 @@ namespace Delta.CertXplorer.ApplicationModel
                 subDictionary = new Dictionary<Guid, ToolWindow>();
                 toolWindows.Add(key, subDictionary);
             }
-            
+
             subDictionary.Add(window.Guid, window);
         }
 
-        /// <summary>
-        /// Restores the docking state of a <see cref="WeifenLuo.WinFormsUI.Docking.DockPanel"/>
-        /// and its tool windows.
-        /// </summary>
-        /// <param name="key">The key identifying the containing form class.</param>
-        /// <returns>
-        /// 	<c>true</c> if the deserialization was successful; otherwise, <c>false</c>.
-        /// </returns>
+        /// <inheritdoc/>
         public bool RestoreDockingState(string key)
         {
             if (!layouts.ContainsKey(key)) return false;
@@ -211,13 +188,6 @@ namespace Delta.CertXplorer.ApplicationModel
             return true;
         }
 
-        #endregion
-
-        #region Xml deserialization
-
-        /// <summary>
-        /// Reads the layouts.
-        /// </summary>
         private void ReadLayouts()
         {
             try
@@ -239,7 +209,7 @@ namespace Delta.CertXplorer.ApplicationModel
                                     catch (Exception ex)
                                     {
                                         This.Logger.Error(string.Format(
-                                            "Unable to deserialize layout information from file {0} for key {1}.", 
+                                            "Unable to deserialize layout information from file {0} for key {1}.",
                                             layoutSettingsFileName, key), ex);
                                     }
                                 }
@@ -255,11 +225,6 @@ namespace Delta.CertXplorer.ApplicationModel
             }
         }
 
-        /// <summary>
-        /// Reads a layout.
-        /// </summary>
-        /// <param name="xnRoot">The xml root node.</param>
-        /// <param name="key">The layout key.</param>
         private void ReadLayout(XmlNode xnRoot, string key)
         {
             if (layouts.ContainsKey(key)) return;
@@ -269,7 +234,7 @@ namespace Delta.CertXplorer.ApplicationModel
             {
                 if (xn.Name == "bounds")
                 {
-                    string bounds = GetNodeValue(xn);
+                    string bounds = GetNodeValue(xn, "value");
                     if (bounds != null)
                     {
                         try { fl.Bounds = bounds.ConvertToType<Rectangle>(); }
@@ -291,7 +256,7 @@ namespace Delta.CertXplorer.ApplicationModel
                 }
                 else if (xn.Name == "state")
                 {
-                    string state = GetNodeValue(xn);
+                    string state = GetNodeValue(xn, "value");
                     if (state != null)
                     {
                         try { fl.WindowState = state.ConvertToType<FormWindowState>(); }
@@ -312,30 +277,20 @@ namespace Delta.CertXplorer.ApplicationModel
                     }
                 }
                 else if (xn.Name == "docking") fl.DockingInfo = xn.InnerXml;
-                else if ((xn.Name == "additionalData") && (xn is XmlElement)) 
+                else if ((xn.Name == "additionalData") && (xn is XmlElement))
                     fl.AdditionalData = xn.InnerText;
             }
 
             layouts.Add(key, fl);
         }
 
-        private string GetNodeValue(XmlNode xn) { return GetNodeValue(xn, "value"); }
         private string GetNodeValue(XmlNode xn, string xaName)
         {
-            var xaValue = xn.Attributes.Cast<XmlAttribute>().FirstOrDefault(
-                        xa => xa.Name == xaName);
-            if (xaValue != null)
-                return xaValue.Value;
-            else return null;
+            var xaValue = xn.Attributes
+                .Cast<XmlAttribute>().FirstOrDefault(xa => xa.Name == xaName);
+            return xaValue?.Value;
         }
 
-        #endregion
-
-        #region Xml serialization
-
-        /// <summary>
-        /// Saves the layouts.
-        /// </summary>
         private void SaveLayouts()
         {
             try
@@ -346,7 +301,7 @@ namespace Delta.CertXplorer.ApplicationModel
                 foreach (string key in layouts.Keys)
                 {
                     var xn = doc.CreateElement("layout");
-                        
+
                     var xa = doc.CreateAttribute("key");
                     xa.Value = key;
                     xn.Attributes.Append(xa);
@@ -395,29 +350,18 @@ namespace Delta.CertXplorer.ApplicationModel
             }
         }
 
-        #endregion
+        private bool IsLoaded(string key) => loadedForms.Contains(key);
 
-        #region Registered forms events
-
-        private bool IsLoaded(string key)
-        {
-            return loadedList.Contains(key);
-        }
-
-        /// <summary>
-        /// Restores the state and bounds of the form identified by the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
         private void LoadForm(string key)
         {
             if (IsLoaded(key)) return;
 
             using (LockEvents())
             {
-                if (!forms.ContainsKey(key)) return;
+                if (!formsByKey.ContainsKey(key)) return;
 
-                var form = forms[key];
-                
+                var form = formsByKey[key];
+
                 if (layouts.ContainsKey(key))
                 {
                     var layout = layouts[key];
@@ -427,35 +371,35 @@ namespace Delta.CertXplorer.ApplicationModel
                         var bounds = layout.Bounds.Value;
                         if (!This.Computer.Screen.WorkingArea.Contains(bounds))
                             bounds = DefaultBounds;
-                        form.Bounds = bounds;                        
+                        form.Bounds = bounds;
                     }
-                    else This.Logger.Verbose(string.Format("Could not find a 'bounds' value for layout key {0}", key));
+                    else This.Logger.Verbose($"Could not find a 'bounds' value for layout key {key}");
 
                     if (layout.WindowState.HasValue)
                     {
                         var state = layout.WindowState.Value;
-                        if (state == FormWindowState.Minimized)
-                            form.WindowState = FormWindowState.Normal;
-                        else form.WindowState = state;
+                        form.WindowState = state == FormWindowState.Minimized ?
+                            FormWindowState.Normal :
+                            state;
                     }
                     else
                     {
                         // default to Normal
                         form.WindowState = FormWindowState.Normal;
-                        This.Logger.Verbose(string.Format("Could not find a 'state' value for layout key {0}", key));                        
+                        This.Logger.Verbose(string.Format("Could not find a 'state' value for layout key {0}", key));
                     }
 
                     // If state is Normal and we have no bounds, use DefaultBounds and center on screen
-                    if ((!layout.Bounds.HasValue) && (form.WindowState == FormWindowState.Normal))
+                    if (!layout.Bounds.HasValue && form.WindowState == FormWindowState.Normal)
                     {
                         form.Size = DefaultBounds.Size;
-                        if (form.ParentForm == null)
-                            form.StartPosition = FormStartPosition.CenterScreen;
-                        else form.StartPosition = FormStartPosition.CenterParent;
+                        form.StartPosition = form.ParentForm == null ?
+                            FormStartPosition.CenterScreen :
+                            FormStartPosition.CenterParent;
                     }
                 }
                 else // Creation and initialization
-                {                    
+                {
                     var newLayout = new FormLayout();
                     if (form.WindowState != FormWindowState.Normal)
                         newLayout.Bounds = DefaultBounds;
@@ -466,32 +410,26 @@ namespace Delta.CertXplorer.ApplicationModel
                 form.LocationChanged += (s, e) => UpdateForm(key);
                 form.FormClosed += (s, e) => UnloadForm(key);
 
-                loadedList.Add(key);
+                loadedForms.Add(key);
 
                 UpdateForm(key);
 
-                // Additional layout data
-                if (form is IAdditionalLayoutDataSource)
-                {
-                    // Even if no additional data was saved, call SetData.
-                    ((IAdditionalLayoutDataSource)form).SetAdditionalLayoutData(layouts[key].AdditionalData);
-                }
+                // Additional layout data.
+                // Even if no additional data was saved, call SetData.
+                if (form is IAdditionalLayoutDataSource source)
+                    source.SetAdditionalLayoutData(layouts[key].AdditionalData);
             }
         }
 
-        /// <summary>
-        /// Updates the bounds and state information of the form identified by the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
         private void UpdateForm(string key)
         {
             if (EventsLocked) return;
             if (!IsLoaded(key)) return;
-                        
+
             using (LockEvents())
             {
-                if (!forms.ContainsKey(key)) return;
-                var form = forms[key];
+                if (!formsByKey.ContainsKey(key)) return;
+                var form = formsByKey[key];
                 var layout = layouts[key];
 
                 layout.WindowState = form.WindowState;
@@ -499,10 +437,6 @@ namespace Delta.CertXplorer.ApplicationModel
             }
         }
 
-        /// <summary>
-        /// Saves the bounds and state information of the form identified by the specified key.
-        /// </summary>
-        /// <param name="key">The key.</param>
         private void UnloadForm(string key)
         {
             UpdateForm(key);
@@ -514,68 +448,28 @@ namespace Delta.CertXplorer.ApplicationModel
                 if (workspaces.ContainsKey(key))
                 {
                     var workspace = workspaces[key];
-                    using (Stream stream = new MemoryStream())
+                    using var stream = new MemoryStream();
+                    workspace.SaveAsXml(stream, Encoding.UTF8, true);
+                    stream.Flush();
+                    _ = stream.Seek(0L, SeekOrigin.Begin);
+                    using (var reader = new StreamReader(stream))
                     {
-                        workspace.SaveAsXml(stream, Encoding.UTF8, true);
-                        stream.Flush();
-                        stream.Seek(0L, SeekOrigin.Begin);
-                        using (var reader = new StreamReader(stream))
-                        {
-                            layout.DockingInfo = reader.ReadToEnd();
-                            reader.Close();
-                        }
-
-                        stream.Close();
+                        layout.DockingInfo = reader.ReadToEnd();
+                        reader.Close();
                     }
+
+                    stream.Close();
                 }
 
-                var form = forms[key];
-                if (form is IAdditionalLayoutDataSource)
-                    layout.AdditionalData = ((IAdditionalLayoutDataSource)form).GetAdditionalLayoutData();
+                var form = formsByKey[key];
+                if (form is IAdditionalLayoutDataSource source)
+                    layout.AdditionalData = source.GetAdditionalLayoutData();
             }
 
             SaveLayouts();
 
-            loadedList.Remove(key);
+            _ = loadedForms.Remove(key);
         }
-        
-        #endregion
-
-        #region Utilities
-
-        /// <summary>
-        /// Gets the default bounds for a form.
-        /// </summary>
-        /// <value>The default bounds.</value>
-        private Rectangle DefaultBounds
-        {
-            get
-            {
-                if (defaultBounds.IsEmpty)
-                    defaultBounds = GetDefaultBounds();
-                return defaultBounds;
-            }
-        }
-
-        /// <summary>
-        /// Gets the default bounds for a form.
-        /// </summary>
-        /// <returns>A rectangle centered in the screen and 4/5 as big.</returns>
-        private Rectangle GetDefaultBounds()
-        {
-            var screen = This.Computer.Screen.WorkingArea;
-            var wmargin = screen.Width / 10;
-            var hmargin = screen.Height / 10;
-
-            return new Rectangle(
-                screen.Left + wmargin,
-                screen.Top + hmargin,
-                screen.Width - 2 * wmargin,
-                screen.Height - 2 * hmargin);
-
-        }
-
-        #endregion
     }
 }
 

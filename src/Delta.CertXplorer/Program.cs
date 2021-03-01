@@ -1,20 +1,17 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-
-using Delta.CertXplorer;
-using Delta.CertXplorer.Logging;
-using Delta.CertXplorer.UI.Theming;
-using Delta.CertXplorer.ApplicationModel;
-
+using System.Xml;
+using Delta.CapiNet.Logging;
 using Delta.CertXplorer.About;
-using Delta.CertXplorer.DocumentModel;
-using Delta.CertXplorer.PluginsManagement;
-using System.IO;
-using System.Reflection;
+using Delta.CertXplorer.ApplicationModel;
 using Delta.CertXplorer.Config;
 using Delta.CertXplorer.Configuration;
-using Delta.CapiNet.Logging;
+using Delta.CertXplorer.DocumentModel;
+using Delta.CertXplorer.Logging;
+using Delta.CertXplorer.PluginsManagement;
+using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer
 {
@@ -23,7 +20,7 @@ namespace Delta.CertXplorer
     /// </summary>
     internal sealed class Program : BaseWindowsFormsApplication
     {
-        private class CapiNetLogServiceWrapper : CapiNetLogger.ILogService
+        private sealed class CapiNetLogServiceWrapper : CapiNetLogger.ILogService
         {
             private readonly ILogService originalLogService;
 
@@ -33,9 +30,7 @@ namespace Delta.CertXplorer
                 originalLogService = logService;
             }
 
-            #region ILogService Members
-
-            public Type Type { get; private set; }
+            public Type Type { get; }
 
             public void Log(string level, string message, Exception exception)
             {
@@ -47,17 +42,15 @@ namespace Delta.CertXplorer
                     // multi-sources does not work well... Don't play with it
                     originalLogService.Log(l, message, exception /*, Type == null ? null : Type.ToString()*/);
                 }
-                catch { }
+                catch 
+                {
+                    // Nothing to do here
+                }
             }
-
-            #endregion
         }
 
-        public const string ApplicationName = "CertXplorer";
+        public static readonly string ApplicationName = "CertXplorer";
 
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         private static void Main(string[] arguments)
         {
@@ -82,12 +75,9 @@ namespace Delta.CertXplorer
 
         protected override void AddOtherServices()
         {
-            var foo = base.LayoutSettingsFileName;
             base.AddOtherServices();
-            This.AddService<IAboutService>(new AboutCertXplorerService());
-            
-            This.AddService<IDocumentHandlerRegistryService>(
-                DocumentFactory.CreateDocumentHandlerRegistryService());
+            This.AddService<IAboutService>(new AboutCertXplorerService());            
+            This.AddService(DocumentFactory.CreateDocumentHandlerRegistryService());
         }
 
         protected override ILogService CreateLogService()

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Windows.Forms;
-
-using WeifenLuo.WinFormsUI.Docking;
-
+﻿using System.Windows.Forms;
 using Delta.CertXplorer.UI.ToolWindows;
+using WeifenLuo.WinFormsUI.Docking;
 
 namespace Delta.CertXplorer.ApplicationModel
 {
@@ -13,13 +10,6 @@ namespace Delta.CertXplorer.ApplicationModel
     /// </summary>
     public interface ILayoutService
     {
-        /// <summary>
-        /// Registers a form with the service.
-        /// </summary>
-        /// <param name="key">The key identifying the form class.</param>
-        /// <param name="form">The form instance.</param>
-        void RegisterForm(string key, Form form);
-
         /// <summary>
         /// Registers a form and its dock panel with the service.
         /// </summary>
@@ -42,5 +32,16 @@ namespace Delta.CertXplorer.ApplicationModel
         /// <param name="key">The key identifying the containing form class.</param>
         /// <returns><c>true</c> if the deserialization was successful; otherwise, <c>false</c>.</returns>
         bool RestoreDockingState(string key);
+    }
+
+    public static class LayoutServiceExtensions
+    {
+        /// <summary>
+        /// Registers a form with the service.
+        /// </summary>
+        /// <param name="key">The key identifying the form class.</param>
+        /// <param name="form">The form instance.</param>
+        public static void RegisterForm(this ILayoutService service, string key, Form form) =>
+            service.RegisterForm(key, form, null);
     }
 }
