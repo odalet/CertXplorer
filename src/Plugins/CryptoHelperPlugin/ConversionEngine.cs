@@ -28,7 +28,7 @@ namespace CryptoHelperPlugin
             }
             catch (Exception ex)
             {
-                Plugin.LogService.Error(string.Format("Could not open or process file {0}: {1}", filename ?? "<NULL>", ex.Message), ex);
+                Plugin.LogService.Error($"Could not open or process file {filename ?? "<NULL>"}: {ex.Message}", ex);
                 return ex.Message;
             }
         }
@@ -43,63 +43,44 @@ namespace CryptoHelperPlugin
             catch (Exception ex)
             {
                 var fname = filename ?? "<NULL>";
-                Plugin.LogService.Error(string.Format("Could not process or save file {0}: {1}", fname, ex.Message), ex);
-                ErrorBox.Show(string.Format("Could not save data to file", fname));
+                Plugin.LogService.Error($"Could not process or save file {fname}: {ex.Message}", ex);
+                _ = ErrorBox.Show($"Could not save data to file {fname}");
             }
 
         }
 
-        private static byte[] Process(byte[] data, Operation operation)
+        public static byte[] GetBytes(string data, DataFormat format) => format switch
         {
-            switch (operation)
-            {
-                case Operation.Convert:
-                    return data; 
-                case Operation.Sha1:
-                    var prov = new SHA1CryptoServiceProvider();
-                    prov.Initialize();
-                    return prov.ComputeHash(data);
-            }
+            DataFormat.Text => Encoding.UTF8.GetBytes(data),
+            DataFormat.Hexa => HexaConverter.GetBytes(data),
+            DataFormat.Base64 => Convert.FromBase64String(data),
+            DataFormat.UrlEncoded => HttpUtility.UrlDecodeToBytes(data),
+            DataFormat.UrlEncodedBase64 => Convert.FromBase64String(HttpUtility.UrlDecode(data)),
+            _ => new byte[0],
+        };
 
-            return null;
-        }
-
-        public static byte[] GetBytes(string data, DataFormat format)
+        private static byte[] Process(byte[] data, Operation operation) => operation switch
         {
-            switch (format)
-            {
-                case DataFormat.Text:
-                    return Encoding.UTF8.GetBytes(data);
-                case DataFormat.Hexa:
-                    return HexaConverter.GetBytes(data);
-                case DataFormat.Base64:
-                    return Convert.FromBase64String(data);
-                case DataFormat.UrlEncoded:
-                    return HttpUtility.UrlDecodeToBytes(data);
-                case DataFormat.UrlEncodedBase64:
-                    return Convert.FromBase64String(HttpUtility.UrlDecode(data));
-            }
+            Operation.Convert => data,
+            Operation.Sha1 => ComputeSha1(data),
+            _ => new byte[0]
+        };
 
-            return null;
-        }
-
-        private static string GetString(byte[] data, DataFormat format)
+        private static byte[] ComputeSha1(byte[] data)
         {
-            switch (format)
-            {
-                case DataFormat.Text:
-                    return Encoding.UTF8.GetString(data);
-                case DataFormat.Hexa:
-                    return HexaConverter.GetString(data);
-                case DataFormat.Base64:
-                    return Convert.ToBase64String(data);
-                case DataFormat.UrlEncoded:
-                    return HttpUtility.UrlEncode(data);
-                case DataFormat.UrlEncodedBase64:
-                    return HttpUtility.UrlEncode(Convert.ToBase64String(data));
-            }
-
-            return null;
+            var prov = new SHA1CryptoServiceProvider();
+            prov.Initialize();
+            return prov.ComputeHash(data);
         }
+
+        private static string GetString(byte[] data, DataFormat format) => format switch
+        {
+            DataFormat.Text => Encoding.UTF8.GetString(data),
+            DataFormat.Hexa => HexaConverter.GetString(data),
+            DataFormat.Base64 => Convert.ToBase64String(data),
+            DataFormat.UrlEncoded => HttpUtility.UrlEncode(data),
+            DataFormat.UrlEncodedBase64 => HttpUtility.UrlEncode(Convert.ToBase64String(data)),
+            _ => string.Empty,
+        };
     }
 }

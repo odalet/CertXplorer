@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 namespace CryptoHelperPlugin.UI
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Winforms convention")]
     public partial class EncoderControl : UserControl
     {
         public EncoderControl()
@@ -13,39 +15,25 @@ namespace CryptoHelperPlugin.UI
             inputFormatSelector.DataFormat = DataFormat.Base64;
         }
 
-        private void runButton_Click(object sender, EventArgs e)
-        {
-            outbox.Text = ConversionEngine.Run(
-                inbox.Text,
-                inputFormatSelector.DataFormat,
-                outputFormatSelector.DataFormat,
-                operationSelector.Operation);
-        }
+        private void runButton_Click(object sender, EventArgs e) => outbox.Text = ConversionEngine.Run(
+            inbox.Text, inputFormatSelector.DataFormat, outputFormatSelector.DataFormat, operationSelector.Operation);
 
         private void loadButton_Click(object sender, EventArgs e)
         {
-            using (var dialog = new OpenFileDialog())
-            {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                    return;
-                inbox.Text = ConversionEngine.Load(dialog.FileName, inputFormatSelector.DataFormat);
-            }
+            using var dialog = new OpenFileDialog();
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            inbox.Text = ConversionEngine.Load(dialog.FileName, inputFormatSelector.DataFormat);
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            using (var dialog = new SaveFileDialog())
-            {
-                if (dialog.ShowDialog(this) != DialogResult.OK)
-                    return;
+            using var dialog = new SaveFileDialog();
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
 
-                ConversionEngine.Save(outbox.Text, dialog.FileName, outputFormatSelector.DataFormat);
-            }
-        }
-
-        private void optionsButton_Click(object sender, EventArgs e)
-        {
-
+            ConversionEngine.Save(outbox.Text, dialog.FileName, outputFormatSelector.DataFormat);
         }
     }
 }

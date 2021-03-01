@@ -7,26 +7,18 @@ namespace PemPlugin
 {
     internal class PemHandlerPlugin : BaseDataHandlerPlugin
     {
-        private class PemHandler : IDataHandler
+        private sealed class PemHandler : IDataHandler
         {
-            private PemHandlerPlugin plugin = null;
+            private readonly PemHandlerPlugin plugin;
             private byte[] fileContent = null;
-            private string FileName { get; set; }
 
-            public PemHandler(PemHandlerPlugin parent)
-            {
-                if (parent == null) throw new ArgumentNullException("parent");
-                plugin = parent;
-            }
-
-            #region IDataHandler Members
+            public PemHandler(PemHandlerPlugin parent) => plugin = parent ?? throw new ArgumentNullException("parent");
 
             public bool CanHandleFile(string filename)
             {
-                if (!File.Exists(filename)) throw new FileNotFoundException(string.Format(
-                    "File {0} could not be found;", filename));
-                
-                FileName = filename;
+                if (!File.Exists(filename)) throw new FileNotFoundException(
+                    $"File {filename} could not be found", filename);
+
                 fileContent = File.ReadAllBytes(filename);
 
                 return PemDecoder.IsPemData(fileContent);
@@ -50,30 +42,14 @@ namespace PemPlugin
 
                 return new PemData(result);
             }
-
-            #endregion
         }
 
         private static readonly IPluginInfo pluginInfo = new PemHandlerPluginInfo();
 
-        public override IDataHandler CreateHandler()
-        {
-            return new PemHandler(this);
-        }
+        public override IPluginInfo PluginInfo => pluginInfo;
+        protected override Guid PluginId => pluginInfo.Id;
+        protected override string PluginName => pluginInfo.Name;
 
-        public override IPluginInfo PluginInfo
-        {
-            get { return pluginInfo; }
-        }
-
-        protected override Guid PluginId
-        {
-            get { return pluginInfo.Id; }
-        }
-
-        protected override string PluginName
-        {
-            get { return pluginInfo.Name; }
-        }
+        public override IDataHandler CreateHandler() => new PemHandler(this);
     }
 }

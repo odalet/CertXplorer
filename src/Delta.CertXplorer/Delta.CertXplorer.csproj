@@ -58,6 +58,10 @@
     <ProjectReference Include="..\Delta.CertXplorer.Common\Delta.CertXplorer.Common.csproj" />
     <ProjectReference Include="..\Delta.CapiNet\Delta.CapiNet.csproj" />
     <ProjectReference Include="..\Delta.Icao\Delta.Icao.csproj" />
+    <ProjectReference Include="..\plugins\CertToolsPlugin\CertToolsPlugin.csproj" />
+    <ProjectReference Include="..\plugins\CryptoHelperPlugin\CryptoHelperPlugin.csproj" />
+    <ProjectReference Include="..\plugins\PemPlugin\PemPlugin.csproj" />
+    <ProjectReference Include="..\plugins\PluralSightSelfCertPlugin\PluralSightSelfCertPlugin.csproj" />
   </ItemGroup>
   
   <ItemGroup>

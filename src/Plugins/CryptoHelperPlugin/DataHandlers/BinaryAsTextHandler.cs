@@ -5,20 +5,10 @@ using Delta.CertXplorer.Extensibility;
 
 namespace CryptoHelperPlugin.DataHandlers
 {
-    internal class BinaryAsTextHandler : IDataHandler
+    internal sealed class BinaryAsTextHandler : IDataHandler
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        private class DataInfo
-        {
-            public DataInfo(string filename, DataFormat format)
-            {
-                FileName = filename;
-                Format = format;
-            }
-
-            public string FileName { get; private set; }
-            public DataFormat Format { get; private set; }
-        }
+        private sealed record DataInfo(string FileName, DataFormat Format);
 
         private readonly BaseDataHandlerPlugin plugin;
         private readonly DataFormat format;        
@@ -27,8 +17,7 @@ namespace CryptoHelperPlugin.DataHandlers
 
         public BinaryAsTextHandler(BaseDataHandlerPlugin parentPlugin, DataFormat dataFormat)
         {
-            if (parentPlugin == null) throw new ArgumentNullException(nameof(parentPlugin));
-            plugin = parentPlugin;
+            plugin = parentPlugin ?? throw new ArgumentNullException(nameof(parentPlugin));
             format = dataFormat;
         }
 
@@ -52,14 +41,12 @@ namespace CryptoHelperPlugin.DataHandlers
             }
         }
 
-        public IData ProcessFile()
-        {
-            if (decoded == null) throw new InvalidOperationException("Invalid input data: null");            
-            return new SimpleData()
+        public IData ProcessFile() => decoded == null ?
+            throw new InvalidOperationException("Invalid input data: null") :
+            new SimpleData
             {
                 MainData = decoded,
                 AdditionalData = new DataInfo(fileName, format)
             };
-        }
     }
 }

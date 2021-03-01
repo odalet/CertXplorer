@@ -1,14 +1,13 @@
-﻿using System.ComponentModel;
-using System.Collections.Generic;
-
+﻿using System.Collections.Generic;
+using System.ComponentModel;
 using Delta.CapiNet.Pem;
-using Delta.CertXplorer.Extensibility;
 using Delta.CertXplorer.ComponentModel;
+using Delta.CertXplorer.Extensibility;
 
 namespace PemPlugin
 {
     [TypeConverter(typeof(ExpandableObjectConverter))]
-    internal class PemData : IData
+    internal sealed class PemData : IData
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
         private class ComplexPemData
@@ -16,7 +15,7 @@ namespace PemPlugin
             [TypeConverter(typeof(ExpandableObjectConverter))]
             public PemInfo Info { get; internal set; }
                         
-            // TODO: Find a means for PropertyGridEx to automatically apply this when encountering a doictionary
+            // TODO: Find a means for PropertyGridEx to automatically apply this when encountering a dictionary
             // See http://stackoverflow.com/questions/2535647/insert-custom-typeconverter-on-a-property-at-runtime-from-inside-a-custom-uityp
             [TypeConverter(typeof(ReadOnlyDictionaryConverter))]            
             public IDictionary<string, string> AdditionalHeaders { get; internal set; }
@@ -30,18 +29,14 @@ namespace PemPlugin
             if (info.AdditionalHeaders == null || info.AdditionalHeaders.Count == 0)
                 AdditionalData = info;
 
-            var data = new ComplexPemData();
-            data.Info = info;
-            data.AdditionalHeaders = info.AdditionalHeaders;
-            AdditionalData = data;
+            AdditionalData = new ComplexPemData
+            {
+                Info = info,
+                AdditionalHeaders = info.AdditionalHeaders
+            };
         }
 
-        #region IData Members
-
-        public byte[] MainData { get; private set; }
-
-        public object AdditionalData { get; private set; }
-
-        #endregion
+        public byte[] MainData { get; }
+        public object AdditionalData { get; }
     }
 }

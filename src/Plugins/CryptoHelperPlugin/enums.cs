@@ -1,7 +1,11 @@
-﻿using System;
-
-namespace CryptoHelperPlugin
+﻿namespace CryptoHelperPlugin
 {
+    internal enum Operation
+    {
+        Convert,
+        Sha1
+    }
+
     internal enum DataFormat
     {
         Text,

@@ -1,89 +1,45 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-
 using Delta.CertXplorer.Extensibility;
 using Delta.CertXplorer.Extensibility.Logging;
 using Delta.CertXplorer.Extensibility.UI;
 
 namespace CryptoHelperPlugin
 {
-    internal class Plugin : BaseGlobalPlugin
+    internal sealed class Plugin : BaseGlobalPlugin
     {
         private static readonly PluginInfo pluginInfo = new PluginInfo();
 
-        /// <summary>
-        /// Runs this plugin passing it the specified Windows forms parent object.
-        /// </summary>
-        /// <param name="owner">The Windows forms parent object.</param>
-        /// <returns>
-        /// 	<c>true</c> if the execution was successful; otherwise, <c>false</c>.
-        /// </returns>
         public override bool Run(IWin32Window owner)
         {
             try
             {
-                LogService = base.Log;
+                LogService = Log;
 
-                base.Log.Verbose(string.Format("Running {0} plugin.", PluginName));
+                Log.Verbose($"Running {PluginName} plugin.");
                 using (var form = new PluginMainForm())
                 {
                     form.Plugin = this;
-                    form.ShowDialog(owner);
+                    _= form.ShowDialog(owner);
                 }
 
                 return true;
             }
             catch (Exception ex)
             {
-                base.Log.Error(ex);
-                var message = string.Format(
-                    "There was an error while executing plugin {0}:\r\n\r\n{1}", PluginName, ex.Message);
-                ErrorBox.Show(owner, message);
+                Log.Error(ex);
+                _ = ErrorBox.Show(owner,
+                    $"There was an error while executing plugin {PluginName}:\r\n\r\n{ex.Message}");
 
                 return false;
             }
         }
 
-        public static ILogService LogService
-        {
-            get; private set;
-        }
-
-        /// <summary>
-        /// Gets the plugin id.
-        /// </summary>
-        /// <value>The plugin id.</value>
-        protected override Guid PluginId
-        {
-            get { return pluginInfo.Id; }
-        }
-
-        /// <summary>
-        /// Gets the name of the plugin.
-        /// </summary>
-        /// <value>The name of the plugin.</value>
-        protected override string PluginName
-        {
-            get { return pluginInfo.Name; }
-        }
-
-        /// <summary>
-        /// Gets the plugin info.
-        /// </summary>
-        /// <value>The plugin info.</value>
-        public override IPluginInfo PluginInfo
-        {
-            get { return pluginInfo; }
-        }
-
-        /// <summary>
-        /// Gets the icon representing this plugin.
-        /// </summary>
-        /// <value>The icon.</value>
-        public override Image Icon
-        {
-            get { return Properties.Resources.Key16; }
-        }
+        public static ILogService LogService { get; private set; }
+        protected override Guid PluginId => pluginInfo.Id;
+        protected override string PluginName => pluginInfo.Name;
+        public override IPluginInfo PluginInfo => pluginInfo;
+        public override Image Icon => Properties.Resources.Key16;
     }
 }

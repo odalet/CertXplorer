@@ -6,7 +6,7 @@ namespace CryptoHelperPlugin
 {
     internal static class HexaConverter
     {
-        public class Options
+        public sealed class Options
         {
             public bool PrefixWithZeroX { get; set; }
             public bool LowerCase { get; set; }
@@ -14,9 +14,8 @@ namespace CryptoHelperPlugin
         }
 
         private static readonly char[] hexLetters = { 'A', 'B', 'C', 'D', 'E', 'F' };
-        private static readonly Options converterOptions = new Options();
 
-        public static Options ConverterOptions { get { return converterOptions; } }
+        public static Options ConverterOptions { get; } = new Options();
 
         public static string GetString(byte[] data)
         {
@@ -24,9 +23,9 @@ namespace CryptoHelperPlugin
                 return string.Empty;
 
             // Adapted from http://stackoverflow.com/questions/321370/how-can-i-convert-a-hex-string-to-a-byte-array
-            var format = converterOptions.LowerCase ? "x2" : "X2";
+            var format = ConverterOptions.LowerCase ? "x2" : "X2";
             return string.Join(ConverterOptions.Separator,
-                data.Select(b => (converterOptions.PrefixWithZeroX ? "0x" : string.Empty) + b.ToString(format)));
+                data.Select(b => (ConverterOptions.PrefixWithZeroX ? "0x" : string.Empty) + b.ToString(format)));
         }
 
         public static byte[] GetBytes(string data)
@@ -38,7 +37,7 @@ namespace CryptoHelperPlugin
             temp = temp.Replace("0X", string.Empty);
             temp = new string(temp.Where(c => char.IsDigit(c) || hexLetters.Contains(c)).ToArray());
 
-            Plugin.LogService.Debug(string.Format("Original string was transformed to: ", FirstCharacters(temp)));
+            Plugin.LogService.Debug($"Original string was transformed to: {FirstCharacters(temp)}");
 
             return Enumerable.Range(0, temp.Length)
                 .Where(x => x % 2 == 0)
