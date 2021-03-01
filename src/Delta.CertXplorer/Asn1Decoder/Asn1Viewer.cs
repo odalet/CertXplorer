@@ -27,7 +27,7 @@ namespace Delta.CertXplorer.Asn1Decoder
 
             // Defaults
             ParseOctetStrings = false;
-            ParseMode = Asn1ParseMode.Icao;
+            ParseMode = Asn1ParseMode.Standard;
             ShowInvalidTaggedObjects = true;
         }
 

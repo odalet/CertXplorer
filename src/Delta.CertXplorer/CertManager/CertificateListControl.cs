@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Linq;
-using System.Drawing;
-using System.Windows.Forms;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Drawing;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Windows.Forms;
 using Delta.CapiNet;
-
+using Delta.CertXplorer.CertManager.Wrappers;
+using Delta.CertXplorer.Commanding;
+using Delta.CertXplorer.DocumentModel;
+using Delta.CertXplorer.Services;
 using Delta.CertXplorer.UI;
 using Delta.CertXplorer.UI.Actions;
 using Delta.CertXplorer.UI.Theming;
-using Delta.CertXplorer.Services;
-using Delta.CertXplorer.Commanding;
-using Delta.CertXplorer.DocumentModel;
-using Delta.CertXplorer.CertManager.Wrappers;
 
 namespace Delta.CertXplorer.CertManager
 {
     public partial class CertificateListControl : ServicedUserControl, ISelectionSource
     {
-        private const int CERTIFICATE_IMAGE = 0;
-        private const int CERTIFICATE_WITH_PRIVATE_KEY_IMAGE = 1;
-        private const int CRL_IMAGE = 2;
-        private const int CTL_IMAGE = 3;
-
         private object parentObject = null;
         private UIAction defaultAction = null;
 
@@ -37,8 +30,8 @@ namespace Delta.CertXplorer.CertManager
 
             ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
             {
-                if (renderer is ToolStripProfessionalRenderer)
-                    ((ToolStripProfessionalRenderer)renderer).RoundedEdges = false;
+                if (renderer is ToolStripProfessionalRenderer tsp)
+                    tsp.RoundedEdges = false;
                 tstrip.Renderer = renderer;
             });
 
@@ -48,12 +41,17 @@ namespace Delta.CertXplorer.CertManager
             UpdateViewMenu();
         }
 
-        #region ISelectionSource Members
-
         /// <summary>
         /// Occurs when the currently selected object has changed.
         /// </summary>
         public event EventHandler SelectionChanged;
+
+        [DefaultValue(BorderStyle.Fixed3D)]
+        public BorderStyle InnerBorderStyle
+        {
+            get => listView.BorderStyle;
+            set => listView.BorderStyle = value;
+        }
 
         /// <summary>
         /// Gets the currently selected object.
@@ -64,19 +62,6 @@ namespace Delta.CertXplorer.CertManager
         private string CurrentStoreName { get; set; }
 
         private StoreLocation CurrentStoreLocation { get; set; }
-
-        #endregion
-
-        #region Properties
-
-        [DefaultValue(BorderStyle.Fixed3D)]
-        public BorderStyle InnerBorderStyle
-        {
-            get { return listView.BorderStyle; }
-            set { listView.BorderStyle = value; }
-        }
-
-        #endregion
 
         protected override void OnLoad(EventArgs e)
         {
@@ -143,8 +128,6 @@ namespace Delta.CertXplorer.CertManager
             };
         }
 
-        #region View Menu Management
-
         private void InitializeViewMenu()
         {
             tileToolStripMenuItem.Tag = View.Tile;
@@ -153,14 +136,13 @@ namespace Delta.CertXplorer.CertManager
             listToolStripMenuItem.Tag = View.List;
             detailsToolStripMenuItem.Tag = View.Details;
 
-            foreach (ToolStripMenuItem item in viewDropDownButton.DropDownItems)
-                item.Click += (s, e) =>
-                {
-                    var menuItem = (ToolStripMenuItem)s;
-                    listView.View = (View)menuItem.Tag;
-                    listView.HeaderStyle = ColumnHeaderStyle.Clickable;
-                    UpdateViewMenu();
-                };
+            foreach (ToolStripMenuItem item in viewDropDownButton.DropDownItems) item.Click += (s, e) =>
+            {
+                var menuItem = (ToolStripMenuItem)s;
+                listView.View = (View)menuItem.Tag;
+                listView.HeaderStyle = ColumnHeaderStyle.Clickable;
+                UpdateViewMenu();
+            };
 
         }
 
@@ -169,10 +151,6 @@ namespace Delta.CertXplorer.CertManager
             foreach (ToolStripMenuItem item in viewDropDownButton.DropDownItems)
                 item.Checked = listView.View == (View)item.Tag;
         }
-
-        #endregion
-
-        #region Selection Service
 
         private void CreateAndBindToSelectionService()
         {
@@ -208,56 +186,53 @@ namespace Delta.CertXplorer.CertManager
             service.AddSource(this);
         }
 
-        /// <summary>
-        /// Notifies that the current selection has changed.
-        /// </summary>
-        /// <param name="selection">The currently selected object.</param>
         private void NotifySelectionChanged(object selection)
         {
             if (SelectedObject == selection) return;
             SelectedObject = selection;
-            if (SelectionChanged != null) SelectionChanged(this, EventArgs.Empty);
+            SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
-
-        #endregion
-
-        private void ClearList() { listView.Items.Clear(); }
 
         private void FillList(
             IEnumerable<Certificate> certificates,
             IEnumerable<CertificateRevocationList> crls,
             IEnumerable<CertificateTrustList> ctls)
         {
+            const int certificateImageIndex = 0;
+            const int certificateWithPrivateKeyImageIndex = 1;
+            const int crlImageIndex = 2;
+            const int ctlImageIndex = 3;
+
             var items = certificates.Select(certificate =>
-            {
-                var item = new ListViewItem(FormatDN(certificate.SubjectName));
+                {
+                    var item = new ListViewItem(FormatDN(certificate.SubjectName));
                 // TODO: don't use X509Certificate class, but the Certificate wrapper 
                 // (and replace "new Certificate(certificate).IsValid" by "certificate.IsValid"
                 if (!certificate.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = certificate.HasPrivateKey ? CERTIFICATE_WITH_PRIVATE_KEY_IMAGE : CERTIFICATE_IMAGE;
-                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
-                {
+                    item.ImageIndex = certificate.HasPrivateKey ? certificateWithPrivateKeyImageIndex : certificateImageIndex;
+                    item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
+                    {
                     new ListViewItem.ListViewSubItem(item, FormatDN(certificate.IssuerName)),
                     new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotBefore)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotAfter)),                        
+                    new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotAfter)),
                     new ListViewItem.ListViewSubItem(item, certificate.FriendlyName)
-                });
-                item.Tag = certificate;
+                    });
+                    item.Tag = certificate;
 
-                return item;
-            });
+                    return item;
+                });
 
             var crlItems = crls.Select(crl =>
             {
                 var item = new ListViewItem("Revocation List");
                 if (!crl.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = CRL_IMAGE;
+                item.ImageIndex = crlImageIndex;
                 item.SubItems.AddRange(
                     new ListViewItem.ListViewSubItem[]
                     {
-                        new ListViewItem.ListViewSubItem(item, FormatDN(crl.IssuerName)),       
+                        new ListViewItem.ListViewSubItem(item, FormatDN(crl.IssuerName)),
                         new ListViewItem.ListViewSubItem(item, FormatDate(crl.PublicationDate)),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(crl.NextUpdate)),                        
+                        new ListViewItem.ListViewSubItem(item, FormatDate(crl.NextUpdate)),
                         new ListViewItem.ListViewSubItem(item, crl.FriendlyName)
                     });
                 item.Tag = crl;
@@ -269,13 +244,13 @@ namespace Delta.CertXplorer.CertManager
             {
                 var item = new ListViewItem("Trust List");
                 if (!ctl.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = CTL_IMAGE;
+                item.ImageIndex = ctlImageIndex;
                 item.SubItems.AddRange(
                     new ListViewItem.ListViewSubItem[]
                     {
-                        new ListViewItem.ListViewSubItem(item, string.Empty),       
+                        new ListViewItem.ListViewSubItem(item, string.Empty),
                         new ListViewItem.ListViewSubItem(item, FormatDate(ctl.PublicationDate)),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(ctl.NextUpdate)),                        
+                        new ListViewItem.ListViewSubItem(item, FormatDate(ctl.NextUpdate)),
                         new ListViewItem.ListViewSubItem(item, ctl.FriendlyName)
                     });
                 item.Tag = ctl;
@@ -285,42 +260,36 @@ namespace Delta.CertXplorer.CertManager
 
             listView.Items.Clear();
 
-            foreach (var item in items) listView.Items.Add(item);
-            foreach (var item in crlItems) listView.Items.Add(item);
-            foreach (var item in ctlItems) listView.Items.Add(item);
+            foreach (var item in items) _ = listView.Items.Add(item);
+            foreach (var item in crlItems) _ = listView.Items.Add(item);
+            foreach (var item in ctlItems) _ = listView.Items.Add(item);
         }
 
         private Certificate GetSelectedCertificate()
         {
             if (listView.SelectedItems.Count == 0) return null;
-            else
-            {
-                var tag = listView.SelectedItems[0].Tag;
-                if (tag is Certificate) return (Certificate)tag;
-                else return null;
-            }
+
+            var tag = listView.SelectedItems[0].Tag;
+            if (tag is Certificate certificate) return certificate;
+            return null;
         }
 
         private CertificateRevocationList GetSelectedCrl()
         {
             if (listView.SelectedItems.Count == 0) return null;
-            else
-            {
-                var tag = listView.SelectedItems[0].Tag;
-                if (tag is CertificateRevocationList) return (CertificateRevocationList)tag;
-                else return null;
-            }
+
+            var tag = listView.SelectedItems[0].Tag;
+            if (tag is CertificateRevocationList crl) return crl;
+            return null;
         }
 
         private CertificateTrustList GetSelectedCtl()
         {
             if (listView.SelectedItems.Count == 0) return null;
-            else
-            {
-                var tag = listView.SelectedItems[0].Tag;
-                if (tag is CertificateTrustList) return (CertificateTrustList)tag;
-                else return null;
-            }
+
+            var tag = listView.SelectedItems[0].Tag;
+            if (tag is CertificateTrustList ctl) return ctl;
+            return null;
         }
 
         private string FormatDN(X500DistinguishedName dn)
@@ -336,349 +305,6 @@ namespace Delta.CertXplorer.CertManager
 
         private string FormatDate(DateTime date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
 
-        private string FormatDate(DateTimeOffset date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
+        private string FormatDate(DateTimeOffset date) => date == DateTimeOffset.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

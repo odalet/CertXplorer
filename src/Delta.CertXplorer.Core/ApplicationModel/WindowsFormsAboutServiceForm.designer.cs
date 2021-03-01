@@ -49,9 +49,9 @@
             this.tpDetails = new System.Windows.Forms.TabPage();
             this.lineControl1 = new Delta.CertXplorer.UI.LineControl();
             this.lvModules = new Delta.CertXplorer.UI.ListViewEx(this.components);
-            this.chName = new System.Windows.Forms.ColumnHeader();
-            this.chVersion = new System.Windows.Forms.ColumnHeader();
-            this.chPath = new System.Windows.Forms.ColumnHeader();
+            this.chName = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chVersion = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.chPath = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tpCredits = new System.Windows.Forms.TabPage();
             this.tbCredits = new System.Windows.Forms.TextBox();
             this.tpHistory = new System.Windows.Forms.TabPage();
@@ -203,11 +203,10 @@
             this.chVersion,
             this.chPath});
             this.lvModules.ControlPadding = new System.Windows.Forms.Padding(4);
+            this.lvModules.FullRowSelect = true;
             this.lvModules.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.lvModules.HideSelection = false;
             this.lvModules.Name = "lvModules";
-            this.lvModules.OwnerDraw = true;
-            this.lvModules.RowHeight = 16;
             this.lvModules.SortColumnOnClick = false;
             this.lvModules.UseCompatibleStateImageBehavior = false;
             this.lvModules.View = System.Windows.Forms.View.Details;

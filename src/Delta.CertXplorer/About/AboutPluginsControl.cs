@@ -27,7 +27,15 @@ namespace Delta.CertXplorer.About
         public AboutPluginsControl()
         {
             InitializeComponent();
-            InitializeListHeader();
+            pluginsListView.Columns.AddRange(new ColumnHeader[]
+            {
+                new ColumnHeader() { Text = string.Empty, Width = 25 },
+                new ColumnHeader() { Text = "Name", Width = 130 },
+                new ColumnHeader() { Text = "Version", Width = 50 },
+                new ColumnHeader() { Text = "Description", Width = 300 },
+                new ColumnHeader() { Text = "Author", Width = 80 },
+                new ColumnHeader() { Text = "Company", Width = 70 }
+            });
         }
 
         /// <summary>
@@ -41,22 +49,6 @@ namespace Delta.CertXplorer.About
         }
 
         /// <summary>
-        /// Initializes the list header.
-        /// </summary>
-        private void InitializeListHeader()
-        {
-            pluginsListView.Columns.AddRange(new ColumnHeader[] 
-            {
-                new ColumnHeader() { Text = string.Empty, Width = 25 },
-                new ColumnHeader() { Text = "Name", Width = 130 },
-                new ColumnHeader() { Text = "Version", Width = 50 },
-                new ColumnHeader() { Text = "Description", Width = 300 },
-                new ColumnHeader() { Text = "Author", Width = 80 },
-                new ColumnHeader() { Text = "Company", Width = 70 }
-            });
-        }
-
-        /// <summary>
         /// Fills the list.
         /// </summary>
         private void FillList()
@@ -67,19 +59,15 @@ namespace Delta.CertXplorer.About
                 var icon = p.GetIcon();
                 pluginIcons.Images.Add(key, icon);
 
-                var item = new ListViewItem();
-                item.ImageKey = key;
-                if (p.PluginInfo != null)
+                var item = new ListViewItem { ImageKey = key };
+                if (p.PluginInfo != null) item.SubItems.AddRange(new[]
                 {
-                    item.SubItems.AddRange(new string[]
-                    {
-                        p.PluginInfo.Name,
-                        p.PluginInfo.Version,
-                        p.PluginInfo.Description,
-                        p.PluginInfo.Author,
-                        p.PluginInfo.Company
-                    });
-                }
+                    p.PluginInfo.Name,
+                    p.PluginInfo.Version,
+                    p.PluginInfo.Description,
+                    p.PluginInfo.Author,
+                    p.PluginInfo.Company
+                });
 
                 item.Tag = new PluginTag(p.PluginInfo, icon);
                 return item;
@@ -88,10 +76,7 @@ namespace Delta.CertXplorer.About
             pluginsListView.Items.AddRange(items.ToArray());
         }
 
-        private void pluginsListView_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            toolTip.SetToolTip(pluginsListView,
-                "Current plugin: ");
-        }
+        private void pluginsListView_SelectedIndexChanged(object sender, EventArgs e) => 
+            toolTip.SetToolTip(pluginsListView, "Current plugin: ");
     }
 }

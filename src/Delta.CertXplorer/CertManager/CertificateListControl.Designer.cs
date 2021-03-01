@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CertificateListControl));
-            this.listView = new System.Windows.Forms.ListView();
+            this.listView = new Delta.CertXplorer.UI.ListViewEx();
             this.chSubject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chIssuer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -224,7 +224,7 @@
 
         #endregion
 
-        private System.Windows.Forms.ListView listView;
+        private Delta.CertXplorer.UI.ListViewEx listView;
         private System.Windows.Forms.ColumnHeader chSubject;
         private System.Windows.Forms.ColumnHeader chIssuer;
         private System.Windows.Forms.ImageList smallImages;

@@ -112,19 +112,19 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="logoPictureBox.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>
   </data>
   <data name="logoPictureBox.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="logoPictureBox.Location" type="System.Drawing.Point, System.Drawing">
     <value>3, 3</value>
   </data>
@@ -134,7 +134,7 @@
   <data name="logoPictureBox.SizeMode" type="System.Windows.Forms.PictureBoxSizeMode, System.Windows.Forms">
     <value>Zoom</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="logoPictureBox.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
   </data>
@@ -142,7 +142,7 @@
     <value>logoPictureBox</value>
   </data>
   <data name="&gt;&gt;logoPictureBox.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;logoPictureBox.Parent" xml:space="preserve">
     <value>$this</value>
@@ -175,7 +175,7 @@
     <value>okButton</value>
   </data>
   <data name="&gt;&gt;okButton.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;okButton.Parent" xml:space="preserve">
     <value>$this</value>
@@ -199,7 +199,7 @@
     <value>pcsLinks</value>
   </data>
   <data name="&gt;&gt;pcsLinks.Type" xml:space="preserve">
-    <value>Delta.CertXplorer.UI.PrintCopySaveLinks, Delta.CertXplorerLite, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Delta.CertXplorer.UI.PrintCopySaveLinks, Delta.CertXplorer.Core, Version=2.4.17.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;pcsLinks.Parent" xml:space="preserve">
     <value>$this</value>
@@ -235,7 +235,7 @@
     <value>textBoxDescription</value>
   </data>
   <data name="&gt;&gt;textBoxDescription.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;textBoxDescription.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -274,7 +274,7 @@
     <value>label5</value>
   </data>
   <data name="&gt;&gt;label5.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label5.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -310,7 +310,7 @@
     <value>label7</value>
   </data>
   <data name="&gt;&gt;label7.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label7.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -346,7 +346,7 @@
     <value>label4</value>
   </data>
   <data name="&gt;&gt;label4.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label4.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -379,7 +379,7 @@
     <value>labelApplication</value>
   </data>
   <data name="&gt;&gt;labelApplication.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelApplication.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -415,7 +415,7 @@
     <value>label3</value>
   </data>
   <data name="&gt;&gt;label3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label3.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -448,7 +448,7 @@
     <value>labelProductName</value>
   </data>
   <data name="&gt;&gt;labelProductName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelProductName.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -484,7 +484,7 @@
     <value>label2</value>
   </data>
   <data name="&gt;&gt;label2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label2.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -517,7 +517,7 @@
     <value>labelCompanyName</value>
   </data>
   <data name="&gt;&gt;labelCompanyName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelCompanyName.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -553,7 +553,7 @@
     <value>label1</value>
   </data>
   <data name="&gt;&gt;label1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;label1.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -586,7 +586,7 @@
     <value>labelVersion</value>
   </data>
   <data name="&gt;&gt;labelVersion.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelVersion.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -619,7 +619,7 @@
     <value>labelCopyright</value>
   </data>
   <data name="&gt;&gt;labelCopyright.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;labelCopyright.Parent" xml:space="preserve">
     <value>tpAbout</value>
@@ -646,7 +646,7 @@
     <value>tpAbout</value>
   </data>
   <data name="&gt;&gt;tpAbout.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tpAbout.Parent" xml:space="preserve">
     <value>Tabs</value>
@@ -673,7 +673,7 @@
     <value>lineControl1</value>
   </data>
   <data name="&gt;&gt;lineControl1.Type" xml:space="preserve">
-    <value>Delta.CertXplorer.UI.LineControl, Delta.CertXplorerLite, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Delta.CertXplorer.UI.LineControl, Delta.CertXplorer.Core, Version=2.4.17.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;lineControl1.Parent" xml:space="preserve">
     <value>tpDetails</value>
@@ -712,7 +712,7 @@
     <value>lvModules</value>
   </data>
   <data name="&gt;&gt;lvModules.Type" xml:space="preserve">
-    <value>Delta.CertXplorer.UI.ListViewEx, Delta.CertXplorerLite, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Delta.CertXplorer.UI.ListViewEx, Delta.CertXplorer.Core, Version=2.4.17.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;lvModules.Parent" xml:space="preserve">
     <value>tpDetails</value>
@@ -727,7 +727,7 @@
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tpDetails.Size" type="System.Drawing.Size, System.Drawing">
-    <value>672, 123</value>
+    <value>664, 123</value>
   </data>
   <data name="tpDetails.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -739,7 +739,7 @@
     <value>tpDetails</value>
   </data>
   <data name="&gt;&gt;tpDetails.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tpDetails.Parent" xml:space="preserve">
     <value>Tabs</value>
@@ -763,7 +763,7 @@
     <value>Both</value>
   </data>
   <data name="tbCredits.Size" type="System.Drawing.Size, System.Drawing">
-    <value>666, 117</value>
+    <value>658, 117</value>
   </data>
   <data name="tbCredits.TabIndex" type="System.Int32, mscorlib">
     <value>24</value>
@@ -772,7 +772,7 @@
     <value>tbCredits</value>
   </data>
   <data name="&gt;&gt;tbCredits.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tbCredits.Parent" xml:space="preserve">
     <value>tpCredits</value>
@@ -787,7 +787,7 @@
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tpCredits.Size" type="System.Drawing.Size, System.Drawing">
-    <value>672, 123</value>
+    <value>664, 123</value>
   </data>
   <data name="tpCredits.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -799,7 +799,7 @@
     <value>tpCredits</value>
   </data>
   <data name="&gt;&gt;tpCredits.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tpCredits.Parent" xml:space="preserve">
     <value>Tabs</value>
@@ -823,7 +823,7 @@
     <value>Both</value>
   </data>
   <data name="tbHistory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>666, 117</value>
+    <value>658, 117</value>
   </data>
   <data name="tbHistory.TabIndex" type="System.Int32, mscorlib">
     <value>25</value>
@@ -832,7 +832,7 @@
     <value>tbHistory</value>
   </data>
   <data name="&gt;&gt;tbHistory.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TextBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tbHistory.Parent" xml:space="preserve">
     <value>tpHistory</value>
@@ -847,7 +847,7 @@
     <value>3, 3, 3, 3</value>
   </data>
   <data name="tpHistory.Size" type="System.Drawing.Size, System.Drawing">
-    <value>672, 123</value>
+    <value>664, 123</value>
   </data>
   <data name="tpHistory.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -859,7 +859,7 @@
     <value>tpHistory</value>
   </data>
   <data name="&gt;&gt;tpHistory.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;tpHistory.Parent" xml:space="preserve">
     <value>Tabs</value>
@@ -880,7 +880,7 @@
     <value>Tabs</value>
   </data>
   <data name="&gt;&gt;Tabs.Type" xml:space="preserve">
-    <value>Delta.CertXplorer.UI.CommunityTabControl, Delta.CertXplorerLite, Version=2.1.0.0, Culture=neutral, PublicKeyToken=null</value>
+    <value>Delta.CertXplorer.UI.CommunityTabControl, Delta.CertXplorer.Core, Version=2.4.17.0, Culture=neutral, PublicKeyToken=null</value>
   </data>
   <data name="&gt;&gt;Tabs.Parent" xml:space="preserve">
     <value>$this</value>
@@ -888,7 +888,7 @@
   <data name="&gt;&gt;Tabs.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
@@ -916,24 +916,24 @@
     <value>chName</value>
   </data>
   <data name="&gt;&gt;chName.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;chVersion.Name" xml:space="preserve">
     <value>chVersion</value>
   </data>
   <data name="&gt;&gt;chVersion.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;chPath.Name" xml:space="preserve">
     <value>chPath</value>
   </data>
   <data name="&gt;&gt;chPath.Type" xml:space="preserve">
-    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.ColumnHeader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;$this.Name" xml:space="preserve">
     <value>WindowsFormsAboutServiceForm</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

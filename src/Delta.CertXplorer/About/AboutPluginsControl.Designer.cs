@@ -50,10 +50,10 @@
             // 
             this.pluginsListView.ControlPadding = new System.Windows.Forms.Padding(4);
             this.pluginsListView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pluginsListView.FullRowSelect = true;
+            this.pluginsListView.HideSelection = false;
             this.pluginsListView.Location = new System.Drawing.Point(0, 0);
             this.pluginsListView.Name = "pluginsListView";
-            this.pluginsListView.OwnerDraw = true;
-            this.pluginsListView.RowHeight = 16;
             this.pluginsListView.Size = new System.Drawing.Size(286, 96);
             this.pluginsListView.SmallImageList = this.pluginIcons;
             this.pluginsListView.TabIndex = 0;

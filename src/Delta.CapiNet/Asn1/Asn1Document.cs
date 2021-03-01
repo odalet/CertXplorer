@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Delta.CapiNet.Asn1
 {
     public class Asn1Document
     {
-        private const byte tagMask = 0x1F;
-        private const byte classMask = 0xC0;
-
         public Asn1Document(byte[] data, bool parseOctetStrings, bool showInvalidTaggedObjects) :
             this(data, parseOctetStrings, showInvalidTaggedObjects, null) { }
 
@@ -20,7 +16,7 @@ namespace Delta.CapiNet.Asn1
 
             ObjectFactory = objectFactory ?? new Asn1ObjectFactory();
 
-            var taggedObjects = CreateTaggedObjects(data);
+            var taggedObjects = TaggedObject.CreateObjects(data, 0, data.Length);
             if (taggedObjects != null && taggedObjects.Length > 0)
             {
                 var objects = new List<Asn1Object>();
@@ -36,47 +32,13 @@ namespace Delta.CapiNet.Asn1
             else Nodes = new Asn1Object[0];
         }
 
-        internal Asn1ObjectFactory ObjectFactory
-        {
-            get; private set;
-        }
+        public byte[] Data { get; }
+        public Asn1Object[] Nodes { get; }
+        public bool ParseOctetStrings { get; }
+        public bool ShowInvalidTaggedObjects { get; }        
+        internal Asn1ObjectFactory ObjectFactory { get; }
 
-        public byte[] Data
-        {
-            get;
-            private set;
-        }
-
-        public bool ParseOctetStrings
-        {
-            get;
-            private set;
-        }
-
-        public bool ShowInvalidTaggedObjects
-        {
-            get;
-            private set;
-        }
-
-        public Asn1Object[] Nodes
-        {
-            get;
-            protected set;
-        }
-
-        public Asn1Object CreateAsn1Object(Asn1Document document,  TaggedObject content,  Asn1Object parent)
-        {
-            return ObjectFactory.CreateAsn1Object(document, content, parent);
-        }
-
-        #region Helpers
-
-        private static TaggedObject[] CreateTaggedObjects(byte[] data)
-        {
-            return TaggedObject.CreateObjects(data, 0, data.Length);
-        }
-
-        #endregion
+        public Asn1Object CreateAsn1Object(Asn1Document document, TaggedObject content, Asn1Object parent) => 
+            ObjectFactory.CreateAsn1Object(document, content, parent);
     }
 }

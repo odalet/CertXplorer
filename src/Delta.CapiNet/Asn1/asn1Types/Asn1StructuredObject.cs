@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Delta.CapiNet.Asn1
 {
     public abstract class Asn1StructuredObject : Asn1Object
     {
-        public Asn1StructuredObject(Asn1Document document, TaggedObject content, Asn1Object parentObject)
-            : base(document, content, parentObject) 
-        {
-            ParseContent();
-        }
+        protected Asn1StructuredObject(Asn1Document document, TaggedObject content, Asn1Object parentObject)
+            : base(document, content, parentObject) => ParseContent();
 
         public Asn1Object[] Nodes
         {
@@ -17,17 +13,15 @@ namespace Delta.CapiNet.Asn1
             protected set;
         }
 
-        protected virtual Asn1ObjectFactory ObjectFactory
-        {
-            get { return base.Document.ObjectFactory; }
-        }
+        protected virtual Asn1ObjectFactory ObjectFactory => Document.ObjectFactory;
 
         protected virtual void ParseContent()
         {
             var taggedObjects = TaggedObject.CreateObjects(
-                base.TaggedObject.AllData, 
-                base.TaggedObject.WorkloadOffset, 
-                base.TaggedObject.WorkloadLength);
+                TaggedObject.AllData,
+                TaggedObject.WorkloadOffset,
+                TaggedObject.WorkloadLength);
+
             if (taggedObjects != null && taggedObjects.Length > 0)
             {
                 var objects = new List<Asn1Object>();

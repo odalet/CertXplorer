@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Drawing;
 using System.Windows.Forms;
-
-using Delta.CertXplorer;
 using Delta.CertXplorer.ApplicationModel;
 
 namespace Delta.CertXplorer.About
@@ -16,7 +13,7 @@ namespace Delta.CertXplorer.About
         {
             InitializeComponent();
 
-            base.Text = "About " + Program.ApplicationName;
+            Text = "About " + Program.ApplicationName;
 
             var service = This.GetService<ILayoutService>();
             if (service != null) service.RegisterForm("Delta.CertXplorer.About", this);
@@ -31,20 +28,12 @@ namespace Delta.CertXplorer.About
             base.OnLoad(e);
 
             var page = new TabPage("Plugins");
-            page.Controls.Add(CreatePluginsPage());
+            page.Controls.Add(new AboutPluginsControl
+            {
+                Dock = DockStyle.Fill
+            });
 
-            base.Tabs.TabPages.Add(page);
-        }
-
-        /// <summary>
-        /// Creates the plugins page.
-        /// </summary>
-        /// <returns>A windows forms control.</returns>
-        private Control CreatePluginsPage()     
-        {
-            var control = new AboutPluginsControl();
-            control.Dock = DockStyle.Fill;
-            return control;
+            Tabs.TabPages.Add(page);
         }
     }
 }
