@@ -1,5 +1,4 @@
-﻿
-namespace Delta.CertXplorer.Commanding
+﻿namespace Delta.CertXplorer.Commanding
 {
     /// <summary>
     /// Represents a UI verb.

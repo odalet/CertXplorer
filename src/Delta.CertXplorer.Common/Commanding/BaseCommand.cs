@@ -11,17 +11,12 @@ namespace Delta.CertXplorer.Commanding
         /// Gets this command's name.
         /// </summary>
         /// <value>The command name.</value>
-        public virtual string Name
-        {
-            get { return GetType().ToString(); }
-        }
+        public virtual string Name => GetType().ToString();
 
         /// <summary>
         /// Gets the verb this command was invoked with.
         /// </summary>
         protected IVerb Verb { get; private set; }
-
-        #region ICommand Members
 
         /// <summary>
         /// Runs the command with the specified arguments.
@@ -32,19 +27,16 @@ namespace Delta.CertXplorer.Commanding
         {
             Verb = verb ?? NullVerb.Instance;
 
-            var targetAsString = string.Empty;
-            if (arguments == null || arguments.Length == 0)
-                targetAsString = "NO TARGET";
-            else
+            var targetAsString = "NO TARGET";
+            if (arguments != null && arguments.Length == 0)
                 targetAsString = arguments[0] == null ? "NULL" : arguments[0].ToString();
 
-            if (arguments != null && arguments.Length > 1) This.Logger.Verbose(string.Format(
-                "Command [{0}] invoked on target [{1}] with verb [{2}]; additional arguments count={3}.", Name, targetAsString, verb.Name, arguments.Length - 1));
-            else This.Logger.Verbose(string.Format(
-                "Command [{0}] invoked on target [{1}] with verb [{2}].", Name, targetAsString, verb.Name));
-        }
+            var message = $"Command [{Name}] invoked on target [{targetAsString}] with verb [{Verb.Name}]";
+            if (arguments != null && arguments.Length > 1)
+                message += $"; additional arguments count={arguments.Length - 1}";
 
-        #endregion
+            This.Logger.Verbose(message);
+        }
     }
 
     /// <summary>
@@ -53,21 +45,18 @@ namespace Delta.CertXplorer.Commanding
     /// <typeparam name="T">Type of the target object of the command.</typeparam>
     public abstract class BaseCommand<T> : BaseCommand
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="BaseCommand&lt;T&gt;"/> class.
-        /// </summary>
-        public BaseCommand() { }
+        protected BaseCommand() { }
 
         /// <summary>
         /// Gets the target of the command (this is the 1st argument in the list passed to the Run method).
         /// </summary>
         protected T Target { get; private set; }
-                
+
         /// <summary>
         /// Gets all the arguments passed to this command (including the target as the first argument).
         /// </summary>
         protected object[] Arguments { get; private set; }
-        
+
         /// <summary>
         /// Runs the command with the specified arguments.
         /// </summary>
@@ -94,11 +83,11 @@ namespace Delta.CertXplorer.Commanding
             var targetObject = arguments[0];
             if (targetObject == null) return;
 
-            if (!(targetObject is T)) throw new ApplicationException(string.Format(
-                "Invalid argument type ({0}) was provided to command [{1}].", targetObject.GetType(), Name));
+            if (!(targetObject is T)) throw new ApplicationException(
+                $"Invalid argument type ({targetObject.GetType()}) was provided to command [{Name}].");
 
-            Arguments = arguments ?? new object[0];
-            Target = (T)target;
+            Arguments = arguments;
+            Target = target;
         }
     }
 }

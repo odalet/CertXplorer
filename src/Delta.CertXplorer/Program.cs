@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
-using System.Xml;
 using Delta.CapiNet.Logging;
 using Delta.CertXplorer.About;
 using Delta.CertXplorer.ApplicationModel;
@@ -61,16 +60,14 @@ namespace Delta.CertXplorer
             Globals.ApplicationSettingsFileName = ResolveConfigFile(Properties.Settings.Default.AppSettingsFileName);
             Globals.LayoutSettingsFileName = ResolveConfigFile(Properties.Settings.Default.LayoutSettingsFileName);
             Globals.LoggingSettingsFileName = ResolveConfigFile(Properties.Settings.Default.LoggingSettingsFileName);
-            
-            var instance = new Program()
+
+            new Program
             {
                 IsSingleInstance = false,
                 ApplicationSettingsFileName = Globals.ApplicationSettingsFileName,
                 LayoutSettingsFileName = Globals.LayoutSettingsFileName,
                 LoggingSettingsFileName = Globals.LoggingSettingsFileName
-            };
-
-            instance.Run(arguments);
+            }.Run(arguments);
         }
 
         protected override void AddOtherServices()
@@ -90,10 +87,6 @@ namespace Delta.CertXplorer
             return logService;
         }
 
-        /// <summary>
-        /// Creates the main form.
-        /// </summary>
-        /// <returns></returns>
         protected override Form CreateMainForm()
         {
             var chrome = new Chrome();
@@ -108,28 +101,15 @@ namespace Delta.CertXplorer
                     themingService.ApplyTheme(themeId);
             }
 
-            This.AddService<IDocumentManagerService>(
-                DocumentFactory.CreateDocumentManagerService(chrome));
+            This.AddService(DocumentFactory.CreateDocumentManagerService(chrome));
 
             // Load document builders & view builders
-            LoadBuilders();
-
-            // Now tell the form what files it should open when launched.            
-            if (base.CommandLineArguments != null && base.CommandLineArguments.Length > 0)
-                chrome.FilesToOpenAtStartup.AddRange(base.CommandLineArguments); 
-
-            return chrome;
-        }
-
-        private void LoadBuilders()
-        {
             var registry = This.GetService<IDocumentHandlerRegistryService>(true);
             registry.Register(() => new Asn1DocumentHandler());
             This.Logger.Verbose("Registered ASN.1 Document Handler");
 
-            foreach (var p in Globals.PluginsManager.DataHandlerPlugins)
+            foreach (var plugin in Globals.PluginsManager.DataHandlerPlugins)
             {
-                var plugin = p;
                 if (!Globals.PluginsManager.Initialize(plugin))
                 {
                     This.Logger.Error("Plugin initialization failed. Disabling it.");
@@ -138,14 +118,16 @@ namespace Delta.CertXplorer
 
                 var documentHandler = new PluginBasedDocumentHandler(plugin);
                 registry.RegisterHandlerPlugin(documentHandler);
-                This.Logger.Verbose(string.Format("Registered {0} Document Handler", p.PluginInfo.Name));
+                This.Logger.Verbose(string.Format("Registered {0} Document Handler", plugin.PluginInfo.Name));
             }
+
+            // Now tell the form what files it should open when launched.            
+            if (CommandLineArguments != null && CommandLineArguments.Length > 0)
+                chrome.FilesToOpenAtStartup.AddRange(CommandLineArguments); 
+
+            return chrome;
         }
 
-        /// <summary>
-        /// Called before the main form is created.
-        /// </summary>
-        /// <returns><c>true</c> if the application should continue loading; otherwise, <c>false</c>.</returns>
         protected override bool OnBeforeCreateMainForm()
         {
             // We plug the mef composition here.
@@ -166,7 +148,7 @@ namespace Delta.CertXplorer
             if (store == null || !store.ContainsKey("culture")) return;
             var cultureName = store["culture"];
             if (!string.IsNullOrEmpty(cultureName))
-                base.ApplicationCulture = cultureName;
+                ApplicationCulture = cultureName;
         }
 
         private static string ResolveConfigFile(string file, bool forceFileInitialization = false)
@@ -180,7 +162,7 @@ namespace Delta.CertXplorer
             if (!File.Exists(userFile) || forceFileInitialization)
             {
                 // Let's see if we don't have a template file in our resources
-                var bytes = ConfigResources.GetResource(filename);
+                var bytes = ConfigResources.Read(filename);
                 if (bytes != null && bytes.Length > 0) 
                     File.WriteAllBytes(userFile, bytes);
             }

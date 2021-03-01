@@ -6,43 +6,27 @@ namespace Delta.CertXplorer.Config
 {
     internal static class ConfigResources 
     {
-        private static string prefix = null;
-
-        public static bool Contains(string name)
+        static ConfigResources()
         {
-            var resourceName = Prefix + name;
-            var assembly = Assembly.GetExecutingAssembly();
-            return assembly.GetManifestResourceNames().Contains(resourceName);
+            // This extracts this namespace + "." -> Delta.CertXplorer.Config.
+            var type = typeof(ConfigResources);
+            var full = type.FullName;
+            Prefix = full.Substring(0, full.Length - type.Name.Length);
         }
 
-        public static byte[] GetResource(string name)
+        private static string Prefix { get; }
+
+        public static byte[] Read(string name)
         {
             var resourceName = Prefix + name;
             var assembly = Assembly.GetExecutingAssembly();
             if (!assembly.GetManifestResourceNames().Contains(resourceName))
                 return null;
 
-            using (var mstream = new MemoryStream())
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                stream.CopyTo(mstream);
-                return mstream.ToArray();
-            }
-        }
-
-        private static string Prefix
-        {
-            get
-            {
-                if (prefix == null)
-                {
-                    var type = typeof(ConfigResources);
-                    var full = type.FullName;
-                    prefix = full.Substring(0, full.Length - type.Name.Length);
-                }
-
-                return prefix;
-            }
+            using var mstream = new MemoryStream();
+            using var stream = assembly.GetManifestResourceStream(resourceName);
+            stream.CopyTo(mstream);
+            return mstream.ToArray();
         }
     }
 }

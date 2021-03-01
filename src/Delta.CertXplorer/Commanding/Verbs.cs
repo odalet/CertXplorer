@@ -1,5 +1,4 @@
-﻿
-namespace Delta.CertXplorer.Commanding
+﻿namespace Delta.CertXplorer.Commanding
 {
     internal static class Verbs
     {
@@ -9,22 +8,22 @@ namespace Delta.CertXplorer.Commanding
         public static readonly IVerb CloseDocument = new CloseDocumentVerb();
     }
 
-    internal class OpenExistingDocumentVerb : BaseVerb
+    internal sealed class OpenExistingDocumentVerb : BaseVerb
     {
         public OpenExistingDocumentVerb() : base("OPEN_EXISTING_DOCUMENT") { }
     }
 
-    internal class OpenFileVerb : BaseVerb
+    internal sealed class OpenFileVerb : BaseVerb
     {
         public OpenFileVerb() : base("OPEN_FILE") { }
     }
 
-    internal class OpenCertificateVerb : BaseVerb
+    internal sealed class OpenCertificateVerb : BaseVerb
     {
         public OpenCertificateVerb() : base("OPEN_CERTIFICATE") { }
     }
 
-    internal class CloseDocumentVerb : BaseVerb
+    internal sealed class CloseDocumentVerb : BaseVerb
     {
         public CloseDocumentVerb() : base("CLOSE_DOCUMENT") { }
     }

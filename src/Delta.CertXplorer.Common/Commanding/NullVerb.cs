@@ -1,5 +1,4 @@
-﻿
-namespace Delta.CertXplorer.Commanding
+﻿namespace Delta.CertXplorer.Commanding
 {
     /// <summary>
     /// A verb with a NULL action.
