@@ -22,7 +22,7 @@ namespace Delta.CertXplorer.UI.Theming
     /// <summary>
     /// Provide Office 2007 Blue Theme colors
     /// </summary>
-    public class Office2007ColorTable : ProfessionalColorTable
+    internal sealed class Office2007ColorTable : ProfessionalColorTable
     {
         private static Color contextMenuBack;
         private static Color buttonPressedBegin;
@@ -52,8 +52,6 @@ namespace Delta.CertXplorer.UI.Theming
         private static Color toolStripEnd;
         private static Color toolStripMiddle;
         private static Color buttonBorder;
-
-        #region Static Fixed Colors - Blue Color Scheme
 
         private static void InitializeBlueColorScheme()
         {
@@ -87,8 +85,6 @@ namespace Delta.CertXplorer.UI.Theming
             buttonBorder = Color.FromArgb(121, 153, 194);
         }
 
-        #endregion
-
         private static Office2007ColorTable blueScheme = null;
 
         public static Office2007ColorTable Blue
@@ -105,331 +101,191 @@ namespace Delta.CertXplorer.UI.Theming
         /// <summary>
         /// Initialize a new instance of the Office2007ColorTable class.
         /// </summary>
-        private Office2007ColorTable(Action initializeColorScheme) 
-        {
-            initializeColorScheme();
-        }
+        private Office2007ColorTable(Action initializeColorScheme) => initializeColorScheme();
 
-        #region ButtonPressed
         /// <summary>
         /// Gets the starting color of the gradient used when the button is pressed down.
         /// </summary>
-        public override Color ButtonPressedGradientBegin
-        {
-            get { return buttonPressedBegin; }
-        }
+        public override Color ButtonPressedGradientBegin => buttonPressedBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used when the button is pressed down.
         /// </summary>
-        public override Color ButtonPressedGradientEnd
-        {
-            get { return buttonPressedEnd; }
-        }
+        public override Color ButtonPressedGradientEnd => buttonPressedEnd;
 
         /// <summary>
         /// Gets the middle color of the gradient used when the button is pressed down.
         /// </summary>
-        public override Color ButtonPressedGradientMiddle
-        {
-            get { return buttonPressedMiddle; }
-        }
-        #endregion
+        public override Color ButtonPressedGradientMiddle => buttonPressedMiddle;
 
-        #region ButtonSelected
         /// <summary>
         /// Gets the starting color of the gradient used when the button is selected.
         /// </summary>
-        public override Color ButtonSelectedGradientBegin
-        {
-            get { return buttonSelectedBegin; }
-        }
+        public override Color ButtonSelectedGradientBegin => buttonSelectedBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used when the button is selected.
         /// </summary>
-        public override Color ButtonSelectedGradientEnd
-        {
-            get { return buttonSelectedEnd; }
-        }
+        public override Color ButtonSelectedGradientEnd => buttonSelectedEnd;
 
         /// <summary>
         /// Gets the middle color of the gradient used when the button is selected.
         /// </summary>
-        public override Color ButtonSelectedGradientMiddle
-        {
-            get { return buttonSelectedMiddle; }
-        }
+        public override Color ButtonSelectedGradientMiddle => buttonSelectedMiddle;
 
         /// <summary>
         /// Gets the border color to use with ButtonSelectedHighlight.
         /// </summary>
-        public override Color ButtonSelectedHighlightBorder
-        {
-            get { return buttonBorder; }
-        }
-        #endregion
+        public override Color ButtonSelectedHighlightBorder => buttonBorder;
 
-        #region Check
         /// <summary>
         /// Gets the solid color to use when the check box is selected and gradients are being used.
         /// </summary>
-        public override Color CheckBackground
-        {
-            get { return checkBack; }
-        }
-        #endregion
+        public override Color CheckBackground => checkBack;
 
-        #region Grip
         /// <summary>
         /// Gets the color to use for shadow effects on the grip or move handle.
         /// </summary>
-        public override Color GripDark
-        {
-            get { return gripDark; }
-        }
+        public override Color GripDark => gripDark;
 
         /// <summary>
         /// Gets the color to use for highlight effects on the grip or move handle.
         /// </summary>
-        public override Color GripLight
-        {
-            get { return gripLight; }
-        }
-        #endregion
+        public override Color GripLight => gripLight;
 
-        #region ImageMargin
         /// <summary>
         /// Gets the starting color of the gradient used in the image margin of a ToolStripDropDownMenu.
         /// </summary>
-        public override Color ImageMarginGradientBegin
-        {
-            get { return imageMargin; }
-        }
-        #endregion
+        public override Color ImageMarginGradientBegin => imageMargin;
 
-        #region MenuBorder
         /// <summary>
         /// Gets the border color or a MenuStrip.
         /// </summary>
-        public override Color MenuBorder
-        {
-            get { return menuBorder; }
-        }
-        #endregion
+        public override Color MenuBorder => menuBorder;
 
-        #region MenuItem
         /// <summary>
         /// Gets the starting color of the gradient used when a top-level ToolStripMenuItem is pressed down.
         /// </summary>
-        public override Color MenuItemPressedGradientBegin
-        {
-            get { return toolStripBegin; }
-        }
+        public override Color MenuItemPressedGradientBegin => toolStripBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used when a top-level ToolStripMenuItem is pressed down.
         /// </summary>
-        public override Color MenuItemPressedGradientEnd
-        {
-            get { return toolStripEnd; }
-        }
+        public override Color MenuItemPressedGradientEnd => toolStripEnd;
 
         /// <summary>
         /// Gets the middle color of the gradient used when a top-level ToolStripMenuItem is pressed down.
         /// </summary>
-        public override Color MenuItemPressedGradientMiddle
-        {
-            get { return toolStripMiddle; }
-        }
+        public override Color MenuItemPressedGradientMiddle => toolStripMiddle;
 
         /// <summary>
         /// Gets the starting color of the gradient used when the ToolStripMenuItem is selected.
         /// </summary>
-        public override Color MenuItemSelectedGradientBegin
-        {
-            get { return menuItemSelectedBegin; }
-        }
+        public override Color MenuItemSelectedGradientBegin => menuItemSelectedBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used when the ToolStripMenuItem is selected.
         /// </summary>
-        public override Color MenuItemSelectedGradientEnd
-        {
-            get { return menuItemSelectedEnd; }
-        }
-        #endregion
+        public override Color MenuItemSelectedGradientEnd => menuItemSelectedEnd;
 
-        #region MenuStrip
         /// <summary>
         /// Gets the starting color of the gradient used in the MenuStrip.
         /// </summary>
-        public override Color MenuStripGradientBegin
-        {
-            get { return menuToolBack; }
-        }
+        public override Color MenuStripGradientBegin => menuToolBack;
 
         /// <summary>
         /// Gets the end color of the gradient used in the MenuStrip.
         /// </summary>
-        public override Color MenuStripGradientEnd
-        {
-            get { return menuToolBack; }
-        }
-        #endregion
+        public override Color MenuStripGradientEnd => menuToolBack;
 
-        #region OverflowButton
         /// <summary>
         /// Gets the starting color of the gradient used in the ToolStripOverflowButton.
         /// </summary>
-        public override Color OverflowButtonGradientBegin
-        {
-            get { return overflowBegin; }
-        }
+        public override Color OverflowButtonGradientBegin => overflowBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used in the ToolStripOverflowButton.
         /// </summary>
-        public override Color OverflowButtonGradientEnd
-        {
-            get { return overflowEnd; }
-        }
+        public override Color OverflowButtonGradientEnd => overflowEnd;
 
         /// <summary>
         /// Gets the middle color of the gradient used in the ToolStripOverflowButton.
         /// </summary>
-        public override Color OverflowButtonGradientMiddle
-        {
-            get { return overflowMiddle; }
-        }
-        #endregion
+        public override Color OverflowButtonGradientMiddle => overflowMiddle;
 
-        #region RaftingContainer
         /// <summary>
         /// Gets the starting color of the gradient used in the ToolStripContainer.
         /// </summary>
-        public override Color RaftingContainerGradientBegin
-        {
-            get { return menuToolBack; }
-        }
+        public override Color RaftingContainerGradientBegin => menuToolBack;
 
         /// <summary>
         /// Gets the end color of the gradient used in the ToolStripContainer.
         /// </summary>
-        public override Color RaftingContainerGradientEnd
-        {
-            get { return menuToolBack; }
-        }
-        #endregion
+        public override Color RaftingContainerGradientEnd => menuToolBack;
 
-        #region Separator
         /// <summary>
         /// Gets the color to use to for shadow effects on the ToolStripSeparator.
         /// </summary>
-        public override Color SeparatorDark
-        {
-            get { return separatorDark; }
-        }
+        public override Color SeparatorDark => separatorDark;
 
         /// <summary>
         /// Gets the color to use to for highlight effects on the ToolStripSeparator.
         /// </summary>
-        public override Color SeparatorLight
-        {
-            get { return separatorLight; }
-        }
-        #endregion
+        public override Color SeparatorLight => separatorLight;
 
-        #region StatusStrip
         /// <summary>
         /// Gets the starting color of the gradient used on the StatusStrip.
         /// </summary>
-        public override Color StatusStripGradientBegin
-        {
-            get { return statusStripLight; }
-        }
+        public override Color StatusStripGradientBegin => statusStripLight;
 
         /// <summary>
         /// Gets the end color of the gradient used on the StatusStrip.
         /// </summary>
-        public override Color StatusStripGradientEnd
-        {
-            get { return statusStripDark; }
-        }
-        #endregion
+        public override Color StatusStripGradientEnd => statusStripDark;
 
-        #region ToolStrip
         /// <summary>
         /// Gets the border color to use on the bottom edge of the ToolStrip.
         /// </summary>
-        public override Color ToolStripBorder
-        {
-            get { return toolStripBorder; }
-        }
+        public override Color ToolStripBorder => toolStripBorder;
 
         /// <summary>
         /// Gets the starting color of the gradient used in the ToolStripContentPanel.
         /// </summary>
-        public override Color ToolStripContentPanelGradientBegin
-        {
-            get { return toolStripContentEnd; }
-        }
+        public override Color ToolStripContentPanelGradientBegin => toolStripContentEnd;
 
         /// <summary>
         /// Gets the end color of the gradient used in the ToolStripContentPanel.
         /// </summary>
-        public override Color ToolStripContentPanelGradientEnd
-        {
-            get { return menuToolBack; }
-        }
+        public override Color ToolStripContentPanelGradientEnd => menuToolBack;
 
         /// <summary>
         /// Gets the solid background color of the ToolStripDropDown.
         /// </summary>
-        public override Color ToolStripDropDownBackground
-        {
-            get { return contextMenuBack; }
-        }
+        public override Color ToolStripDropDownBackground => contextMenuBack;
 
         /// <summary>
         /// Gets the starting color of the gradient used in the ToolStrip background.
         /// </summary>
-        public override Color ToolStripGradientBegin
-        {
-            get { return toolStripBegin; }
-        }
+        public override Color ToolStripGradientBegin => toolStripBegin;
 
         /// <summary>
         /// Gets the end color of the gradient used in the ToolStrip background.
         /// </summary>
-        public override Color ToolStripGradientEnd
-        {
-            get { return toolStripEnd; }
-        }
+        public override Color ToolStripGradientEnd => toolStripEnd;
 
         /// <summary>
         /// Gets the middle color of the gradient used in the ToolStrip background.
         /// </summary>
-        public override Color ToolStripGradientMiddle
-        {
-            get { return toolStripMiddle; }
-        }
+        public override Color ToolStripGradientMiddle => toolStripMiddle;
 
         /// <summary>
         /// Gets the starting color of the gradient used in the ToolStripPanel.
         /// </summary>
-        public override Color ToolStripPanelGradientBegin
-        {
-            get { return menuToolBack; }
-        }
+        public override Color ToolStripPanelGradientBegin => menuToolBack;
 
         /// <summary>
         /// Gets the end color of the gradient used in the ToolStripPanel.
         /// </summary>
-        public override Color ToolStripPanelGradientEnd
-        {
-            get { return menuToolBack; }
-        }
-        #endregion
+        public override Color ToolStripPanelGradientEnd => menuToolBack;
     }
 }

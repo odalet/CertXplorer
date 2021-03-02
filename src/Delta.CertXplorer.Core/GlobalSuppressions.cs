@@ -7,3 +7,4 @@ using System.Diagnostics.CodeAnalysis;
 
 [assembly: SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~M:Delta.CertXplorer.UI.ListViewEx.ListViewItemComparer.GetStringValue(System.Object)~System.String")]
 [assembly: SuppressMessage("Style", "IDE0046:Convert to conditional expression", Justification = "<Pending>", Scope = "member", Target = "~P:Delta.CertXplorer.UI.ListViewEx.EmbeddedControl.SubItem")]
+[assembly: SuppressMessage("Minor Code Smell", "S3963:\"static\" fields should be initialized inline", Justification = "<Pending>", Scope = "member", Target = "~M:Delta.CertXplorer.UI.Theming.OfficeColorTable.#cctor")]

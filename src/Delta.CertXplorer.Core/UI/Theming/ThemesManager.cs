@@ -1,44 +1,32 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Delta.CertXplorer.UI.Theming
 {
     public static class ThemesManager
     {
-        private static readonly ProfessionalColorTable defaultColorTable = 
-            new ProfessionalColorTable() { UseSystemColors = true };
-
-        public static ProfessionalColorTable DefaultColorTable
-        {
-            get { return defaultColorTable; }
-        }
+        public static ProfessionalColorTable DefaultColorTable { get; } = new ProfessionalColorTable() { UseSystemColors = true };
 
         public static void RegisterThemeAwareControl(Control control, Action<ToolStripRenderer> onThemeChanged)
         {
-            if ((control != null) && !control.IsDisposed)
-            {
-                ToolStripManager.RendererChanged += (s, e) => UpdateRenderer(control, onThemeChanged);
-                UpdateRenderer(control, onThemeChanged);                
-            }
+            if (control == null || control.IsDisposed)
+                return;
+
+            ToolStripManager.RendererChanged += (s, e) => UpdateRenderer(control, onThemeChanged);
+            UpdateRenderer(control, onThemeChanged);
         }
 
         public static ToolStripRenderer CloneCurrentRenderer()
         {
             ToolStripRenderer renderer = null;
 
-            IThemingService th = This.GetService<IThemingService>();
-            if (th != null) renderer = th.CreateThemeRenderer(th.Current);
+            var service = This.GetService<IThemingService>();
+            if (service != null) renderer = service.CreateThemeRenderer(service.Current);
 
-            if (renderer == null)
-            {
-                if (ToolStripManager.Renderer is ToolStripProfessionalRenderer)
-                {
-                    renderer = new ToolStripProfessionalRenderer(
-                        ((ToolStripProfessionalRenderer)ToolStripManager.Renderer).ColorTable);
-                }
-                else renderer = new ToolStripProfessionalRenderer();
-            }
+            if (renderer == null) renderer = 
+                    ToolStripManager.Renderer is ToolStripProfessionalRenderer tspRenderer ?
+                    new ToolStripProfessionalRenderer(tspRenderer.ColorTable) :
+                    new ToolStripProfessionalRenderer();
 
             return renderer;
         }
@@ -47,23 +35,23 @@ namespace Delta.CertXplorer.UI.Theming
         {
             ToolStripRenderer renderer = null;
 
-            IThemingService th = This.GetService<IThemingService>();
-            if (th != null) renderer = th.CreateThemeRenderer(th.Current);
+            var service = This.GetService<IThemingService>();
+            if (service != null) renderer = service.CreateThemeRenderer(service.Current);
 
             if (renderer == null) renderer = ToolStripManager.Renderer;
 
-            if ((renderer != null) && renderer is ToolStripProfessionalRenderer)
-                    return ((ToolStripProfessionalRenderer)renderer).ColorTable;
-
-            return defaultColorTable;
+            return renderer is ToolStripProfessionalRenderer tspRenderer ?
+                tspRenderer.ColorTable : 
+                DefaultColorTable;
         }
 
         private static void UpdateRenderer(Control control, Action<ToolStripRenderer> action)
         {
-            if ((control == null) || control.IsDisposed) return;
+            if (control == null || control.IsDisposed)
+                return;
 
             var clone = CloneCurrentRenderer();
-            if (action != null) action(clone);
+            action?.Invoke(clone);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Drawing.Drawing2D;
 
 namespace Delta.CertXplorer.UI.Theming
 {
-    internal class VisualStudio2008Renderer : ToolStripProfessionalRenderer
+    internal sealed class VisualStudio2008Renderer : ToolStripProfessionalRenderer
     {
         /// <summary>
         /// The palette used by this renderer.

@@ -1,11 +1,10 @@
-using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Collections.Generic;
 
 namespace Delta.CertXplorer.UI.Theming
-{   
-    internal class TanLunaColorTable : ProfessionalColorTable
+{
+    internal sealed class TanLunaColorTable : ProfessionalColorTable
     {
         private enum KnownColors
         {
@@ -222,498 +221,288 @@ namespace Delta.CertXplorer.UI.Theming
             msocbvcrXLFormulaBarBkgd = 0xd1
         }
 
-        private Dictionary<KnownColors, Color> rgb = null;
+        private Dictionary<KnownColors, Color> colorTable = null;
 
         public TanLunaColorTable() { }
 
-        private Color FromKnownColor(KnownColors color) 
-        { 
-            return ColorTable[color]; 
-        }
+        private Color FromKnownColor(KnownColors color) => ColorTable[color];
 
         private Dictionary<KnownColors, Color> ColorTable
         {
             get
             {
-                if (rgb == null)
+                if (colorTable == null)
                 {
-                    rgb = new Dictionary<KnownColors, Color>(210);
-                    InitTanLunaColors(ref rgb);
+                    colorTable = new Dictionary<KnownColors, Color>(210);
+                    InitializeTanLunaColors(colorTable);
                 }
-                return rgb;
+                return colorTable;
             }
         }
 
-        #region Initialize TanLuna table
+        public override Color ButtonCheckedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradSelectedBegin);
+        public override Color ButtonCheckedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradSelectedEnd);
+        public override Color ButtonCheckedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradSelectedMiddle);
+        public override Color ButtonPressedBorder => FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
+        public override Color ButtonPressedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownBegin);
+        public override Color ButtonPressedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownEnd);
+        public override Color ButtonPressedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownMiddle);
+        public override Color ButtonSelectedBorder => FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
+        public override Color ButtonSelectedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
+        public override Color ButtonSelectedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
+        public override Color ButtonSelectedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverMiddle);
+        public override Color CheckBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelected);
+        public override Color CheckPressedBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
+        public override Color CheckSelectedBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
+        public override Color GripDark => FromKnownColor(KnownColors.msocbvcrCBDragHandle);
+        public override Color GripLight => FromKnownColor(KnownColors.msocbvcrCBDragHandleShadow);
+        public override Color ImageMarginGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
+        public override Color ImageMarginGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradVertEnd);
+        public override Color ImageMarginGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle);
+        public override Color ImageMarginRevealedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin);
+        public override Color ImageMarginRevealedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd);
+        public override Color ImageMarginRevealedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
+        public override Color MenuBorder => FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter);
+        public override Color MenuItemBorder => FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter);
+        public override Color MenuItemPressedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdBegin);
+        public override Color MenuItemPressedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdEnd);
+        public override Color MenuItemPressedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
+        public override Color MenuItemSelected => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdMouseOver);
+        public override Color MenuItemSelectedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
+        public override Color MenuItemSelectedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
+        public override Color MenuStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
+        public override Color MenuStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
+        public override Color OverflowButtonGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradOptionsBegin);
+        public override Color OverflowButtonGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradOptionsEnd);
+        public override Color OverflowButtonGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradOptionsMiddle);
+        public override Color RaftingContainerGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
+        public override Color RaftingContainerGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
+        public override Color SeparatorDark => FromKnownColor(KnownColors.msocbvcrCBSplitterLine);
+        public override Color SeparatorLight => FromKnownColor(KnownColors.msocbvcrCBSplitterLineLight);
+        public override Color StatusStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
+        public override Color StatusStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
+        public override Color ToolStripBorder => FromKnownColor(KnownColors.msocbvcrCBShadow);
+        public override Color ToolStripContentPanelGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
+        public override Color ToolStripDropDownBackground => FromKnownColor(KnownColors.msocbvcrCBMenuBkgd);
+        public override Color ToolStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
+        public override Color ToolStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradVertEnd);
+        public override Color ToolStripGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle);
+        public override Color ToolStripPanelGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
+        public override Color ToolStripPanelGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
+        public Color ToolWindowInactiveGradientBegin => Color.FromArgb(0xcc, 0xc7, 0xba);
 
-        private void InitTanLunaColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeTanLunaColors(Dictionary<KnownColors, Color> table)
         {
-            rgbTable[KnownColors.msocbvcrCBBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
-            rgbTable[KnownColors.msocbvcrCBDragHandle] = Color.FromArgb(0xc1, 190, 0xb3);
-            rgbTable[KnownColors.msocbvcrCBSplitterLine] = Color.FromArgb(0xc5, 0xc2, 0xb8);
-            rgbTable[KnownColors.msocbvcrCBTitleBkgd] = Color.FromArgb(0xac, 0xa8, 0x99);
-            rgbTable[KnownColors.msocbvcrCBTitleText] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrCBBdrOuterFloating] = Color.FromArgb(0x92, 0x8f, 130);
-            rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrCBTearOffHandle] = Color.FromArgb(0xef, 0xed, 0xde);
-            rgbTable[KnownColors.msocbvcrCBTearOffHandleMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
-            rgbTable[KnownColors.msocbvcrCBCtlText] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrCBCtlTextDisabled] = Color.FromArgb(180, 0xb1, 0xa3);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBCtlBdrMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrCBCtlTextMouseOver] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseDown] = Color.FromArgb(0x98, 0xb5, 0xe2);
-            rgbTable[KnownColors.msocbvcrCBCtlBdrMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
-            rgbTable[KnownColors.msocbvcrCBCtlTextMouseDown] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgdSelected] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBCtlBdrSelected] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrCBCtlBdrSelectedMouseOver] = Color.FromArgb(0x4b, 0x4b, 0x6f);
-            rgbTable[KnownColors.msocbvcrCBCtlBkgdLight] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrCBCtlTextLight] = Color.FromArgb(0x80, 0x80, 0x80);
-            rgbTable[KnownColors.msocbvcrCBMainMenuBkgd] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrCBMenuBkgd] = Color.FromArgb(0xfc, 0xfc, 0xf9);
-            rgbTable[KnownColors.msocbvcrCBMenuCtlText] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrCBMenuCtlTextDisabled] = Color.FromArgb(0xc5, 0xc2, 0xb8);
-            rgbTable[KnownColors.msocbvcrCBMenuBdrOuter] = Color.FromArgb(0x8a, 0x86, 0x7a);
-            rgbTable[KnownColors.msocbvcrCBMenuIconBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
-            rgbTable[KnownColors.msocbvcrCBMenuIconBkgdDropped] = Color.FromArgb(230, 0xe3, 210);
-            rgbTable[KnownColors.msocbvcrCBMenuSplitArrow] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrWPBkgd] = Color.FromArgb(0xf6, 0xf4, 0xec);
-            rgbTable[KnownColors.msocbvcrWPText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPTitleBkgdActive] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPTitleBkgdInactive] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPTitleTextActive] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPTitleTextInactive] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPBdrOuterFloating] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPBdrOuterDocked] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlBdrDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlBkgdDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlBdrDefault] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPGroupline] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrSBBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOBBkgdBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOBBkgdBdrContrast] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOABBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderCellBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderSeeThroughSelection] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderCellBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGDHeaderCellBkgdSelected] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrCBSplitterLineLight] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrCBShadow] = Color.FromArgb(0xa3, 0xa3, 0x7c);
-            rgbTable[KnownColors.msocbvcrCBOptionsButtonShadow] = Color.FromArgb(0xee, 0xee, 0xf4);
-            rgbTable[KnownColors.msocbvcrWPNavBarBkgnd] = Color.FromArgb(0xc5, 0xc2, 0xb8);
-            rgbTable[KnownColors.msocbvcrWPBdrInnerDocked] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrCBLabelBkgnd] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrCBIconDisabledLight] = Color.FromArgb(0xf7, 0xf5, 0xf9);
-            rgbTable[KnownColors.msocbvcrCBIconDisabledDark] = Color.FromArgb(0x7a, 0x79, 0x99);
-            rgbTable[KnownColors.msocbvcrCBLowColorIconDisabled] = Color.FromArgb(180, 0xb1, 0xa3);
-            rgbTable[KnownColors.msocbvcrCBGradMainMenuHorzBegin] = Color.FromArgb(0xe5, 0xe5, 0xd7);
-            rgbTable[KnownColors.msocbvcrCBGradMainMenuHorzEnd] = Color.FromArgb(0xf3, 0xf2, 0xe7);
-            rgbTable[KnownColors.msocbvcrCBGradVertBegin] = Color.FromArgb(250, 0xf9, 0xf5);
-            rgbTable[KnownColors.msocbvcrCBGradVertMiddle] = Color.FromArgb(0xec, 0xe7, 0xe0);
-            rgbTable[KnownColors.msocbvcrCBGradVertEnd] = Color.FromArgb(0xba, 0xba, 0xa3);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsBegin] = Color.FromArgb(0xf3, 0xf2, 240);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsMiddle] = Color.FromArgb(0xe2, 0xe1, 0xdb);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsEnd] = Color.FromArgb(0x92, 0x92, 0x76);
-            rgbTable[KnownColors.msocbvcrCBGradMenuTitleBkgdBegin] = Color.FromArgb(0xfc, 0xfc, 0xf9);
-            rgbTable[KnownColors.msocbvcrCBGradMenuTitleBkgdEnd] = Color.FromArgb(0xf6, 0xf4, 0xec);
-            rgbTable[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin] = Color.FromArgb(0xf7, 0xf6, 0xef);
-            rgbTable[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle] = Color.FromArgb(0xf2, 240, 0xe4);
-            rgbTable[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd] = Color.FromArgb(230, 0xe3, 210);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsSelectedBegin] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsSelectedMiddle] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsSelectedEnd] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsMouseOverBegin] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsMouseOverMiddle] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradOptionsMouseOverEnd] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradSelectedBegin] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradSelectedMiddle] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradSelectedEnd] = Color.FromArgb(0xe1, 230, 0xe8);
-            rgbTable[KnownColors.msocbvcrCBGradMouseOverBegin] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradMouseOverMiddle] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradMouseOverEnd] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrCBGradMouseDownBegin] = Color.FromArgb(0x98, 0xb5, 0xe2);
-            rgbTable[KnownColors.msocbvcrCBGradMouseDownMiddle] = Color.FromArgb(0x98, 0xb5, 0xe2);
-            rgbTable[KnownColors.msocbvcrCBGradMouseDownEnd] = Color.FromArgb(0x98, 0xb5, 0xe2);
-            rgbTable[KnownColors.msocbvcrNetLookBkgnd] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrCBMenuShadow] = Color.FromArgb(0xfc, 0xfc, 0xf9);
-            rgbTable[KnownColors.msocbvcrCBDockSeparatorLine] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrCBDropDownArrow] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrOLKGridlines] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKGroupText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKGroupLine] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKGroupShaded] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKGroupNested] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKIconBar] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKFlagNone] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKFolderbarLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKFolderbarDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKFolderbarText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBSelectedButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBSelectedButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBHoverButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBHoverButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBPressedButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBPressedButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBDarkOutline] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBSplitterLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBSplitterDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBActionDividerLine] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBLabelText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKWBFoldersBackground] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKTodayIndicatorLight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKTodayIndicatorDark] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKInfoBarBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKInfoBarText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOLKPreviewPaneLabelText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrHyperlink] = Color.FromArgb(0, 0x3d, 0xb2);
-            rgbTable[KnownColors.msocbvcrHyperlinkFollowed] = Color.FromArgb(170, 0, 170);
-            rgbTable[KnownColors.msocbvcrOGWorkspaceBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGMDIParentWorkspaceBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerActiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerInactiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerTabStopTicks] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerTabBoxBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrOGRulerTabBoxBdrHighlight] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.lastKnownColor] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrCBDragHandleShadow] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrOGTaskPaneGroupBoxHeaderBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabAreaBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabInactiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabBdr] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPSlideBdrActiveSelected] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPSlideBdrInactiveSelected] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPSlideBdrMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrPPSlideBdrActiveSelectedMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDlgGroupBoxText] = Color.FromArgb(7, 70, 0xd5);
-            rgbTable[KnownColors.msocbvcrScrollbarBkgd] = Color.FromArgb(0xf6, 0xf4, 0xec);
-            rgbTable[KnownColors.msocbvcrListHeaderArrow] = Color.FromArgb(0x9c, 0x9a, 0x8f);
-            rgbTable[KnownColors.msocbvcrDisabledHighlightedText] = Color.FromArgb(0xbb, 0xce, 0xec);
-            rgbTable[KnownColors.msocbvcrFocuslessHighlightedBkgd] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrFocuslessHighlightedText] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrDisabledFocuslessHighlightedText] = Color.FromArgb(0xac, 0xa8, 0x99);
-            rgbTable[KnownColors.msocbvcrWPCtlTextMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPInfoTipBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrWPInfoTipText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWActiveTabBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWActiveTabText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWActiveTabTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWInactiveTabBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWInactiveTabText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWTabBkgdMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWTabTextMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWTabBkgdMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDWTabTextMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupHeaderLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupHeaderDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupHeaderText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupContentLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupContentDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupContentText] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupContentTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPGroupline] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrGSPHyperlink] = Color.FromArgb(0xff, 0x33, 0x99);
-            rgbTable[KnownColors.msocbvcrDocTabBkgd] = Color.FromArgb(0xd4, 0xd4, 0xe2);
-            rgbTable[KnownColors.msocbvcrDocTabText] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrDocTabBdr] = Color.FromArgb(0x76, 0x74, 0x92);
-            rgbTable[KnownColors.msocbvcrDocTabBdrLight] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrDocTabBdrDark] = Color.FromArgb(0xba, 0xb9, 0xce);
-            rgbTable[KnownColors.msocbvcrDocTabBkgdSelected] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrDocTabTextSelected] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrDocTabBdrSelected] = Color.FromArgb(0x7c, 0x7c, 0x94);
-            rgbTable[KnownColors.msocbvcrDocTabBkgdMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
-            rgbTable[KnownColors.msocbvcrDocTabTextMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrDocTabBdrMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrDocTabBdrLightMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrDocTabBdrDarkMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
-            rgbTable[KnownColors.msocbvcrDocTabBkgdMouseDown] = Color.FromArgb(0x9a, 0xb7, 0xe4);
-            rgbTable[KnownColors.msocbvcrDocTabTextMouseDown] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrDocTabBdrMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
-            rgbTable[KnownColors.msocbvcrDocTabBdrLightMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
-            rgbTable[KnownColors.msocbvcrDocTabBdrDarkMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
-            rgbTable[KnownColors.msocbvcrToastGradBegin] = Color.FromArgb(0xf6, 0xf4, 0xec);
-            rgbTable[KnownColors.msocbvcrToastGradEnd] = Color.FromArgb(0xb3, 0xb2, 0xcc);
-            rgbTable[KnownColors.msocbvcrJotNavUIGradBegin] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrJotNavUIGradMiddle] = Color.FromArgb(0xec, 0xe9, 0xd8);
-            rgbTable[KnownColors.msocbvcrJotNavUIGradEnd] = Color.FromArgb(0xff, 0xff, 0xff);
-            rgbTable[KnownColors.msocbvcrJotNavUIText] = Color.FromArgb(0, 0, 0);
-            rgbTable[KnownColors.msocbvcrJotNavUIBdr] = Color.FromArgb(0xac, 0xa8, 0x99);
-            rgbTable[KnownColors.msocbvcrPlacesBarBkgd] = Color.FromArgb(0xe0, 0xdf, 0xe3);
-            rgbTable[KnownColors.msocbvcrPubPrintDocScratchPageBkgd] = Color.FromArgb(0x98, 0xb5, 0xe2);
-            rgbTable[KnownColors.msocbvcrPubWebDocScratchPageBkgd] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
+            table[KnownColors.msocbvcrCBDragHandle] = Color.FromArgb(0xc1, 190, 0xb3);
+            table[KnownColors.msocbvcrCBSplitterLine] = Color.FromArgb(0xc5, 0xc2, 0xb8);
+            table[KnownColors.msocbvcrCBTitleBkgd] = Color.FromArgb(0xac, 0xa8, 0x99);
+            table[KnownColors.msocbvcrCBTitleText] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrCBBdrOuterFloating] = Color.FromArgb(0x92, 0x8f, 130);
+            table[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrCBTearOffHandle] = Color.FromArgb(0xef, 0xed, 0xde);
+            table[KnownColors.msocbvcrCBTearOffHandleMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBCtlBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
+            table[KnownColors.msocbvcrCBCtlText] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrCBCtlTextDisabled] = Color.FromArgb(180, 0xb1, 0xa3);
+            table[KnownColors.msocbvcrCBCtlBkgdMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBCtlBdrMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrCBCtlTextMouseOver] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrCBCtlBkgdMouseDown] = Color.FromArgb(0x98, 0xb5, 0xe2);
+            table[KnownColors.msocbvcrCBCtlBdrMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
+            table[KnownColors.msocbvcrCBCtlTextMouseDown] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrCBCtlBkgdSelected] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBCtlBdrSelected] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrCBCtlBdrSelectedMouseOver] = Color.FromArgb(0x4b, 0x4b, 0x6f);
+            table[KnownColors.msocbvcrCBCtlBkgdLight] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrCBCtlTextLight] = Color.FromArgb(0x80, 0x80, 0x80);
+            table[KnownColors.msocbvcrCBMainMenuBkgd] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrCBMenuBkgd] = Color.FromArgb(0xfc, 0xfc, 0xf9);
+            table[KnownColors.msocbvcrCBMenuCtlText] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrCBMenuCtlTextDisabled] = Color.FromArgb(0xc5, 0xc2, 0xb8);
+            table[KnownColors.msocbvcrCBMenuBdrOuter] = Color.FromArgb(0x8a, 0x86, 0x7a);
+            table[KnownColors.msocbvcrCBMenuIconBkgd] = Color.FromArgb(0xef, 0xed, 0xde);
+            table[KnownColors.msocbvcrCBMenuIconBkgdDropped] = Color.FromArgb(230, 0xe3, 210);
+            table[KnownColors.msocbvcrCBMenuSplitArrow] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrWPBkgd] = Color.FromArgb(0xf6, 0xf4, 0xec);
+            table[KnownColors.msocbvcrWPText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPTitleBkgdActive] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPTitleBkgdInactive] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPTitleTextActive] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPTitleTextInactive] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPBdrOuterFloating] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPBdrOuterDocked] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlBdrDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlBkgdDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPCtlBdrDefault] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPGroupline] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrSBBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOBBkgdBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOBBkgdBdrContrast] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOABBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderCellBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderSeeThroughSelection] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderCellBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGDHeaderCellBkgdSelected] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrCBSplitterLineLight] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrCBShadow] = Color.FromArgb(0xa3, 0xa3, 0x7c);
+            table[KnownColors.msocbvcrCBOptionsButtonShadow] = Color.FromArgb(0xee, 0xee, 0xf4);
+            table[KnownColors.msocbvcrWPNavBarBkgnd] = Color.FromArgb(0xc5, 0xc2, 0xb8);
+            table[KnownColors.msocbvcrWPBdrInnerDocked] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrCBLabelBkgnd] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrCBIconDisabledLight] = Color.FromArgb(0xf7, 0xf5, 0xf9);
+            table[KnownColors.msocbvcrCBIconDisabledDark] = Color.FromArgb(0x7a, 0x79, 0x99);
+            table[KnownColors.msocbvcrCBLowColorIconDisabled] = Color.FromArgb(180, 0xb1, 0xa3);
+            table[KnownColors.msocbvcrCBGradMainMenuHorzBegin] = Color.FromArgb(0xe5, 0xe5, 0xd7);
+            table[KnownColors.msocbvcrCBGradMainMenuHorzEnd] = Color.FromArgb(0xf3, 0xf2, 0xe7);
+            table[KnownColors.msocbvcrCBGradVertBegin] = Color.FromArgb(250, 0xf9, 0xf5);
+            table[KnownColors.msocbvcrCBGradVertMiddle] = Color.FromArgb(0xec, 0xe7, 0xe0);
+            table[KnownColors.msocbvcrCBGradVertEnd] = Color.FromArgb(0xba, 0xba, 0xa3);
+            table[KnownColors.msocbvcrCBGradOptionsBegin] = Color.FromArgb(0xf3, 0xf2, 240);
+            table[KnownColors.msocbvcrCBGradOptionsMiddle] = Color.FromArgb(0xe2, 0xe1, 0xdb);
+            table[KnownColors.msocbvcrCBGradOptionsEnd] = Color.FromArgb(0x92, 0x92, 0x76);
+            table[KnownColors.msocbvcrCBGradMenuTitleBkgdBegin] = Color.FromArgb(0xfc, 0xfc, 0xf9);
+            table[KnownColors.msocbvcrCBGradMenuTitleBkgdEnd] = Color.FromArgb(0xf6, 0xf4, 0xec);
+            table[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin] = Color.FromArgb(0xf7, 0xf6, 0xef);
+            table[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle] = Color.FromArgb(0xf2, 240, 0xe4);
+            table[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd] = Color.FromArgb(230, 0xe3, 210);
+            table[KnownColors.msocbvcrCBGradOptionsSelectedBegin] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradOptionsSelectedMiddle] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradOptionsSelectedEnd] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradOptionsMouseOverBegin] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradOptionsMouseOverMiddle] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradOptionsMouseOverEnd] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradSelectedBegin] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradSelectedMiddle] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradSelectedEnd] = Color.FromArgb(0xe1, 230, 0xe8);
+            table[KnownColors.msocbvcrCBGradMouseOverBegin] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradMouseOverMiddle] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradMouseOverEnd] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrCBGradMouseDownBegin] = Color.FromArgb(0x98, 0xb5, 0xe2);
+            table[KnownColors.msocbvcrCBGradMouseDownMiddle] = Color.FromArgb(0x98, 0xb5, 0xe2);
+            table[KnownColors.msocbvcrCBGradMouseDownEnd] = Color.FromArgb(0x98, 0xb5, 0xe2);
+            table[KnownColors.msocbvcrNetLookBkgnd] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrCBMenuShadow] = Color.FromArgb(0xfc, 0xfc, 0xf9);
+            table[KnownColors.msocbvcrCBDockSeparatorLine] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrCBDropDownArrow] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrOLKGridlines] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKGroupText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKGroupLine] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKGroupShaded] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKGroupNested] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKIconBar] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKFlagNone] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKFolderbarLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKFolderbarDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKFolderbarText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBSelectedButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBSelectedButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBHoverButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBHoverButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBPressedButtonLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBPressedButtonDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBDarkOutline] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBSplitterLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBSplitterDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBActionDividerLine] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBLabelText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKWBFoldersBackground] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKTodayIndicatorLight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKTodayIndicatorDark] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKInfoBarBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKInfoBarText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOLKPreviewPaneLabelText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrHyperlink] = Color.FromArgb(0, 0x3d, 0xb2);
+            table[KnownColors.msocbvcrHyperlinkFollowed] = Color.FromArgb(170, 0, 170);
+            table[KnownColors.msocbvcrOGWorkspaceBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGMDIParentWorkspaceBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerActiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerInactiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerTabStopTicks] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerTabBoxBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrOGRulerTabBoxBdrHighlight] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.lastKnownColor] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrCBDragHandleShadow] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrOGTaskPaneGroupBoxHeaderBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabAreaBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabInactiveBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabBdr] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPOutlineThumbnailsPaneTabText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPSlideBdrActiveSelected] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPSlideBdrInactiveSelected] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPSlideBdrMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrPPSlideBdrActiveSelectedMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDlgGroupBoxText] = Color.FromArgb(7, 70, 0xd5);
+            table[KnownColors.msocbvcrScrollbarBkgd] = Color.FromArgb(0xf6, 0xf4, 0xec);
+            table[KnownColors.msocbvcrListHeaderArrow] = Color.FromArgb(0x9c, 0x9a, 0x8f);
+            table[KnownColors.msocbvcrDisabledHighlightedText] = Color.FromArgb(0xbb, 0xce, 0xec);
+            table[KnownColors.msocbvcrFocuslessHighlightedBkgd] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrFocuslessHighlightedText] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrDisabledFocuslessHighlightedText] = Color.FromArgb(0xac, 0xa8, 0x99);
+            table[KnownColors.msocbvcrWPCtlTextMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPInfoTipBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrWPInfoTipText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWActiveTabBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWActiveTabText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWActiveTabTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWInactiveTabBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWInactiveTabText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWTabBkgdMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWTabTextMouseOver] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWTabBkgdMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDWTabTextMouseDown] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupHeaderLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupHeaderDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupHeaderText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupContentLightBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupContentDarkBkgd] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupContentText] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupContentTextDisabled] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPGroupline] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrGSPHyperlink] = Color.FromArgb(0xff, 0x33, 0x99);
+            table[KnownColors.msocbvcrDocTabBkgd] = Color.FromArgb(0xd4, 0xd4, 0xe2);
+            table[KnownColors.msocbvcrDocTabText] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrDocTabBdr] = Color.FromArgb(0x76, 0x74, 0x92);
+            table[KnownColors.msocbvcrDocTabBdrLight] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrDocTabBdrDark] = Color.FromArgb(0xba, 0xb9, 0xce);
+            table[KnownColors.msocbvcrDocTabBkgdSelected] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrDocTabTextSelected] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrDocTabBdrSelected] = Color.FromArgb(0x7c, 0x7c, 0x94);
+            table[KnownColors.msocbvcrDocTabBkgdMouseOver] = Color.FromArgb(0xc1, 210, 0xee);
+            table[KnownColors.msocbvcrDocTabTextMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrDocTabBdrMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrDocTabBdrLightMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrDocTabBdrDarkMouseOver] = Color.FromArgb(0x31, 0x6a, 0xc5);
+            table[KnownColors.msocbvcrDocTabBkgdMouseDown] = Color.FromArgb(0x9a, 0xb7, 0xe4);
+            table[KnownColors.msocbvcrDocTabTextMouseDown] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrDocTabBdrMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
+            table[KnownColors.msocbvcrDocTabBdrLightMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
+            table[KnownColors.msocbvcrDocTabBdrDarkMouseDown] = Color.FromArgb(0x4b, 0x4b, 0x6f);
+            table[KnownColors.msocbvcrToastGradBegin] = Color.FromArgb(0xf6, 0xf4, 0xec);
+            table[KnownColors.msocbvcrToastGradEnd] = Color.FromArgb(0xb3, 0xb2, 0xcc);
+            table[KnownColors.msocbvcrJotNavUIGradBegin] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrJotNavUIGradMiddle] = Color.FromArgb(0xec, 0xe9, 0xd8);
+            table[KnownColors.msocbvcrJotNavUIGradEnd] = Color.FromArgb(0xff, 0xff, 0xff);
+            table[KnownColors.msocbvcrJotNavUIText] = Color.FromArgb(0, 0, 0);
+            table[KnownColors.msocbvcrJotNavUIBdr] = Color.FromArgb(0xac, 0xa8, 0x99);
+            table[KnownColors.msocbvcrPlacesBarBkgd] = Color.FromArgb(0xe0, 0xdf, 0xe3);
+            table[KnownColors.msocbvcrPubPrintDocScratchPageBkgd] = Color.FromArgb(0x98, 0xb5, 0xe2);
+            table[KnownColors.msocbvcrPubWebDocScratchPageBkgd] = Color.FromArgb(0xc1, 210, 0xee);
         }
-
-        #endregion
-        
-        #region Colors
-
-        public override Color ButtonCheckedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradSelectedBegin); }
-        }
-
-        public override Color ButtonCheckedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradSelectedEnd); }
-        }
-
-        public override Color ButtonCheckedGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradSelectedMiddle); }
-        }
-
-        public override Color ButtonPressedBorder
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver); }
-        }
-
-        public override Color ButtonPressedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseDownBegin); }
-        }
-
-        public override Color ButtonPressedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseDownEnd); }
-        }
-
-        public override Color ButtonPressedGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseDownMiddle); }
-        }
-
-        public override Color ButtonSelectedBorder
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver); }
-        }
-
-        public override Color ButtonSelectedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin); }
-        }
-
-        public override Color ButtonSelectedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd); }
-        }
-
-        public override Color ButtonSelectedGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseOverMiddle); }
-        }
-
-        public override Color CheckBackground
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelected); }
-        }
-
-        public override Color CheckPressedBackground
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver); }
-        }
-
-        public override Color CheckSelectedBackground
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver); }
-        }
-
-        public override Color GripDark
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBDragHandle); }
-        }
-
-        public override Color GripLight
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBDragHandleShadow); }
-        }
-
-        public override Color ImageMarginGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertBegin); }
-        }
-
-        public override Color ImageMarginGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertEnd); }
-        }
-
-        public override Color ImageMarginGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle); }
-        }
-
-        public override Color ImageMarginRevealedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin); }
-        }
-
-        public override Color ImageMarginRevealedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd); }
-        }
-
-        public override Color ImageMarginRevealedGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle); }
-        }
-
-        public override Color MenuBorder
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter); }
-        }
-
-        public override Color MenuItemBorder
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter); }
-        }
-
-        public override Color MenuItemPressedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdBegin); }
-        }
-
-        public override Color MenuItemPressedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdEnd); }             
-        }
-
-        public override Color MenuItemPressedGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle); }
-        }
-
-        public override Color MenuItemSelected
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBCtlBkgdMouseOver); }
-        }
-
-        public override Color MenuItemSelectedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin); }
-        }
-
-        public override Color MenuItemSelectedGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd); }
-        }
-
-        public override Color MenuStripGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin); }
-        }
-
-        public override Color MenuStripGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); }
-        }
-
-        public override Color OverflowButtonGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradOptionsBegin); }
-        }
-
-        public override Color OverflowButtonGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradOptionsEnd); }
-        }
-
-        public override Color OverflowButtonGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradOptionsMiddle); }
-        }
-
-        public override Color RaftingContainerGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin); }
-        }
-
-        public override Color RaftingContainerGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); }
-        }
-
-        public override Color SeparatorDark
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBSplitterLine); }
-        }
-
-        public override Color SeparatorLight
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBSplitterLineLight); }
-        }
-
-        public override Color StatusStripGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin); }
-        }
-
-        public override Color StatusStripGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); }
-        }
-
-        public override Color ToolStripBorder
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBShadow); }
-        }
-
-        public override Color ToolStripContentPanelGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); }
-        }
-
-        public override Color ToolStripDropDownBackground
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBMenuBkgd); }
-        }
-
-        public override Color ToolStripGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertBegin); }
-        }
-
-        public override Color ToolStripGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertEnd); }
-        }
-
-        public override Color ToolStripGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle); }
-        }
-
-        public override Color ToolStripPanelGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin); }
-        }
-
-        public override Color ToolStripPanelGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd); }
-        }
-
-        public Color ToolWindowInactiveGradientBegin
-        {
-            get { return Color.FromArgb(0xcc, 0xc7, 0xba); }
-        }
-
-        #endregion
     }
 }

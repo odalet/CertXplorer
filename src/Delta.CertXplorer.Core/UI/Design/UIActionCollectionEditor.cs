@@ -4,18 +4,17 @@
  * Original namespace: Crad.Windows.Forms.Actions
  * License: Common Public License Version 1.0
  * 
- */ 
+ */
 
 using System;
 using System.ComponentModel;
 using System.ComponentModel.Design;
-
 using Delta.CertXplorer.UI.Actions;
 
 namespace Delta.CertXplorer.UI.Design
 {
     /// <summary>
-    /// Design-Time Editor for <see cref="Delta.CertXplorer.UI.Actions.UIAction"/> objects collections.
+    /// Design-Time Editor for <see cref="UIAction"/> objects collections.
     /// </summary>
     internal sealed class UIActionCollectionEditor : CollectionEditor
     {
@@ -30,10 +29,7 @@ namespace Delta.CertXplorer.UI.Design
         /// <returns>
         /// An array of data types that this collection can contain.
         /// </returns>
-        protected override Type[] CreateNewItemTypes()
-        {
-            return new Type[] { typeof(UIAction) };
-        }
+        protected override Type[] CreateNewItemTypes() => new Type[] { typeof(UIAction) };
 
         /// <summary>
         /// Edits the value of the specified object using the specified service provider and context.
@@ -47,9 +43,7 @@ namespace Delta.CertXplorer.UI.Design
         /// <exception cref="T:System.ComponentModel.Design.CheckoutException">
         /// An attempt to check out a file that is checked into a source code management program did not succeed.
         /// </exception>
-        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
-        {
-            return base.EditValue(context, provider, value);
-        }
+        public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value) => base.EditValue(
+            context, provider, value);
     }
 }

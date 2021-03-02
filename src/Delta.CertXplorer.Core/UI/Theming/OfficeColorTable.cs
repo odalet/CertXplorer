@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Delta.CertXplorer.UI.Theming
 {
     /// <summary>Provides colors used for Microsoft Office display elements.</summary>
-    internal class OfficeColorTable : ProfessionalColorTable
+    internal sealed class OfficeColorTable : ProfessionalColorTable
     {
         private enum KnownColors
         {
@@ -221,10 +221,10 @@ namespace Delta.CertXplorer.UI.Theming
             msocbvcrWPTitleBkgdInactive = 0xce,
             msocbvcrWPTitleTextActive = 0xcf,
             msocbvcrWPTitleTextInactive = 0xd0,
-            msocbvcrXLFormulaBarBkgd = 0xd1,            
-            ButtonSelectedHighlight = 0xd2,  
+            msocbvcrXLFormulaBarBkgd = 0xd1,
+            ButtonSelectedHighlight = 0xd2,
             ButtonPressedHighlight = 0xd3,
-            ButtonCheckedHighlight = 0xd4            
+            ButtonCheckedHighlight = 0xd4
         }
 
         private const string aeroColorScheme = "AeroColor";
@@ -246,9 +246,9 @@ namespace Delta.CertXplorer.UI.Theming
             validSchemes = new List<string>()
             {
                 aeroColorScheme,
-                normalColorScheme, 
-                oliveColorScheme, 
-                royaleColorScheme, 
+                normalColorScheme,
+                oliveColorScheme,
+                royaleColorScheme,
                 silverColorScheme
             };
 
@@ -257,781 +257,383 @@ namespace Delta.CertXplorer.UI.Theming
             Luna = new OfficeColorTable(silverColorScheme);
             Royale = new OfficeColorTable(royaleColorScheme);
             Aero = new OfficeColorTable(aeroColorScheme);
-        }        
-
-        private string colorScheme = string.Empty;
-        private Dictionary<KnownColors, Color> professionalRGB = null;        
-
-        /// <summary>Initializes a new instance of the <see cref="T:System.Windows.Forms.BaseColorTable"></see> class. </summary>
-        private OfficeColorTable(string scheme) 
-        {
-            if (!validSchemes.Contains(scheme)) throw new ArgumentException(string.Format(
-                "Unknwon color scheme: {0}", scheme), "scheme");
-            colorScheme = scheme;
         }
 
-        private Color FromKnownColor(KnownColors color)
+        private readonly Dictionary<KnownColors, Color> professionalRGB;
+
+        private OfficeColorTable(string scheme)
         {
-            return ColorTable[color];
+            if (!validSchemes.Contains(scheme)) throw new ArgumentException($"Unknown color scheme: {scheme}", nameof(scheme));
+
+            professionalRGB = new Dictionary<KnownColors, Color>(212);
+            InitializeColors(professionalRGB, scheme);
         }
 
-        private Dictionary<KnownColors, Color> ColorTable
+        private static void InitializeColors(Dictionary<KnownColors, Color> rgbTable, string scheme)
         {
-            get
+            switch (scheme)
             {
-                if (professionalRGB == null)
-                {
-                    professionalRGB = new Dictionary<KnownColors, Color>(212);
-                    InitColors(ref professionalRGB);
-                }
-
-                return professionalRGB;
+                case aeroColorScheme:
+                    InitializeSystemColors(rgbTable);
+                    rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseOver] = rgbTable[KnownColors.ButtonSelectedHighlight];
+                    rgbTable[KnownColors.msocbvcrCBCtlBkgdSelected] = rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseOver];
+                    break;
+                case normalColorScheme:
+                    InitializeBlueLunaColors(rgbTable);
+                    break;
+                case oliveColorScheme:
+                    InitializeOliveLunaColors(rgbTable);
+                    break;
+                case silverColorScheme:
+                    InitializeSilverLunaColors(rgbTable);
+                    break;
+                case royaleColorScheme:
+                    InitializeRoyaleColors(rgbTable);
+                    break;
             }
+
+            InitializeCommonColors(rgbTable);
         }
 
-        #region Colors
+        private Color FromKnownColor(KnownColors color) => professionalRGB[color];
+
         /// <summary>Gets the starting color of the gradient used when the button is checked.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used when the button is checked.</returns>
         [Description("BaseColorsButtonCheckedGradientBeginDescr")]
-        public override Color ButtonCheckedGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradSelectedBegin);
-            }
-        }
+        public override Color ButtonCheckedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradSelectedBegin);
 
         /// <summary>Gets the end color of the gradient used when the button is checked.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used when the button is checked.</returns>
         [Description("BaseColorsButtonCheckedGradientEndDescr")]
-        public override Color ButtonCheckedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradSelectedEnd);
-            }
-        }
+        public override Color ButtonCheckedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradSelectedEnd);
 
         /// <summary>Gets the middle color of the gradient used when the button is checked.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used when the button is checked.</returns>
         [Description("BaseColorsButtonCheckedGradientMiddleDescr")]
-        public override Color ButtonCheckedGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradSelectedMiddle);
-            }
-        }
+        public override Color ButtonCheckedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradSelectedMiddle);
 
         /// <summary>Gets the solid color used when the button is checked.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color used when the button is checked.</returns>
         [Description("BaseColorsButtonCheckedHighlightDescr")]
-        public override Color ButtonCheckedHighlight
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.ButtonCheckedHighlight);
-            }
-        }
+        public override Color ButtonCheckedHighlight => FromKnownColor(KnownColors.ButtonCheckedHighlight);
 
         /// <summary>Gets the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonCheckedHighlight"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonCheckedHighlight"></see>.</returns>
         [Description("BaseColorsButtonCheckedHighlightBorderDescr")]
-        public override Color ButtonCheckedHighlightBorder
-        {
-            get
-            {
-                return SystemColors.Highlight;
-            }
-        }
+        public override Color ButtonCheckedHighlightBorder => SystemColors.Highlight;
 
         /// <summary>Gets the border color to use with the <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientBegin"></see>, <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientMiddle"></see>, and <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientEnd"></see> colors.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with the <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientBegin"></see>, <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientMiddle"></see>, and <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedGradientEnd"></see> colors.</returns>
         [Description("BaseColorsButtonPressedBorderDescr")]
-        public override Color ButtonPressedBorder
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
-            }
-        }
+        public override Color ButtonPressedBorder => FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
 
         /// <summary>Gets the starting color of the gradient used when the button is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used when the button is pressed.</returns>
         [Description("BaseColorsButtonPressedGradientBeginDescr")]
-        public override Color ButtonPressedGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseDownBegin);
-            }
-        }
+        public override Color ButtonPressedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownBegin);
 
         /// <summary>Gets the end color of the gradient used when the button is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used when the button is pressed.</returns>
         [Description("BaseColorsButtonPressedGradientEndDescr")]
-        public override Color ButtonPressedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseDownEnd);
-            }
-        }
+        public override Color ButtonPressedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownEnd);
 
         /// <summary>Gets the middle color of the gradient used when the button is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used when the button is pressed.</returns>
         [Description("BaseColorsButtonPressedGradientMiddleDescr")]
-        public override Color ButtonPressedGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseDownMiddle);
-            }
-        }
+        public override Color ButtonPressedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMouseDownMiddle);
 
         /// <summary>Gets the solid color used when the button is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color used when the button is pressed.</returns>
         [Description("BaseColorsButtonPressedHighlightDescr")]
-        public override Color ButtonPressedHighlight
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.ButtonPressedHighlight);
-            }
-        }
+        public override Color ButtonPressedHighlight => FromKnownColor(KnownColors.ButtonPressedHighlight);
 
         /// <summary>Gets the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedHighlight"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonPressedHighlight"></see>.</returns>
         [Description("BaseColorsButtonPressedHighlightBorderDescr")]
-        public override Color ButtonPressedHighlightBorder
-        {
-            get
-            {
-                return SystemColors.Highlight;
-            }
-        }
+        public override Color ButtonPressedHighlightBorder => SystemColors.Highlight;
 
         /// <summary>Gets the border color to use with the <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientBegin"></see>, <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientMiddle"></see>, and <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientEnd"></see> colors.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with the <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientBegin"></see>, <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientMiddle"></see>, and <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedGradientEnd"></see> colors.</returns>
         [Description("BaseColorsButtonSelectedBorderDescr")]
-        public override Color ButtonSelectedBorder
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
-            }
-        }
+        public override Color ButtonSelectedBorder => FromKnownColor(KnownColors.msocbvcrCBCtlBdrMouseOver);
 
         /// <summary>Gets the starting color of the gradient used when the button is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used when the button is selected.</returns>
         [Description("BaseColorsButtonSelectedGradientBeginDescr")]
-        public override Color ButtonSelectedGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
-            }
-        }
+        public override Color ButtonSelectedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
 
         /// <summary>Gets the end color of the gradient used when the button is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used when the button is selected.</returns>
         [Description("BaseColorsButtonSelectedGradientEndDescr")]
-        public override Color ButtonSelectedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
-            }
-        }
+        public override Color ButtonSelectedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
 
         /// <summary>Gets the middle color of the gradient used when the button is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used when the button is selected.</returns>
         [Description("BaseColorsButtonSelectedGradientMiddleDescr")]
-        public override Color ButtonSelectedGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseOverMiddle);
-            }
-        }
+        public override Color ButtonSelectedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverMiddle);
 
         /// <summary>Gets the solid color used when the button is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color used when the button is selected.</returns>
         [Description("BaseColorsButtonSelectedHighlightDescr")]
-        public override Color ButtonSelectedHighlight
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.ButtonSelectedHighlight);
-            }
-        }
+        public override Color ButtonSelectedHighlight => FromKnownColor(KnownColors.ButtonSelectedHighlight);
 
         /// <summary>Gets the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedHighlight"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with <see cref="P:System.Windows.Forms.BaseColorTable.ButtonSelectedHighlight"></see>.</returns>
         [Description("BaseColorsButtonSelectedHighlightBorderDescr")]
-        public override Color ButtonSelectedHighlightBorder
-        {
-            get
-            {
-                return this.ButtonPressedBorder;
-            }
-        }
+        public override Color ButtonSelectedHighlightBorder => ButtonPressedBorder;
 
         /// <summary>Gets the solid color to use when the button is checked and gradients are being used.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color to use when the button is checked and gradients are being used.</returns>
         [Description("BaseColorsCheckBackgroundDescr")]
-        public override Color CheckBackground
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelected);
-            }
-        }
+        public override Color CheckBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelected);
 
         /// <summary>Gets the solid color to use when the button is checked and selected and gradients are being used.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color to use when the button is checked and selected and gradients are being used.</returns>
         [Description("BaseColorsCheckPressedBackgroundDescr")]
-        public override Color CheckPressedBackground
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
-            }
-        }
+        public override Color CheckPressedBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
 
         /// <summary>Gets the solid color to use when the button is checked and selected and gradients are being used.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color to use when the button is checked and selected and gradients are being used.</returns>
         [Description("BaseColorsCheckSelectedBackgroundDescr")]
-        public override Color CheckSelectedBackground
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
-            }
-        }
+        public override Color CheckSelectedBackground => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver);
 
         /// <summary>Gets the color to use for shadow effects on the grip (move handle).</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the color to use for shadow effects on the grip (move handle).</returns>
         [Description("BaseColorsGripDarkDescr")]
-        public override Color GripDark
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBDragHandle);
-            }
-        }
+        public override Color GripDark => FromKnownColor(KnownColors.msocbvcrCBDragHandle);
 
         /// <summary>Gets the color to use for highlight effects on the grip (move handle).</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the color to use for highlight effects on the grip (move handle).</returns>
         [Description("BaseColorsGripLightDescr")]
-        public override Color GripLight
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBDragHandleShadow);
-            }
-        }
+        public override Color GripLight => FromKnownColor(KnownColors.msocbvcrCBDragHandleShadow);
 
         /// <summary>Gets the starting color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</returns>
         [Description("BaseColorsImageMarginGradientBeginDescr")]
-        public override Color ImageMarginGradientBegin
-        {
-            get
-            {
-                return FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
-            }
-        }
+        public override Color ImageMarginGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
 
         /// <summary>Gets the end color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</returns>
         [Description("BaseColorsImageMarginGradientEndDescr")]
-        public override Color ImageMarginGradientEnd
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertEnd); }
-        }
+        public override Color ImageMarginGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradVertEnd);
 
         /// <summary>Gets the middle color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see>.</returns>
         [Description("BaseColorsImageMarginGradientMiddleDescr")]
-        public override Color ImageMarginGradientMiddle
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle); }
-        }
+        public override Color ImageMarginGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle);
 
         /// <summary>Gets the starting color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</returns>
         [Description("BaseColorsImageMarginRevealedGradientBeginDescr")]
-        public override Color ImageMarginRevealedGradientBegin
-        {
-            get { return FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin); }
-        }
+        public override Color ImageMarginRevealedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedBegin);
 
         /// <summary>Gets the end color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</returns>
         [Description("BaseColorsImageMarginRevealedGradientEndDescr")]
-        public override Color ImageMarginRevealedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd);
-            }
-        }
+        public override Color ImageMarginRevealedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd);
 
         /// <summary>Gets the middle color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used in the image margin of a <see cref="T:System.Windows.Forms.ToolStripDropDownMenu"></see> when an item is revealed.</returns>
         [Description("BaseColorsImageMarginRevealedGradientMiddleDescr")]
-        public override Color ImageMarginRevealedGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
-            }
-        }
+        public override Color ImageMarginRevealedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
 
         /// <summary>Gets the color that is the border color to use on a <see cref="T:System.Windows.Forms.MenuStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use on a <see cref="T:System.Windows.Forms.MenuStrip"></see>.</returns>
         [Description("BaseColorsMenuBorderDescr")]
-        public override Color MenuBorder
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter);
-            }
-        }
+        public override Color MenuBorder => FromKnownColor(KnownColors.msocbvcrCBMenuBdrOuter);
 
         /// <summary>Gets the border color to use with a <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use with a <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see>.</returns>
         [Description("BaseColorsMenuItemBorderDescr")]
-        public override Color MenuItemBorder
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBdrSelected);
-            }
-        }
+        public override Color MenuItemBorder => FromKnownColor(KnownColors.msocbvcrCBCtlBdrSelected);
 
         /// <summary>Gets the starting color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</returns>
         [Description("BaseColorsMenuItemPressedGradientBeginDescr")]
-        public override Color MenuItemPressedGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdBegin);
-            }
-        }
+        public override Color MenuItemPressedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdBegin);
 
         /// <summary>Gets the end color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</returns>
         [Description("BaseColorsMenuItemPressedGradientEndDescr")]
-        public override Color MenuItemPressedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdEnd);
-            }
-        }
+        public override Color MenuItemPressedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMenuTitleBkgdEnd);
 
         /// <summary>Gets the middle color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used when a top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is pressed.</returns>
         [Description("BaseColorsMenuItemPressedGradientMiddleDescr")]
-        public override Color MenuItemPressedGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
-            }
-        }
+        public override Color MenuItemPressedGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradMenuIconBkgdDroppedMiddle);
 
         /// <summary>Gets the solid color to use when a <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> other than the top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid color to use when a <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> other than the top-level <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</returns>
         [Description("BaseColorsMenuItemSelectedDescr")]
-        public override Color MenuItemSelected
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBCtlBkgdMouseOver);
-            }
-        }
+        public override Color MenuItemSelected => FromKnownColor(KnownColors.msocbvcrCBCtlBkgdMouseOver);
 
         /// <summary>Gets the starting color of the gradient used when the <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used when the <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</returns>
         [Description("BaseColorsMenuItemSelectedGradientBeginDescr")]
-        public override Color MenuItemSelectedGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
-            }
-        }
+        public override Color MenuItemSelectedGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverBegin);
 
         /// <summary>Gets the end color of the gradient used when the <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used when the <see cref="T:System.Windows.Forms.ToolStripMenuItem"></see> is selected.</returns>
         [Description("BaseColorsMenuItemSelectedGradientEndDescr")]
-        public override Color MenuItemSelectedGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
-            }
-        }
+        public override Color MenuItemSelectedGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMouseOverEnd);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.MenuStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.MenuStrip"></see>.</returns>
         [Description("BaseColorsMenuStripGradientBeginDescr")]
-        public override Color MenuStripGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
-            }
-        }
+        public override Color MenuStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.MenuStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.MenuStrip"></see>.</returns>
         [Description("BaseColorsMenuStripGradientEndDescr")]
-        public override Color MenuStripGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
-            }
-        }
+        public override Color MenuStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</returns>
         [Description("BaseColorsOverflowButtonGradientBeginDescr")]
-        public override Color OverflowButtonGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradOptionsBegin);
-            }
-        }
+        public override Color OverflowButtonGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradOptionsBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</returns>
         [Description("BaseColorsOverflowButtonGradientEndDescr")]
-        public override Color OverflowButtonGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradOptionsEnd);
-            }
-        }
+        public override Color OverflowButtonGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradOptionsEnd);
 
         /// <summary>Gets the middle color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripOverflowButton"></see>.</returns>
         [Description("BaseColorsOverflowButtonGradientMiddleDescr")]
-        public override Color OverflowButtonGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradOptionsMiddle);
-            }
-        }
+        public override Color OverflowButtonGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradOptionsMiddle);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContainer"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContainer"></see>.</returns>
         [Description("BaseColorsRaftingContainerGradientBeginDescr")]
-        public override Color RaftingContainerGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
-            }
-        }
+        public override Color RaftingContainerGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContainer"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContainer"></see>.</returns>
         [Description("BaseColorsRaftingContainerGradientEndDescr")]
-        public override Color RaftingContainerGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
-            }
-        }
+        public override Color RaftingContainerGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
 
         /// <summary>Gets the color to use to for shadow effects on the <see cref="T:System.Windows.Forms.ToolStripSeparator"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the color to use to for shadow effects on the <see cref="T:System.Windows.Forms.ToolStripSeparator"></see>.</returns>
         [Description("BaseColorsSeparatorDarkDescr")]
-        public override Color SeparatorDark
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBSplitterLine);
-            }
-        }
+        public override Color SeparatorDark => FromKnownColor(KnownColors.msocbvcrCBSplitterLine);
 
         /// <summary>Gets the color to use to for highlight effects on the <see cref="T:System.Windows.Forms.ToolStripSeparator"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the color to use to for highlight effects on the <see cref="T:System.Windows.Forms.ToolStripSeparator"></see>.</returns>
         [Description("BaseColorsSeparatorLightDescr")]
-        public override Color SeparatorLight
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBSplitterLineLight);
-            }
-        }
+        public override Color SeparatorLight => FromKnownColor(KnownColors.msocbvcrCBSplitterLineLight);
 
         /// <summary>Gets the starting color of the gradient used on the <see cref="T:System.Windows.Forms.StatusStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used on the <see cref="T:System.Windows.Forms.StatusStrip"></see>.</returns>
         [Description("BaseColorsStatusStripGradientBeginDescr")]
-        public override Color StatusStripGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
-            }
-        }
+        public override Color StatusStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
 
         /// <summary>Gets the end color of the gradient used on the <see cref="T:System.Windows.Forms.StatusStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used on the <see cref="T:System.Windows.Forms.StatusStrip"></see>.</returns>
         [Description("BaseColorsStatusStripGradientEndDescr")]
-        public override Color StatusStripGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
-            }
-        }
-
-        internal Color TextBoxBorder
-        {
-            get
-            {
-                return this.ButtonSelectedHighlightBorder;
-            }
-        }
+        public override Color StatusStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
 
         /// <summary>Gets the border color to use on the bottom edge of the <see cref="T:System.Windows.Forms.ToolStrip"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the border color to use on the bottom edge of the <see cref="T:System.Windows.Forms.ToolStrip"></see>.</returns>
         [Description("BaseColorsToolStripBorderDescr")]
-        public override Color ToolStripBorder
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBShadow);
-            }
-        }
+        public override Color ToolStripBorder => FromKnownColor(KnownColors.msocbvcrCBShadow);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContentPanel"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContentPanel"></see>.</returns>
         [Description("BaseColorsToolStripContentPanelGradientBeginDescr")]
-        public override Color ToolStripContentPanelGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
-            }
-        }
+        public override Color ToolStripContentPanelGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContentPanel"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripContentPanel"></see>.</returns>
         [Description("BaseColorsToolStripContentPanelGradientEndDescr")]
-        public override Color ToolStripContentPanelGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
-            }
-        }
+        public override Color ToolStripContentPanelGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
 
         /// <summary>Gets the solid background color of the <see cref="T:System.Windows.Forms.ToolStripDropDown"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the solid background color of the <see cref="T:System.Windows.Forms.ToolStripDropDown"></see>.</returns>
         [Description("BaseColorsToolStripDropDownBackgroundDescr")]
-        public override Color ToolStripDropDownBackground
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBMenuBkgd);
-            }
-        }
+        public override Color ToolStripDropDownBackground => FromKnownColor(KnownColors.msocbvcrCBMenuBkgd);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</returns>
         [Description("BaseColorsToolStripGradientBeginDescr")]
-        public override Color ToolStripGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
-            }
-        }
+        public override Color ToolStripGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradVertBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</returns>
         [Description("BaseColorsToolStripGradientEndDescr")]
-        public override Color ToolStripGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradVertEnd);
-            }
-        }
+        public override Color ToolStripGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradVertEnd);
 
         /// <summary>Gets the middle color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the middle color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStrip"></see> background.</returns>
         [Description("BaseColorsToolStripGradientMiddleDescr")]
-        public override Color ToolStripGradientMiddle
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle);
-            }
-        }
+        public override Color ToolStripGradientMiddle => FromKnownColor(KnownColors.msocbvcrCBGradVertMiddle);
 
         /// <summary>Gets the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripPanel"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the starting color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripPanel"></see>.</returns>
         [Description("BaseColorsToolStripPanelGradientBeginDescr")]
-        public override Color ToolStripPanelGradientBegin
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
-            }
-        }
+        public override Color ToolStripPanelGradientBegin => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzBegin);
 
         /// <summary>Gets the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripPanel"></see>.</summary>
         /// <returns>A <see cref="T:System.Drawing.Color"></see> that is the end color of the gradient used in the <see cref="T:System.Windows.Forms.ToolStripPanel"></see>.</returns>
         [Description("BaseColorsToolStripPanelGradientEndDescr")]
-        public override Color ToolStripPanelGradientEnd
-        {
-            get
-            {
-                return this.FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
-            }
-        }
+        public override Color ToolStripPanelGradientEnd => FromKnownColor(KnownColors.msocbvcrCBGradMainMenuHorzEnd);
 
-        internal Color ComboBoxBorder
-        {
-            get
-            {
-                return this.ButtonSelectedHighlightBorder;
-            }
-        }
-
-        internal Color ComboBoxButtonGradientBegin
-        {
-            get
-            {
-                return this.MenuItemPressedGradientBegin;
-            }
-        }
-
-        internal Color ComboBoxButtonGradientEnd
-        {
-            get
-            {
-                return this.MenuItemPressedGradientEnd;
-            }
-        }
-
-        internal Color ComboBoxButtonOnOverflow
-        {
-            get
-            {
-                return this.ToolStripDropDownBackground;
-            }
-        }
-
-        internal Color ComboBoxButtonPressedGradientBegin
-        {
-            get
-            {
-                return this.ButtonPressedGradientBegin;
-            }
-        }
-
-        internal Color ComboBoxButtonPressedGradientEnd
-        {
-            get
-            {
-                return this.ButtonPressedGradientEnd;
-            }
-        }
-
-        internal Color ComboBoxButtonSelectedGradientBegin
-        {
-            get
-            {
-                return this.MenuItemSelectedGradientBegin;
-            }
-        }
-
-        internal Color ComboBoxButtonSelectedGradientEnd
-        {
-            get
-            {
-                return this.MenuItemSelectedGradientEnd;
-            }
-        }
-
-        #endregion
-
-        #region Static utilities
-
-        private static Color GetAlphaBlendedColor(Graphics graphics, Color src, Color dest, int alpha)
-        {
-            int r = ((src.R * alpha) + ((255 - alpha) * dest.R)) / 255;
-            int g = ((src.G * alpha) + ((255 - alpha) * dest.G)) / 255;
-            int b = ((src.B * alpha) + ((255 - alpha) * dest.B)) / 255;
-            int a = ((src.A * alpha) + ((255 - alpha) * dest.A)) / 255;
-
-            if (graphics == null) return Color.FromArgb(a, r, g, b);
-            else return graphics.GetNearestColor(Color.FromArgb(a, r, g, b));
-        }
+        internal Color TextBoxBorder => ButtonSelectedHighlightBorder;
+        internal Color ComboBoxBorder => ButtonSelectedHighlightBorder;
+        internal Color ComboBoxButtonGradientBegin => MenuItemPressedGradientBegin;
+        internal Color ComboBoxButtonGradientEnd => MenuItemPressedGradientEnd;
+        internal Color ComboBoxButtonOnOverflow => ToolStripDropDownBackground;
+        internal Color ComboBoxButtonPressedGradientBegin => ButtonPressedGradientBegin;
+        internal Color ComboBoxButtonPressedGradientEnd => ButtonPressedGradientEnd;
+        internal Color ComboBoxButtonSelectedGradientBegin => MenuItemSelectedGradientBegin;
+        internal Color ComboBoxButtonSelectedGradientEnd => MenuItemSelectedGradientEnd;
 
         private static Color GetAlphaBlendedColorHighRes(Graphics graphics, Color src, Color dest, int alpha)
         {
-            int factor = 100;
-            int inv_alpha = 100 - alpha;
+            var factor = 100;
+            var inverseAlpha = 100 - alpha;
 
             if (alpha >= 100)
             {
-                inv_alpha = 1000 - alpha;
+                inverseAlpha = 1000 - alpha;
                 factor = 1000;
             }
 
-            int r = (((alpha * src.R) + (inv_alpha * dest.R)) + (factor / 2)) / factor;
-            int g = (((alpha * src.G) + (inv_alpha * dest.G)) + (factor / 2)) / factor;
-            int b = (((alpha * src.B) + (inv_alpha * dest.B)) + (factor / 2)) / factor;
+            var r = (alpha * src.R + inverseAlpha * dest.R + factor / 2) / factor;
+            var g = (alpha * src.G + inverseAlpha * dest.G + factor / 2) / factor;
+            var b = (alpha * src.B + inverseAlpha * dest.B + factor / 2) / factor;
 
-            if (graphics == null) return Color.FromArgb(r, g, b);
-            else return graphics.GetNearestColor(Color.FromArgb(r, g, b));
+            return graphics == null ? 
+                Color.FromArgb(r, g, b) : 
+                graphics.GetNearestColor(Color.FromArgb(r, g, b));
         }
 
-        #endregion
-
-        #region Tables initialization
-
-        private void InitSystemColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeCommonColors(Dictionary<KnownColors, Color> rgbTable)
         {
-            InitCommonColors(ref rgbTable);
+            rgbTable[KnownColors.ButtonPressedHighlight] = SystemColors.Highlight;
+            rgbTable[KnownColors.ButtonCheckedHighlight] = SystemColors.ControlLight;
+            rgbTable[KnownColors.ButtonSelectedHighlight] = SystemColors.ControlLight;
+        }
 
-            Color buttonFace = SystemColors.ButtonFace;
-            Color buttonShadow = SystemColors.ButtonShadow;
-            Color highlight = SystemColors.Highlight;
-            Color window = SystemColors.Window;
-            Color empty = Color.Empty;
-            Color controlText = SystemColors.ControlText;
-            Color buttonHighlight = SystemColors.ButtonHighlight;
-            Color grayText = SystemColors.GrayText;
-            Color highlightText = SystemColors.HighlightText;
-            Color windowText = SystemColors.WindowText;
-            Color color11 = buttonFace;
-            Color color12 = buttonFace;
-            Color color13 = buttonFace;
-            Color color14 = highlight;
-            Color color15 = highlight;
+        private static void InitializeSystemColors(Dictionary<KnownColors, Color> rgbTable)
+        {
+            InitializeCommonColors(rgbTable);
 
-            color11 = GetAlphaBlendedColorHighRes(null, buttonFace, window, 0x17);
-            color12 = GetAlphaBlendedColorHighRes(null, buttonFace, window, 50);
-            color13 = SystemColors.ButtonFace;
-            color14 = GetAlphaBlendedColorHighRes(null, highlight, window, 30);
-            color15 = GetAlphaBlendedColorHighRes(null, highlight, window, 50);
+            var buttonFace = SystemColors.ButtonFace;
+            var buttonShadow = SystemColors.ButtonShadow;
+            var highlight = SystemColors.Highlight;
+            var window = SystemColors.Window;
+            var empty = Color.Empty;
+            var controlText = SystemColors.ControlText;
+            var buttonHighlight = SystemColors.ButtonHighlight;
+            var grayText = SystemColors.GrayText;
+            var highlightText = SystemColors.HighlightText;
+            var windowText = SystemColors.WindowText;
+            var color11 = GetAlphaBlendedColorHighRes(null, buttonFace, window, 23);
+            var color12 = GetAlphaBlendedColorHighRes(null, buttonFace, window, 50);
+            var color13 = SystemColors.ButtonFace;
+            var color14 = GetAlphaBlendedColorHighRes(null, highlight, window, 30);
+            var color15 = GetAlphaBlendedColorHighRes(null, highlight, window, 50);
+
             rgbTable[KnownColors.msocbvcrCBBkgd] = GetAlphaBlendedColorHighRes(null, window, buttonFace, 0xa5);
             rgbTable[KnownColors.msocbvcrCBCtlBkgdSelectedMouseOver] = GetAlphaBlendedColorHighRes(null, highlight, window, 50);
             rgbTable[KnownColors.msocbvcrCBDragHandle] = GetAlphaBlendedColorHighRes(null, buttonShadow, window, 0x4b);
@@ -1043,7 +645,7 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrCBGradMenuIconBkgdDroppedEnd] = GetAlphaBlendedColorHighRes(null, buttonFace, window, 90);
             rgbTable[KnownColors.msocbvcrCBMenuBdrOuter] = GetAlphaBlendedColorHighRes(null, controlText, buttonShadow, 20);
             rgbTable[KnownColors.msocbvcrCBMenuBkgd] = GetAlphaBlendedColorHighRes(null, buttonFace, window, 0x8f);
-            rgbTable[KnownColors.msocbvcrCBSplitterLine] = GetAlphaBlendedColorHighRes(null, buttonShadow, window, 70);            
+            rgbTable[KnownColors.msocbvcrCBSplitterLine] = GetAlphaBlendedColorHighRes(null, buttonShadow, window, 70);
             rgbTable[KnownColors.msocbvcrCBCtlBkgdSelected] = highlight;
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = buttonFace;
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = buttonShadow;
@@ -1262,7 +864,7 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrXLFormulaBarBkgd] = buttonFace;
         }
 
-        private void InitBlueLunaColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeBlueLunaColors(Dictionary<KnownColors, Color> rgbTable)
         {
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0xc4, 0xcd, 0xda);
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0xc4, 0xcd, 0xda);
@@ -1508,14 +1110,7 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrXLFormulaBarBkgd] = Color.FromArgb(0x9e, 190, 0xf5);
         }
 
-        private void InitCommonColors(ref Dictionary<KnownColors, Color> rgbTable)
-        {
-            rgbTable[KnownColors.ButtonPressedHighlight] = SystemColors.Highlight;
-            rgbTable[KnownColors.ButtonCheckedHighlight] = SystemColors.ControlLight;
-            rgbTable[KnownColors.ButtonSelectedHighlight] = SystemColors.ControlLight;
-        }
-
-        private void InitOliveLunaColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeOliveLunaColors(Dictionary<KnownColors, Color> rgbTable)
         {
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0x51, 0x5e, 0x33);
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0x51, 0x5e, 0x33);
@@ -1761,7 +1356,7 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrXLFormulaBarBkgd] = Color.FromArgb(0xd9, 0xd9, 0xa7);
         }
 
-        private void InitRoyaleColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeRoyaleColors(Dictionary<KnownColors, Color> rgbTable)
         {
             rgbTable[KnownColors.msocbvcrCBBkgd] = Color.FromArgb(0xee, 0xed, 240);
             rgbTable[KnownColors.msocbvcrCBDragHandle] = Color.FromArgb(0xbd, 0xbc, 0xbf);
@@ -1975,7 +1570,7 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrPubWebDocScratchPageBkgd] = Color.FromArgb(0xc1, 210, 0xee);
         }
 
-        private void InitSilverLunaColors(ref Dictionary<KnownColors, Color> rgbTable)
+        private static void InitializeSilverLunaColors(Dictionary<KnownColors, Color> rgbTable)
         {
             rgbTable[KnownColors.msocbvcrCBBdrOuterDocked] = Color.FromArgb(0xad, 0xae, 0xc1);
             rgbTable[KnownColors.msocbvcrCBBdrOuterFloating] = Color.FromArgb(0x7a, 0x79, 0x99);
@@ -2216,51 +1811,5 @@ namespace Delta.CertXplorer.UI.Theming
             rgbTable[KnownColors.msocbvcrWPTitleTextInactive] = Color.FromArgb(0, 0, 0);
             rgbTable[KnownColors.msocbvcrXLFormulaBarBkgd] = Color.FromArgb(0xd7, 0xd7, 0xe5);
         }
-
-        #endregion
-
-        internal void InitColors()
-        {
-            if (professionalRGB == null)
-                professionalRGB = new Dictionary<KnownColors, Color>(212);
-            InitColors(ref professionalRGB);
-        }
-
-        private void InitColors(ref Dictionary<KnownColors, Color> rgbTable)
-        {
-            InitColors(ref rgbTable, colorScheme);
-        }
-
-        private void InitColors(ref Dictionary<KnownColors, Color> rgbTable, string scheme)
-        {
-            switch (scheme)
-            {
-                case aeroColorScheme:
-                    InitSystemColors(ref rgbTable);
-                    rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseOver] = rgbTable[KnownColors.ButtonSelectedHighlight];
-                    rgbTable[KnownColors.msocbvcrCBCtlBkgdSelected] = rgbTable[KnownColors.msocbvcrCBCtlBkgdMouseOver];
-                    break;
-                case normalColorScheme:
-                    InitBlueLunaColors(ref rgbTable);
-                    break;
-                case oliveColorScheme:
-                    InitOliveLunaColors(ref rgbTable);
-                    break;
-                case silverColorScheme:
-                    InitSilverLunaColors(ref rgbTable);
-                    break;
-                case royaleColorScheme:
-                    InitRoyaleColors(ref rgbTable);
-                    break;
-            }
-
-            InitCommonColors(ref rgbTable);
-        }
-
-        internal void ResetRGBTable()
-        {
-            if (professionalRGB != null) professionalRGB.Clear();
-            professionalRGB = null;
-        }
-    }   
+    }
 }

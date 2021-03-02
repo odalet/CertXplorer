@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
@@ -30,7 +31,7 @@ namespace Delta.CertXplorer.UI
                 return;
             }
 
-            const int WM_PAINT = 0x000F;
+            ////const int WM_PAINT = 0x000F;
 
             switch (m.Msg)
             {
@@ -91,8 +92,12 @@ namespace Delta.CertXplorer.UI
             if (ok)
             {
                 Sort();
-                if (info != null) info.Direction = info.Direction == SortDirection.Ascending ? 
-                        SortDirection.Descending : SortDirection.Ascending;
+                var order = info.Direction == SortDirection.Ascending ? SortOrder.Ascending : SortOrder.Descending;
+                SetSortIcon(columnIndex, order);
+
+                // Direction to apply when clicking again
+                info.Direction = info.Direction == SortDirection.Ascending ? 
+                    SortDirection.Descending : SortDirection.Ascending;
             }
         }
 
@@ -116,6 +121,40 @@ namespace Delta.CertXplorer.UI
             {
                 if (!sortProperties.ContainsKey(ch.Index))
                     sortProperties.Add(ch.Index, new SortInformation());
+            }
+        }
+
+        // Grabbed from https://www.codeproject.com/Tips/734463/Sort-listview-Columns-and-Set-Sort-Arrow-Icon-on-C
+        private void SetSortIcon(int columnIndex, SortOrder order)
+        {
+            var columnHeader = SendMessage(Handle, LVM_GETHEADER, IntPtr.Zero, IntPtr.Zero);
+            var columnHeaderPtr = new IntPtr(columnHeader);
+            for (var columnNumber = 0; columnNumber <= Columns.Count - 1; columnNumber++)
+            {
+                var columnPtr = new IntPtr(columnNumber);
+                var lvColumn = new LVCOLUMN { mask = HDI_FORMAT };
+
+                _ = SendMessageLVCOLUMN(columnHeaderPtr, HDM_GETITEM, columnPtr, ref lvColumn);
+
+                if (order != SortOrder.None && columnNumber == columnIndex)
+                {
+                    switch (order)
+                    {
+                        case SortOrder.Ascending:
+                            lvColumn.fmt &= ~HDF_SORTDOWN;
+                            lvColumn.fmt |= HDF_SORTUP;
+                            break;
+                        case SortOrder.Descending:
+                            lvColumn.fmt &= ~HDF_SORTUP;
+                            lvColumn.fmt |= HDF_SORTDOWN;
+                            break;
+                    }
+
+                    lvColumn.fmt |= HDF_BITMAP_ON_RIGHT;
+                }
+                else lvColumn.fmt &= ~HDF_SORTDOWN & ~HDF_SORTUP & ~HDF_BITMAP_ON_RIGHT;
+
+                _ = SendMessageLVCOLUMN(columnHeaderPtr, HDM_SETITEM, columnPtr, ref lvColumn);
             }
         }
     }
