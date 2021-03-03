@@ -1,5 +1,9 @@
 # CertXplorer
 
+[![Build](https://github.com/odalet/CertXplorer/workflows/Build/badge.svg)](https://github.com/odalet/CertXplorer/actions?query=workflow%3ABuild)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=odalet_CertXplorer&metric=alert_status)](https://sonarcloud.io/dashboard?id=odalet_CertXplorer)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=odalet/CertXplorer)](https://dependabot.com)
+
 **CertXplorer** is a GUI allowing to explore the machine's certificates stores as well as decoding **ASN.1/DER** encoded files.
 
 ## History
