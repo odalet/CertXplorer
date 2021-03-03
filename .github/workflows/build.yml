@@ -75,7 +75,7 @@ jobs:
     - name: Build Windows .NET 4.7.2
       run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=false /p:OutputPath=${{ github.workspace }}/build/
     - name: End Sonar Analysis
-      run: .\.sonar\scanner\dotnet-sonarscanner /d:sonar.login="${{secrets.SONAR_TOKEN}}"
+      run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: Collect Windows .NET 4.7.2 executable
