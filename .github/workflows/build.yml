@@ -48,11 +48,13 @@ jobs:
       id: gitversion # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v0.9.5
     - name: Install SonarScanner
-      run: dotnet tool install --global dotnet-sonarscanner      
+      run: dotnet tool install --global dotnet-sonarscanner
+    - name: Restore
+      run: dotnet restore "${{ env.SOLUTION }}" --configfile ./nuget.config
     - name: Begin Sonar Analysis
       run: dotnet sonarscanner begin /key:"odalet_CertXplorer" /name:"CertXplorer" /version:"${{ steps.gitversion.outputs.majorMinorPatch }}" /organization:"odalet" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.host.url=https://sonarcloud.io
     - name: Build Windows .NET 4.7.2
-      run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=true /p:OutputPath=${{ github.workspace }}/build/
+      run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=false /p:OutputPath=${{ github.workspace }}/build/
     - name: End Sonar Analysis
       run: dotnet sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
       env:
