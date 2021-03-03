@@ -10,7 +10,7 @@ namespace Delta.CertXplorer.ThisImplementation
     /// <remarks>
     /// This is a basically a C# translation of <c>Microsoft.VisualBasic.FileIO.FileSystem</c>.
     /// </remarks>
-    public class FileSystemProxy
+    public sealed class FileSystemProxy
     {
         public SpecialDirectoriesProxy SpecialDirectories { get; } = new SpecialDirectoriesProxy();
 
