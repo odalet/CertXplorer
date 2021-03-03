@@ -17,7 +17,7 @@
   </PropertyGroup>
 
   <!-- Required by "deterministic" local builds: see https://github.com/dotnet/roslyn/issues/37379 -->
-  <ItemGroup Condition="'$(GITHUB_ACTIONS)' != 'true'">
+  <ItemGroup Condition="'$(TF_BUILD)' != 'true'">
     <SourceRoot Include="$(MSBuildThisFileDirectory)/"/>
   </ItemGroup>
 
