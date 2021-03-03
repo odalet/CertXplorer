@@ -52,11 +52,7 @@ jobs:
       shell: powershell
       run: |
         New-Item -Path .\.sonar\scanner -ItemType Directory
-        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner            
-    # - name: Setup .NET Core
-    #   uses: actions/setup-dotnet@v1
-    #   with:
-    #     dotnet-version: 3.1.101
+        dotnet tool update dotnet-sonarscanner --tool-path .\.sonar\scanner
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1
     - name: Install GitVersion
@@ -66,14 +62,16 @@ jobs:
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v0.9.5
-    # - name: Install SonarScanner
-    #   run: dotnet tool install --global dotnet-sonarscanner
     - name: Restore
       run: dotnet restore "${{ env.SOLUTION }}" --configfile ./nuget.config
     - name: Begin Sonar Analysis
-      run: .\.sonar\scanner\dotnet-sonarscanner begin /key:"odalet_CertXplorer" /name:"CertXplorer" /version:"${{ steps.gitversion.outputs.majorMinorPatch }}" /organization:"odalet" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.host.url=https://sonarcloud.io
-    - name: Build Windows .NET 4.7.2
-      run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=false /p:OutputPath=${{ github.workspace }}/build/
+      run: .\.sonar\scanner\dotnet-sonarscanner begin /key:"odalet_CertXplorer" /name:"CertXplorer" /version:"${{ steps.gitversion.outputs.majorMinorPatch }}" /organization:"odalet" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/*.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.host.url=https://sonarcloud.io
+    # - name: Build Windows .NET 4.7.2
+    #   run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=false /p:OutputPath=${{ github.workspace }}/build/
+    - name: Build
+      run: dotnet build "${{ env.SOLUTION }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-restore
+    - name: Test
+      run: dotnet test "${{ env.SOLUTION }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-restore --no-build --logger trx --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
     - name: End Sonar Analysis
       run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
       env:

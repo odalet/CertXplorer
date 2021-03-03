@@ -8,6 +8,7 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/odalet/CertXplorer</PackageProjectUrl>
     <!--<PackageIcon>logo.png</PackageIcon>-->
+    <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
   </PropertyGroup>
 
   <!-- Deterministic Builds -->
