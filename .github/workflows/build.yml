@@ -66,8 +66,6 @@ jobs:
       run: dotnet restore "${{ env.SOLUTION }}" --configfile ./nuget.config
     - name: Begin Sonar Analysis
       run: .\.sonar\scanner\dotnet-sonarscanner begin /key:"odalet_CertXplorer" /name:"CertXplorer" /version:"${{ steps.gitversion.outputs.majorMinorPatch }}" /organization:"odalet" /d:sonar.cs.vstest.reportsPaths="**/TestResults/**/*.trx" /d:sonar.cs.opencover.reportsPaths="**/TestResults/**/*.opencover.xml" /d:sonar.coverage.exclusions="**Tests.cs" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.verbose=true /d:sonar.host.url=https://sonarcloud.io
-    # - name: Build Windows .NET 4.7.2
-    #   run: msbuild "${{ env.SOLUTION }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:RestorePackages=false /p:OutputPath=${{ github.workspace }}/build/
     - name: Build
       run: dotnet build "${{ env.SOLUTION }}" --configuration "${{ env.BUILD_CONFIGURATION }}" --no-restore
     - name: Test
@@ -76,7 +74,7 @@ jobs:
       run: .\.sonar\scanner\dotnet-sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: Collect Windows .NET 4.7.2 executable
+    - name: Collect Windows executable
       uses: actions/upload-artifact@v2
       with:
         name: CertXplorer
@@ -94,10 +92,10 @@ jobs:
         release_name: ${{ github.ref }}
         draft: true
         prerelease: false    
-    - name: Zip Windows .NET 4.7.2 executable
+    - name: Zip Windows executable
       if: startsWith(github.ref, 'refs/tags/v') 
       run: 7z a ${{ github.workspace }}/build/CertXplorer.zip ${{ github.workspace }}/build/*.*        
-    - name: Upload Windows .NET 4.7.2 executable to Release
+    - name: Upload Windows executable to Release
       if: startsWith(github.ref, 'refs/tags/v') 
       uses: actions/upload-release-asset@v1
       env:
