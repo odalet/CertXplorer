@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<layouts>
+  <layout key="Delta.CertXplorer.Chrome">
+    <bounds value="40, 40, 1200, 800" />
+    <state value="Normal" />
+    <docking>
+      <!--DockPanel configuration file. Author: Weifen Luo, all rights reserved.-->
+      <!--!!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!!-->
+      <DockPanel FormatVersion="1.0" DockLeftPortion="0.25" DockRightPortion="0.25" DockTopPortion="0.25" DockBottomPortion="0.25" ActiveDocumentPane="4" ActivePane="1">
+        <Contents Count="5">
+          <Content ID="0" PersistString="2a823517-2135-4417-9b82-3a43edbe4532" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+          <Content ID="1" PersistString="5d07d1f4-652a-4b0b-bb1d-7a269ac7134d" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+          <Content ID="2" PersistString="34e7f36c-0078-41fc-a9cd-46adee8a2fa8" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+          <Content ID="3" PersistString="70b5e014-8dac-4cfb-9a5a-5d5e93ba6dfe" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+          <Content ID="4" PersistString="9452b3a0-7efa-4638-b3e4-57b9479cbdfb" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+        </Contents>
+        <Panes Count="5">
+          <Pane ID="0" DockState="DockBottom" ActiveContent="0">
+            <Contents Count="1">
+              <Content ID="0" RefID="0" />
+            </Contents>
+          </Pane>
+          <Pane ID="1" DockState="DockLeft" ActiveContent="1">
+            <Contents Count="1">
+              <Content ID="0" RefID="1" />
+            </Contents>
+          </Pane>
+          <Pane ID="2" DockState="DockLeft" ActiveContent="2">
+            <Contents Count="1">
+              <Content ID="0" RefID="2" />
+            </Contents>
+          </Pane>
+          <Pane ID="3" DockState="DockRight" ActiveContent="3">
+            <Contents Count="1">
+              <Content ID="0" RefID="3" />
+            </Contents>
+          </Pane>
+          <Pane ID="4" DockState="Document" ActiveContent="4">
+            <Contents Count="1">
+              <Content ID="0" RefID="4" />
+            </Contents>
+          </Pane>
+        </Panes>
+        <DockWindows>
+          <DockWindow ID="0" DockState="Document" ZOrderIndex="1">
+            <NestedPanes Count="1">
+              <Pane ID="0" RefID="4" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+            </NestedPanes>
+          </DockWindow>
+          <DockWindow ID="1" DockState="DockLeft" ZOrderIndex="4">
+            <NestedPanes Count="2">
+              <Pane ID="0" RefID="2" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
+              <Pane ID="1" RefID="1" PrevPane="2" Alignment="Bottom" Proportion="0.5" />
+            </NestedPanes>
+          </DockWindow>
+          <DockWindow ID="2" DockState="DockRight" ZOrderIndex="2">
+            <NestedPanes Count="1">
+              <Pane ID="0" RefID="3" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
+            </NestedPanes>
+          </DockWindow>
+          <DockWindow ID="3" DockState="DockTop" ZOrderIndex="5">
+            <NestedPanes Count="0" />
+          </DockWindow>
+          <DockWindow ID="4" DockState="DockBottom" ZOrderIndex="3">
+            <NestedPanes Count="1">
+              <Pane ID="0" RefID="0" PrevPane="-1" Alignment="Right" Proportion="0.5" />
+            </NestedPanes>
+          </DockWindow>
+        </DockWindows>
+        <FloatWindows Count="0" />
+      </DockPanel>
+    </docking>
+  </layout>
+  <layout key="2a823517-2135-4417-9b82-3a43edbe4532">
+    <bounds value="1, 22, 877, 140" />
+    <state value="Normal" />
+  </layout>
+  <layout key="5d07d1f4-652a-4b0b-bb1d-7a269ac7134d">
+    <bounds value="1, 22, 285, 313" />
+    <state value="Normal" />
+  </layout>
+  <layout key="34e7f36c-0078-41fc-a9cd-46adee8a2fa8">
+    <bounds value="1, 22, 285, 313" />
+    <state value="Normal" />
+  </layout>
+  <layout key="70b5e014-8dac-4cfb-9a5a-5d5e93ba6dfe">
+    <bounds value="1, 22, 285, 486" />
+    <state value="Normal" />
+  </layout>
+  <layout key="9452b3a0-7efa-4638-b3e4-57b9479cbdfb">
+    <bounds value="1, 21, 584, 487" />
+    <state value="Normal" />
+  </layout>
+</layouts>
