@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
@@ -16,6 +17,7 @@ using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer.CertManager
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Winforms convention")]
     public partial class CertificateListControl : ServicedUserControl, ISelectionSource
     {
         private object parentObject = null;
@@ -41,9 +43,6 @@ namespace Delta.CertXplorer.CertManager
             UpdateViewMenu();
         }
 
-        /// <summary>
-        /// Occurs when the currently selected object has changed.
-        /// </summary>
         public event EventHandler SelectionChanged;
 
         [DefaultValue(BorderStyle.Fixed3D)]
@@ -53,15 +52,13 @@ namespace Delta.CertXplorer.CertManager
             set => listView.BorderStyle = value;
         }
 
-        /// <summary>
-        /// Gets the currently selected object.
-        /// </summary>
-        /// <value>The selected object.</value>
         public object SelectedObject { get; private set; }
-
         private string CurrentStoreName { get; set; }
-
         private StoreLocation CurrentStoreLocation { get; set; }
+
+        private IEnumerable<Certificate> Certificates { get; set; }
+        private IEnumerable<CertificateRevocationList> CertificateRevocationLists { get; set; }
+        private IEnumerable<CertificateTrustList> CertificateTrustLists { get; set; }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -166,20 +163,18 @@ namespace Delta.CertXplorer.CertManager
                     parentObject = service.SelectedObject;
                     var systemStore = (CertificateStore)parentObject;
                     var store = systemStore.GetX509Store();
-
-                    // See http://msdn.microsoft.com/en-us/library/aa376559%28VS.85%29.aspx : CERT_STORE_PROV_PHYSICAL
-                    //var store = new X509Store(systemStore.Name + "\\.Default", systemStore.Location.ToStoreLocation());
-
                     store.Open(OpenFlags.ReadOnly);
 
                     CurrentStoreName = store.Name;
                     CurrentStoreLocation = store.Location;
 
-                    FillList(
-                        store.GetCertificates(),
-                        store.GetCertificateRevocationLists(),
-                        store.GetCertificateTrustLists());
+                    Certificates = store.GetCertificates();
+                    CertificateRevocationLists = store.GetCertificateRevocationLists();
+                    CertificateTrustLists = store.GetCertificateTrustLists();
+
                     store.Close();
+
+                    FilterList();
                 }
             };
 
@@ -193,6 +188,41 @@ namespace Delta.CertXplorer.CertManager
             SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        private void FilterList()
+        {
+            static bool match(string input, string filter) => input.ToUpperInvariant().Contains(filter.ToUpperInvariant());
+
+            bool certificateFilter(Certificate c) =>
+                match(FormatDN(c.IssuerName), filterBox.Text) ||
+                match(FormatDate(c.X509.NotBefore), filterBox.Text) ||
+                match(FormatDate(c.X509.NotAfter), filterBox.Text) ||
+                match(c.FriendlyName, filterBox.Text);
+
+            bool crlFilter(CertificateRevocationList c) =>
+                match(FormatDN(c.IssuerName), filterBox.Text) ||
+                match(FormatDate(c.PublicationDate), filterBox.Text) ||
+                match(FormatDate(c.NextUpdate), filterBox.Text) ||
+                match(c.FriendlyName, filterBox.Text);
+
+            bool ctlFilter(CertificateTrustList c) =>
+                match(FormatDate(c.PublicationDate), filterBox.Text) ||
+                match(FormatDate(c.NextUpdate), filterBox.Text) ||
+                match(c.FriendlyName, filterBox.Text);
+
+            var certificates = Certificates;
+            var certificateRevocationLists = CertificateRevocationLists;
+            var certificateTrustLists = CertificateTrustLists;
+
+            if (!string.IsNullOrEmpty(filterBox.Text))
+            {
+                certificates = certificates.Where(certificateFilter);
+                certificateRevocationLists = certificateRevocationLists.Where(crlFilter);
+                certificateTrustLists = certificateTrustLists.Where(ctlFilter);
+            }
+
+            FillList(certificates, certificateRevocationLists, certificateTrustLists);
+        }
+
         private void FillList(
             IEnumerable<Certificate> certificates,
             IEnumerable<CertificateRevocationList> crls,
@@ -204,38 +234,37 @@ namespace Delta.CertXplorer.CertManager
             const int ctlImageIndex = 3;
 
             var items = certificates.Select(certificate =>
-                {
-                    var item = new ListViewItem(FormatDN(certificate.SubjectName));
+            {
+                var item = new ListViewItem(FormatDN(certificate.SubjectName));
                 // TODO: don't use X509Certificate class, but the Certificate wrapper 
                 // (and replace "new Certificate(certificate).IsValid" by "certificate.IsValid"
                 if (!certificate.IsValid) item.ForeColor = Color.Red;
-                    item.ImageIndex = certificate.HasPrivateKey ? certificateWithPrivateKeyImageIndex : certificateImageIndex;
-                    item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
-                    {
+                item.ImageIndex = certificate.HasPrivateKey ? certificateWithPrivateKeyImageIndex : certificateImageIndex;
+                item.Tag = certificate;
+                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
+                {
                     new ListViewItem.ListViewSubItem(item, FormatDN(certificate.IssuerName)),
                     new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotBefore)),
                     new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotAfter)),
                     new ListViewItem.ListViewSubItem(item, certificate.FriendlyName)
-                    });
-                    item.Tag = certificate;
-
-                    return item;
                 });
+
+                return item;
+            });
 
             var crlItems = crls.Select(crl =>
             {
                 var item = new ListViewItem("Revocation List");
                 if (!crl.IsValid) item.ForeColor = Color.Red;
                 item.ImageIndex = crlImageIndex;
-                item.SubItems.AddRange(
-                    new ListViewItem.ListViewSubItem[]
-                    {
-                        new ListViewItem.ListViewSubItem(item, FormatDN(crl.IssuerName)),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(crl.PublicationDate)),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(crl.NextUpdate)),
-                        new ListViewItem.ListViewSubItem(item, crl.FriendlyName)
-                    });
                 item.Tag = crl;
+                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
+                {
+                    new ListViewItem.ListViewSubItem(item, FormatDN(crl.IssuerName)),
+                    new ListViewItem.ListViewSubItem(item, FormatDate(crl.PublicationDate)),
+                    new ListViewItem.ListViewSubItem(item, FormatDate(crl.NextUpdate)),
+                    new ListViewItem.ListViewSubItem(item, crl.FriendlyName)
+                });
 
                 return item;
             });
@@ -245,15 +274,14 @@ namespace Delta.CertXplorer.CertManager
                 var item = new ListViewItem("Trust List");
                 if (!ctl.IsValid) item.ForeColor = Color.Red;
                 item.ImageIndex = ctlImageIndex;
-                item.SubItems.AddRange(
-                    new ListViewItem.ListViewSubItem[]
-                    {
-                        new ListViewItem.ListViewSubItem(item, string.Empty),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(ctl.PublicationDate)),
-                        new ListViewItem.ListViewSubItem(item, FormatDate(ctl.NextUpdate)),
-                        new ListViewItem.ListViewSubItem(item, ctl.FriendlyName)
-                    });
                 item.Tag = ctl;
+                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
+                {
+                    new ListViewItem.ListViewSubItem(item, string.Empty),
+                    new ListViewItem.ListViewSubItem(item, FormatDate(ctl.PublicationDate)),
+                    new ListViewItem.ListViewSubItem(item, FormatDate(ctl.NextUpdate)),
+                    new ListViewItem.ListViewSubItem(item, ctl.FriendlyName)
+                });
 
                 return item;
             });
@@ -306,5 +334,7 @@ namespace Delta.CertXplorer.CertManager
         private string FormatDate(DateTime date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
 
         private string FormatDate(DateTimeOffset date) => date == DateTimeOffset.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
+
+        private void filterBox_TextChanged(object sender, EventArgs e) => FilterList();
     }
 }

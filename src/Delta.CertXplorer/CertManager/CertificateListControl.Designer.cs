@@ -30,7 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(CertificateListControl));
-            this.listView = new Delta.CertXplorer.UI.ListViewEx();
+            this.listView = new Delta.CertXplorer.UI.ListViewEx(this.components);
             this.chSubject = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chIssuer = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.chCreationDate = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -51,6 +51,8 @@
             this.actions = new Delta.CertXplorer.UI.Actions.UIActionsManager();
             this.openCertificateAction = new Delta.CertXplorer.UI.Actions.UIAction();
             this.viewInformationAction = new Delta.CertXplorer.UI.Actions.UIAction();
+            this.filterBox = new System.Windows.Forms.ToolStripTextBox();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.listContextMenu.SuspendLayout();
             this.tstrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.actions)).BeginInit();
@@ -65,6 +67,7 @@
             this.chExpirationDate,
             this.chFriendlyName});
             this.listView.ContextMenuStrip = this.listContextMenu;
+            this.listView.ControlPadding = new System.Windows.Forms.Padding(4);
             this.listView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.listView.FullRowSelect = true;
             this.listView.HideSelection = false;
@@ -146,7 +149,9 @@
             // 
             this.tstrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.tstrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.viewDropDownButton});
+            this.viewDropDownButton,
+            this.toolStripLabel1,
+            this.filterBox});
             this.tstrip.Location = new System.Drawing.Point(0, 0);
             this.tstrip.Name = "tstrip";
             this.tstrip.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
@@ -205,6 +210,19 @@
             this.actions.Actions.Add(this.viewInformationAction);
             this.actions.ContainerControl = this;
             // 
+            // filterBox
+            // 
+            this.filterBox.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.filterBox.Name = "filterBox";
+            this.filterBox.Size = new System.Drawing.Size(200, 25);
+            this.filterBox.TextChanged += new System.EventHandler(this.filterBox_TextChanged);
+            // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(36, 22);
+            this.toolStripLabel1.Text = "Filter:";
+            // 
             // CertificateListControl
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -245,6 +263,7 @@
         private Delta.CertXplorer.UI.Actions.UIAction openCertificateAction;
         private Delta.CertXplorer.UI.Actions.UIAction viewInformationAction;
         private System.Windows.Forms.ToolStripMenuItem viewInformationToolStripMenuItem;
-
+        private System.Windows.Forms.ToolStripTextBox filterBox;
+        private System.Windows.Forms.ToolStripLabel toolStripLabel1;
     }
 }
