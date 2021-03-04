@@ -1,56 +1,36 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Runtime.InteropServices;
-
 using Delta.CapiNet.Internals;
 
 namespace Delta.CapiNet
 {
-    /// <summary>
-    /// Represents A Certificate Revocation List.
-    /// </summary>
-    public class CertificateRevocationList
-    {
-        private byte[] cachedData = null;
-        private DateTimeOffset thisUpdate = DateTimeOffset.MinValue;
-        private DateTimeOffset nextUpdate = DateTimeOffset.MinValue;
-        private X500DistinguishedName issuerName = null; // cached Issuer Name
-        private CrlContextHandle safeHandle = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificateRevocationList"/> class.
-        /// </summary>
-        public CertificateRevocationList() 
-        {
-            safeHandle = CrlContextHandle.InvalidHandle;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CertificateRevocationList"/> class.
-        /// </summary>
-        /// <param name="handle">The handle.</param>
-        /// <exception cref="System.ArgumentException">Invalid Handle</exception>
-        public CertificateRevocationList(IntPtr handle) : this()
+    [SuppressMessage("Blocker Bug", "S3869:\"SafeHandle.DangerousGetHandle\" should not be called", Justification = "Required here: unsafe code")]
+    public sealed class CertificateRevocationList
+    {        
+        public CertificateRevocationList(IntPtr handle)
         {
             if (handle == IntPtr.Zero) throw new ArgumentException("Invalid Handle");
-            safeHandle = NativeMethods.CertDuplicateCRLContext(handle);
-        }
+            
+            SafeHandle = NativeMethods.CertDuplicateCRLContext(handle);
+            if (SafeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
 
-        #region Properties
+            CrlInfo = GetCrlInfo();
+            RawData = GetRawData();
+        }
 
         public string FriendlyName
         {
             get
             {
-                if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-
                 var allocHandle = LocalAllocHandle.InvalidHandle;
                 uint pcbData = 0;
 
                 // 1st call gives the memory amount to allocate
                 if (!NativeMethods.CertGetCRLContextProperty(
-                    safeHandle, CapiConstants.CERT_FRIENDLY_NAME_PROP_ID, allocHandle, ref pcbData)) 
+                    SafeHandle, CapiConstants.CERT_FRIENDLY_NAME_PROP_ID, allocHandle, ref pcbData)) 
                     return string.Empty;
 
                 // 2nd call fills the memory
@@ -58,7 +38,7 @@ namespace Delta.CapiNet
                 try
                 {
                     if (!NativeMethods.CertGetCRLContextProperty(
-                        safeHandle, CapiConstants.CERT_FRIENDLY_NAME_PROP_ID, allocHandle, ref pcbData))
+                        SafeHandle, CapiConstants.CERT_FRIENDLY_NAME_PROP_ID, allocHandle, ref pcbData))
                         return string.Empty;
 
                     // Get the data back to a managed string and release the native memory.
@@ -69,92 +49,36 @@ namespace Delta.CapiNet
             }
         }
 
-        internal CrlContextHandle SafeHandle
-        {
-            get { return safeHandle; }
-        }
-
-        public X500DistinguishedName IssuerName
-        {
-            get
-            {
-                if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-                if (issuerName == null)
-                {
-                    var crlInfo = GetCrlInfo();
-                    if (crlInfo.HasValue)
-                        issuerName = new X500DistinguishedName(crlInfo.Value.Issuer.ToByteArray());
-                }
-                return issuerName;
-            }
-        }
-
-        /// <summary>
-        /// Gets this CRL's publication date.
-        /// </summary>
-        public DateTimeOffset PublicationDate
-        {
-            get
-            {
-                if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-                if (thisUpdate == DateTimeOffset.MinValue)
-                {
-                    var crlInfo = GetCrlInfo();
-                    if (crlInfo.HasValue)
-                        thisUpdate = crlInfo.Value.ThisUpdate.ToDateTimeOffset();
-                }
-
-                return thisUpdate;
-            }
-        }
-
-        /// <summary>
-        /// Gets this CRL's next scheduled update.
-        /// </summary>
-        public DateTimeOffset NextUpdate
-        {
-            get
-            {
-                if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");
-                if (nextUpdate == DateTimeOffset.MinValue)
-                {
-                    var crlInfo = GetCrlInfo();
-                    if (crlInfo.HasValue)
-                        nextUpdate = crlInfo.Value.NextUpdate.ToDateTimeOffset();
-                }
-
-                return nextUpdate;
-            }
-        }
+        public X500DistinguishedName IssuerName => CrlInfo.HasValue ? new X500DistinguishedName(CrlInfo.Value.Issuer.ToByteArray()) : null;
+        public DateTimeOffset PublicationDate => CrlInfo.HasValue ? CrlInfo.Value.ThisUpdate.ToDateTimeOffset() : DateTimeOffset.MinValue;
+        public DateTimeOffset NextUpdate => CrlInfo.HasValue ? CrlInfo.Value.NextUpdate.ToDateTimeOffset() : DateTimeOffset.MinValue;
 
         public bool IsValid
         {
             get
             {
-                var now = DateTime.Now;
-                return now >= PublicationDate && now <= NextUpdate;
+                var publicationDate = PublicationDate;
+                if (publicationDate == DateTimeOffset.MinValue) return false;
+                
+                var nextUpdate = NextUpdate;
+                if (nextUpdate == DateTimeOffset.MinValue) return false;
+                
+                var now = DateTimeOffset.Now;
+                return now >= publicationDate && now <= nextUpdate;
             }
         }
 
-        public byte[] RawData
-        {
-            get
-            {
-                if (safeHandle.IsInvalid) throw new CryptographicException("Invalid Handle");  
-              
-                if (cachedData == null)
-                    cachedData = GetRawData() ?? new byte[0];
-                return cachedData;
-            }
-        }
+        public byte[] RawData { get; }
 
-        #endregion
+        internal CrlContextHandle SafeHandle { get; }
+        private CRL_INFO? CrlInfo { get; }
 
+        [SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "For debugging purpose")]
         private unsafe CRL_INFO? GetCrlInfo()
         {
             try
             {
-                var crlContext = *((CRL_CONTEXT*)safeHandle.DangerousGetHandle());
+                var crlContext = *(CRL_CONTEXT*)SafeHandle.DangerousGetHandle();
                 return (CRL_INFO)Marshal.PtrToStructure(crlContext.pCrlInfo, typeof(CRL_INFO));
             }
             catch (Exception ex)
@@ -165,12 +89,13 @@ namespace Delta.CapiNet
             return null;
         }
 
+        [SuppressMessage("Minor Code Smell", "S1481:Unused local variables should be removed", Justification = "For debugging purpose")]
         private unsafe byte[] GetRawData()
         {
             try
             {
-                var crlContext = *((CRL_CONTEXT*)safeHandle.DangerousGetHandle());
-                int size = (int)crlContext.cbCrlEncoded;
+                var crlContext = *(CRL_CONTEXT*)SafeHandle.DangerousGetHandle();
+                var size = (int)crlContext.cbCrlEncoded;
                 var data = new byte[size];
                 Marshal.Copy(crlContext.pbCrlEncoded, data, 0, size);
                 return data;
@@ -180,7 +105,7 @@ namespace Delta.CapiNet
                 var debugEx = ex; // for debugging purpose
             }
 
-            return null;
+            return new byte[0];
         }
     }
 }

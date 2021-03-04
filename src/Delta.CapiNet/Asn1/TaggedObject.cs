@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-
 using Delta.CapiNet.Logging;
 
 namespace Delta.CapiNet.Asn1
@@ -11,23 +9,21 @@ namespace Delta.CapiNet.Asn1
     /// </summary>
     public class TaggedObject
     {
-        private static ILogService log = LogManager.GetLogger<TaggedObject>();
+        private static readonly ILogService log = LogManager.GetLogger<TaggedObject>();
 
         public struct DataTag
         {
             private byte[] tagData;
             private ushort? asn1Tag;
 
-            // The complete Tag; most tags will be ine byte long.
-            public byte[] FullTagValue 
+            // The complete Tag; most tags will be one byte long.
+            public byte[] FullTagValue
             {
-                get { return tagData; }
-                set 
+                get => tagData;
+                set
                 {
-                    if (value == null)
-                        throw new ArgumentNullException("value");
-                    tagData = value; 
-                    asn1Tag = null; 
+                    tagData = value ?? throw new ArgumentNullException("value");
+                    asn1Tag = null;
                 }
             }
 
@@ -35,13 +31,13 @@ namespace Delta.CapiNet.Asn1
             {
                 get
                 {
-                    if (asn1Tag == null || !asn1Tag.HasValue)
+                    if (!asn1Tag.HasValue)
                     {
                         if (FullTagValue == null || FullTagValue.Length == 0)
-                            return 0xFFFF; // TODO: Provide a constant to represent invalid tags
+                            return 0xFFFF;
 
                         if (FullTagValue.Length == 1)
-                            asn1Tag = (ushort)FullTagValue[0];
+                            asn1Tag = FullTagValue[0];
                         else
                             asn1Tag = (ushort)(FullTagValue[0] << 8 | FullTagValue[1]);
                     }
@@ -50,10 +46,7 @@ namespace Delta.CapiNet.Asn1
                 }
             }
 
-            public bool IsAsn1Tag
-            {
-                get { return FullTagValue.Length == 1; }
-            }
+            public bool IsAsn1Tag => FullTagValue.Length == 1;
 
             public int Length { get; set; }
         }
@@ -64,67 +57,63 @@ namespace Delta.CapiNet.Asn1
             public int Length { get; set; }
         }
 
-        private byte[] allData = null;
-        private int rawDataOffset = 0;
-        private int rawDataLength = 0;
-        private int workloadShift = 0;
-        private int workloadLength = 0;
-
         protected TaggedObject(byte[] data, int offset, int length)
         {
             EnsureArguments(data, offset, length);
-            allData = data;
-            rawDataOffset = offset;
-            rawDataLength = length;
+            AllData = data;
+            RawDataOffset = offset;
+            RawDataLength = length;
         }
 
-        public DataTag Tag
+        public DataTag Tag { get; private set; }
+        public DataLength Length { get;  private set; }
+
+        public byte[] RawData => AllData.SubArray(RawDataOffset, RawDataLength);
+
+        internal byte[] AllData { get; }
+        public int RawDataOffset { get; }
+        public int RawDataLength { get; }
+
+        public byte[] Workload => AllData.CheckedSubArray(WorkloadOffset, WorkloadLength);
+        public int WorkloadOffset => RawDataOffset + WorkloadShift;
+        public int WorkloadLength { get; private set; }
+        private int WorkloadShift { get; set; }
+
+        internal static TaggedObject[] CreateObjects(byte[] data, int offset, int length)
         {
-            get; 
-            private set;
-        }
+            try
+            {
+                EnsureArguments(data, offset, length);
 
-        public DataLength Length
-        {
-            get; 
-            private set;
-        }
+                var taggedObjects = new List<TaggedObject>();
+                var buffer = data.SubArray(offset, length);
+                var currentOffset = offset;
+                var currentLength = length;
+                
+                while (buffer.Length > 0)
+                {
+                    var taggedObject = CreateObject(data, currentOffset, currentLength, out var count);
+                    if (taggedObject is InvalidTaggedObject)
+                        log.Warning("Encountered an invalid tagged object during parsing");
 
-        /// <summary>
-        /// Gets a copy of the raw data.
-        /// </summary>
-        /// <value>The raw data.</value>
-        public byte[] RawData
-        {
-            get { return allData.SubArray(rawDataOffset, rawDataLength); }
-        }
+                    if (taggedObject != null)
+                    {
+                        taggedObjects.Add(taggedObject);
+                        currentOffset += count;
+                        currentLength -= count;
+                        buffer = count >= buffer.Length ? (new byte[0]) : Skip(buffer, count);
+                    }
+                    else buffer = new byte[0];
+                }
 
-        internal byte[] AllData
-        {
-            get { return allData; }
-        }
+                return taggedObjects.ToArray();
+            }
+            catch (Exception ex)
+            {
+                log.Error(ex);
+            }
 
-        public int RawDataOffset { get { return rawDataOffset; } }
-
-        public int RawDataLength { get { return RawDataLength; } }
-
-        /// <summary>
-        /// Gets a copy of the workload data.
-        /// </summary>
-        /// <value>The workload.</value>
-        public byte[] Workload
-        {
-            get { return allData.CheckedSubArray(WorkloadOffset, WorkloadLength); } 
-        }
-
-        public int WorkloadOffset { get { return rawDataOffset + workloadShift; } }
-
-        public int WorkloadLength { get { return workloadLength; } }
-
-        internal static TaggedObject CreateObject(byte[] data, int offset, int length)        
-        {
-            int count;
-            return CreateObject(data, offset, length, out count);
+            return new TaggedObject[0];
         }
 
         private static TaggedObject CreateObject(byte[] data, int offset, int length, out int count)
@@ -145,54 +134,6 @@ namespace Delta.CapiNet.Asn1
             return new InvalidTaggedObject(data, offset, length);
         }
 
-        internal static TaggedObject[] CreateObjects(byte[] data, int offset, int length)
-        {
-            try
-            {
-                EnsureArguments(data, offset, length);
-
-                var taggedObjects = new List<TaggedObject>();
-                var buffer = data.SubArray(offset, length);
-                var currentOffset = offset;
-                var currentLength = length;
-                
-                while (buffer.Length > 0)
-                {
-                    int count = 0;
-                    var taggedObject = CreateObject(data, currentOffset, currentLength, out count);
-#if DEBUG
-                    if (taggedObject is InvalidTaggedObject)
-                    {
-#pragma warning disable 219
-                        // for debugging purpose: place a breakpoint here
-                        var foo = 42;
-#pragma warning restore 219
-                    }
-#endif
-
-                    if (taggedObject != null)
-                    {
-                        taggedObjects.Add(taggedObject);
-                        currentOffset += count;
-                        currentLength -= count;
-
-                        if (count >= buffer.Length) 
-                            buffer = new byte[0];
-                        else buffer = Skip(buffer, count);
-                    }
-                    else buffer = new byte[0];
-                }
-
-                return taggedObjects.ToArray();
-            }
-            catch (Exception ex)
-            {
-                log.Error(ex);
-            }
-
-            return new TaggedObject[0];
-        }
-
         /// <summary>
         /// Parses this instance.
         /// </summary>
@@ -206,13 +147,13 @@ namespace Delta.CapiNet.Asn1
                 Length = result.Tag.Length
             };
 
-            workloadShift = Tag.Length;
-            workloadShift += result.LengthLength;
-            workloadLength = (int)result.Length;
+            WorkloadShift = Tag.Length;
+            WorkloadShift += result.LengthLength;
+            WorkloadLength = result.Length;
 
             Length = new DataLength()
             {
-                Value = (int)result.Length,
+                Value = result.Length,
                 Length = result.LengthLength
             };
 

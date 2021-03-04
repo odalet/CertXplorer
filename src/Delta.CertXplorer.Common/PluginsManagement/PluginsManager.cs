@@ -1,60 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Design;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.ComponentModel.Composition;
-using System.ComponentModel.Composition.Hosting;
-
 using Delta.CertXplorer.Extensibility;
 
 namespace Delta.CertXplorer.PluginsManagement
 {
-    public class PluginsManager
+    public sealed class PluginsManager
     {
         // This dictionary stores the plugins unique ids and their short name.
-        private Dictionary<Guid, string> pluginNames = new Dictionary<Guid, string>();
-        private List<IPlugin> initializedPlugins = new List<IPlugin>();
-        private ServiceContainer globalServices = new ServiceContainer();
-        private string[] pluginsDirectories = new string[] { "." };
+        private readonly Dictionary<Guid, string> pluginNames = new Dictionary<Guid, string>();
+        private readonly List<IPlugin> initializedPlugins = new List<IPlugin>();
+        private readonly ServiceContainer globalServices = new ServiceContainer();
+        private readonly string[] pluginsDirectories;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PluginsManager"/> class.
-        /// </summary>
         public PluginsManager(IEnumerable<string> pluginsDirectoriesArray)
         {
-            ParsePluginDirectories(pluginsDirectoriesArray);
-            AddGlobalServices();
+            pluginsDirectories = ParsePluginDirectories(pluginsDirectoriesArray).ToArray();
+            globalServices.AddService<IHostService>(new HostService());
         }
 
-        /// <summary>
-        /// Gets or sets the global plugins.
-        /// </summary>
         [ImportMany]
         public IEnumerable<IGlobalPlugin> GlobalPlugins { get; set; }
 
-        /// <summary>
-        /// Gets or sets the data handler plugins.
-        /// </summary>
         [ImportMany]
         public IEnumerable<IDataHandlerPlugin> DataHandlerPlugins { get; set; }
 
-        /// <summary>
-        /// Gets the list of all plugins regardless of their type.
-        /// </summary>
-        public IEnumerable<IPlugin> Plugins
-        {
-            get
-            {
-                return GlobalPlugins.Cast<IPlugin>().Union(DataHandlerPlugins.Cast<IPlugin>());
-            }
-        }
+        public IEnumerable<IPlugin> Plugins => GlobalPlugins.Cast<IPlugin>().Union(DataHandlerPlugins.Cast<IPlugin>());
 
-        /// <summary>
-        /// Composes: load the available plugins.
-        /// </summary>
         public void Compose()
         {
             GlobalPlugins = new List<IGlobalPlugin>();
@@ -62,42 +40,38 @@ namespace Delta.CertXplorer.PluginsManagement
 
             try
             {
-                var directoryCatalogs = pluginsDirectories.Select(d =>
-                    new DirectoryCatalog(d));
-
+                var directoryCatalogs = pluginsDirectories.Select(d => new DirectoryCatalog(d));
                 var catalog = new AggregateCatalog(directoryCatalogs.ToArray());
                 var container = new CompositionContainer(catalog);
 
                 var batch = new CompositionBatch();
-                batch.AddPart(this);
+                _ = batch.AddPart(this);
 
                 container.Compose(batch);
             }
             catch (Exception ex)
             {
-                var debugException = ex;
-                This.Logger.Error("Could not load plugins.", ex);
+                This.Logger.Error($"Could not load plugins: {ex.Message}", ex);
             }
         }
 
-        /// <summary>Runs the specified plugin.</summary>
-        /// <param name="plugin">The plugin to run.</param>
-        /// <param name="parent">The parent window.</param>
-        /// <param name="shouldDisable">if set to <c>true</c> the plugin should be disabled (because it failed).</param>
         public void Run(IGlobalPlugin plugin, IWin32Window parent, out bool shouldDisable)
         {
+            shouldDisable = true; // default
+
             if (plugin == null)
             {
-                This.Logger.Error("Null plugins are not allowed.");
-                shouldDisable = true;
+                This.Logger.Error("Null plugins are not allowed");                
                 return;
             }
 
-            shouldDisable = !Initialize(plugin);
+            if (!Initialize(plugin))
+                return;
 
             if (!plugin.Run(parent))
-                This.Logger.Warning("This plugin notified that it ended in an error state.");
-            shouldDisable = false;
+                This.Logger.Warning("This plugin notified that it ended in an error state");
+
+            shouldDisable = false; // This plugin is ok
         }
 
         public bool Initialize(IPlugin plugin)
@@ -107,12 +81,20 @@ namespace Delta.CertXplorer.PluginsManagement
 
             try 
             {
-                InitializePlugin(plugin);
+                CheckPlugin(plugin);
+
+                // add local services
+                var services = new ServiceContainer(globalServices);                
+                services.AddService<Extensibility.Logging.ILogService>(
+                    new PluginsLogService(pluginNames[plugin.PluginInfo.Id]));
+
+                plugin.Initialize(services);
+
                 return true;
             }
             catch (Exception ex)
             {
-                This.Logger.Error("Plugin initialization failed", ex);
+                This.Logger.Error($"Plugin initialization failed: {ex.Message}", ex);
                 return false;
             }
             finally
@@ -121,89 +103,38 @@ namespace Delta.CertXplorer.PluginsManagement
             }            
         }
 
-        /// <summary>
-        /// Parses the plugin directories from the application configuration file.
-        /// </summary>
-        /// <param name="directories">The plugins directories list.</param>
-        private void ParsePluginDirectories(IEnumerable<string> directories)
-        {
-            List<string> list = directories == null ?
-                new List<string>(new[] { "." }) : directories.ToList();
-            try
-            {
-                pluginsDirectories = list.Select(d =>
-                {
-                    return Path.IsPathRooted(d) ? d : Path.Combine(
-                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), d);
-                })
-                .Where(d =>
-                {
-                    bool exists = Directory.Exists(d);
-                    if (!exists)
-                        This.Logger.Warning(string.Format("Plugins directory {0} doesn't exist.", d));
-                    return exists;
-                })
-                .ToArray();
-            }
-            catch (Exception ex)
-            {
-                This.Logger.Error("Error while parsing the plugins directories.", ex);
-                pluginsDirectories = new string[] { "." };
-            }
-        }
-
-        /// <summary>
-        /// Initializes the specified plugin.
-        /// </summary>
-        /// <param name="plugin">The plugin.</param>
-        private void InitializePlugin(IPlugin plugin)
-        {
-            CheckPlugin(plugin);
-
-            var services = new ServiceContainer(globalServices);
-            // add local services
-            services.AddService<Delta.CertXplorer.Extensibility.Logging.ILogService>(
-                new PluginsLogService(pluginNames[plugin.PluginInfo.Id]));
-
-            plugin.Initialize(services);
-        }
-
-        /// <summary>
-        /// Checks the correctness of the specified plugin.
-        /// </summary>
-        /// <param name="plugin">The plugin.</param>
         private void CheckPlugin(IPlugin plugin)
         {
-            if (plugin == null) Throw(new ArgumentNullException("plugin"));
-            if (plugin.PluginInfo == null) Throw(new NullReferenceException("The PlugInfo member can't be null."));
-            if (plugin.PluginInfo.Id == Guid.Empty) Throw(new NullReferenceException("The PlugInfo.Id member must be set."));
+            if (plugin == null) throw new ArgumentNullException(nameof(plugin));
+            if (plugin.PluginInfo == null) throw new NullReferenceException("The PlugInfo member can't be null");
+            if (plugin.PluginInfo.Id == Guid.Empty) throw new NullReferenceException("The PlugInfo.Id member must be set");
 
             var id = plugin.PluginInfo.Id;
-            if (pluginNames.ContainsKey(id)) Throw(new ApplicationException(string.Format(
-                "A plugin with id {0} was already loaded.", id)));
+            if (pluginNames.ContainsKey(id)) throw new ApplicationException($"A plugin with id {id} was already loaded");
 
             // Now build the plugin's short name (it must be unique too).
             var name = plugin.PluginInfo.Name;
             if (string.IsNullOrEmpty(name)) name = id.ToString();
+
             if (pluginNames.Values.Contains(name))
             {
                 var version = plugin.PluginInfo.Version;
                 if (!string.IsNullOrEmpty(version))
-                    name = string.Format("{0} {1}", name, version);
+                    name = $"{name} {version}";
             }
 
             // this is very unlikely...
             if (pluginNames.Values.Contains(name))
-                name = string.Format("{0} [{1}]", name, id);
+                name = $"{name} [{id}]";
 
             // most improbable...
             if (pluginNames.Values.Contains(name))
             {
-                int index = 1;
+                var index = 1;
                 var baseName = name;
                 while (pluginNames.Values.Contains(name))
                 {
-                    name = string.Format("{0} ({1})", baseName, index);
+                    name = $"{baseName} ({index})";
                     index++;
                 }
             }
@@ -211,22 +142,29 @@ namespace Delta.CertXplorer.PluginsManagement
             pluginNames.Add(id, name);
         }
 
-        /// <summary>
-        /// Throws the specified exception.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        private void Throw(Exception exception)
+        private static IEnumerable<string> ParsePluginDirectories(IEnumerable<string> directories)
         {
-            This.Logger.Error("Plugin Validation Error.", exception);
-            throw exception;
-        }
-
-        /// <summary>
-        /// Adds the global services.
-        /// </summary>
-        private void AddGlobalServices()
-        {
-            globalServices.AddService<Delta.CertXplorer.Extensibility.IHostService>(new HostService());
+            var list = directories == null ? new List<string>(new[] { "." }) : directories.ToList();
+            try
+            {
+                return list
+                    .Select(d => Path.IsPathRooted(d) ?
+                        d :
+                        Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), d))
+                    .Where(d =>
+                    {
+                        var exists = Directory.Exists(d);
+                        if (!exists)
+                            This.Logger.Warning(string.Format("Plugins directory {0} doesn't exist.", d));
+                        return exists;
+                    })
+                    .ToArray();
+            }
+            catch (Exception ex)
+            {
+                This.Logger.Error("Error while parsing the plugins directories.", ex);
+                return new string[] { "." };
+            }
         }
     }
 }
