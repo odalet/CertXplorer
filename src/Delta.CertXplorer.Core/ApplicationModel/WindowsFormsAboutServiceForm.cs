@@ -208,9 +208,9 @@ namespace Delta.CertXplorer.ApplicationModel
         {
             using (var sfd = new SaveFileDialog())
             {
-                sfd.Filter = FileType.CombineFilters(FileType.TXT, FileType.ALL);
+                sfd.Filter = FileType.CombineFilters(FileType.Text, FileType.All);
                 sfd.FilterIndex = 0;
-                sfd.DefaultExt = FileType.TXT.Patterns[0];
+                sfd.DefaultExt = FileType.Text.Patterns[0];
                 sfd.OverwritePrompt = true;
                 sfd.SupportMultiDottedExtensions = true;
                 sfd.CheckPathExists = true;

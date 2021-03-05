@@ -77,7 +77,7 @@ namespace Delta.CertXplorer.Logging
             sb.Append(Level.ToString().ToUpperInvariant());
 
             if ((TimeStamp != DateTime.MinValue) && (TimeStamp != DateTime.MaxValue))
-                sb.AppendFormat(" [{0}]", TimeStamp.ToLongInvariantString());
+                sb.AppendFormat(" [{0}]", TimeStamp.ToString("yyyy/MM/dd HH:mm:ss"));
 
             sb.Append(": ");
 

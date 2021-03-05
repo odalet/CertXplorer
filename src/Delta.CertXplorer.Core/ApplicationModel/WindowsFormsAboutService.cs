@@ -124,11 +124,13 @@ namespace Delta.CertXplorer.ApplicationModel
         {
             get
             {
-                Assembly assembly = null;
-                try { assembly = This.Application.EntryAssembly; }
-                catch (Exception ex)
+                Assembly assembly;
+                try 
                 {
-                    var debugEx = ex;
+                    assembly = Assembly.GetEntryAssembly(); 
+                }
+                catch
+                {
                     assembly = Assembly.GetExecutingAssembly();
                 }
 

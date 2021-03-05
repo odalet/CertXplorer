@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -63,7 +64,6 @@ namespace Delta.CertXplorer
 
             new Program
             {
-                IsSingleInstance = false,
                 ApplicationSettingsFileName = Globals.ApplicationSettingsFileName,
                 LayoutSettingsFileName = Globals.LayoutSettingsFileName,
                 LoggingSettingsFileName = Globals.LoggingSettingsFileName
@@ -148,7 +148,16 @@ namespace Delta.CertXplorer
             if (store == null || !store.ContainsKey("culture")) return;
             var cultureName = store["culture"];
             if (!string.IsNullOrEmpty(cultureName))
-                ApplicationCulture = cultureName;
+            {
+                try
+                {
+                    ApplicationCulture = new CultureInfo(cultureName);
+                }
+                catch 
+                {
+                    // Do nothing...
+                }
+            }
         }
 
         private static string ResolveConfigFile(string file, bool forceFileInitialization = false)

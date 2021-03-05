@@ -124,14 +124,14 @@ namespace Delta.CertXplorer.UI.ToolWindows
             {
                 if (string.IsNullOrEmpty(filename)) return;
 
-                var isRtf = (type == FileType.RTF || FileType.RTF.Matches(filename));
+                var isRtf = (type == FileType.Rtf || FileType.Rtf.Matches(filename));
                 var streamType = (isRtf ?
                     RichTextBoxStreamType.RichText :
                     RichTextBoxStreamType.UnicodePlainText);
                 tb.SaveFile(filename, streamType);
             },
             "log.rtf",
-            new FileType[] { FileType.LOG, FileType.RTF, FileType.ALL }, 1, "Save Log As");
+            new FileType[] { FileType.Log, FileType.Rtf, FileType.All }, 1, "Save Log As");
 
             if (result == OperationResult.Failed) This.Logger.Error("Unable to save log to a file");
         }

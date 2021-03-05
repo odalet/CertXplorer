@@ -64,7 +64,7 @@ namespace Delta.CertXplorer.ApplicationModel
             {
                 if (defaultBounds.IsEmpty)
                 {
-                    var screen = This.Computer.Screen.WorkingArea;
+                    var screen = Screen.PrimaryScreen.WorkingArea;
                     var wmargin = screen.Width / 10;
                     var hmargin = screen.Height / 10;
 
@@ -369,7 +369,7 @@ namespace Delta.CertXplorer.ApplicationModel
                     {
                         form.StartPosition = FormStartPosition.Manual;
                         var bounds = layout.Bounds.Value;
-                        if (!This.Computer.Screen.WorkingArea.Contains(bounds))
+                        if (!Screen.PrimaryScreen.WorkingArea.Contains(bounds))
                             bounds = DefaultBounds;
                         form.Bounds = bounds;
                     }

@@ -1,4 +1,7 @@
-﻿using System.IO;
+﻿using System;
+using System.Globalization;
+using System.IO;
+using System.Threading;
 using Delta.CertXplorer.Configuration;
 using Delta.CertXplorer.Diagnostics;
 using Delta.CertXplorer.Logging;
@@ -13,25 +16,14 @@ namespace Delta.CertXplorer.ApplicationModel
 <settings></settings>";
 
         private string applicationSettingsFileName = defaultApplicationSettingsFileName;
-        private string applicationCulture = string.Empty;
 
         protected BaseApplication()
         {
-            ApplicationCulture = This.Application.Culture.ToString();
+            ApplicationCulture = Thread.CurrentThread.CurrentCulture;
             ApplicationSettingsDefaultContent = defaultApplicationSettingsDefaultContent;
         }
 
-        protected string ApplicationCulture
-        {
-            get => applicationCulture;
-            set
-            {
-                if (string.IsNullOrEmpty(value)) return;
-                if (applicationCulture == value) return;
-                applicationCulture = value;
-                This.SetApplicationCulture(applicationCulture);
-            }
-        }
+        protected CultureInfo ApplicationCulture { get; set; }
 
         protected string ApplicationSettingsFileName
         {
@@ -76,10 +68,10 @@ namespace Delta.CertXplorer.ApplicationModel
         protected virtual string BuildPathRootedFileName(string fileName, string defaultFileName)
         {
             if (string.IsNullOrEmpty(fileName))
-                fileName = Path.Combine(This.Application.RootDirectory, defaultFileName);
+                fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, defaultFileName);
 
             if (!Path.IsPathRooted(fileName))
-                fileName = Path.Combine(This.Application.RootDirectory, fileName);
+                fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, fileName);
 
             return fileName;
         }

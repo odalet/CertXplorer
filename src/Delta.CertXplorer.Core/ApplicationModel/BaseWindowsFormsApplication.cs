@@ -1,4 +1,6 @@
-﻿using System.Windows.Forms;
+﻿using System.Globalization;
+using System.Threading;
+using System.Windows.Forms;
 using Delta.CertXplorer.ApplicationModel.Services;
 using Delta.CertXplorer.Configuration;
 using Delta.CertXplorer.Diagnostics;
@@ -22,9 +24,7 @@ namespace Delta.CertXplorer.ApplicationModel
         private string loggingSettingsFileName = defaultLoggingSettingsFileName;
         private string layoutSettingsFileName = defaultLayoutSettingsFileName;
 
-        protected BaseWindowsFormsApplication() => IsSingleInstance = false;
-
-        protected bool IsSingleInstance { get; set; }
+        protected BaseWindowsFormsApplication() { }
 
         protected string LayoutSettingsFileName
         {
@@ -59,11 +59,13 @@ namespace Delta.CertXplorer.ApplicationModel
             if (OnBeforeCreateMainForm()) ShowMainForm();
         }
 
-        protected override void InitializeThisApplication() => InitializeThisApplication(ApplicationCulture, IsSingleInstance);
+        protected override void InitializeThisApplication() => InitializeThisApplication(ApplicationCulture);
 
-        protected virtual void InitializeThisApplication(string culture, bool singleInstance)
+        protected virtual void InitializeThisApplication(CultureInfo culture)
         {
-            This.InitializeWindowsFormsApplication(culture, singleInstance);
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+
             ToolStripManager.Renderer = new BaseToolStripRenderer();
         }
 
@@ -98,7 +100,7 @@ namespace Delta.CertXplorer.ApplicationModel
         {
             var form = CreateMainForm();
             OnBeforeShowMainForm(form);
-            This.Application.Run(form);
+            Application.Run(form);
         }
 
         protected virtual bool OnBeforeCreateMainForm() => true; // True: continue loading

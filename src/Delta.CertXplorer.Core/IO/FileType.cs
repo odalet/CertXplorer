@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 
 namespace Delta.CertXplorer.IO
 {
@@ -10,153 +12,127 @@ namespace Delta.CertXplorer.IO
     /// <remarks>
     /// The only supported patterns are of the followinf form: *.extension
     /// </remarks>
-    public class FileType
+    public sealed class FileType
     {
-        private static Dictionary<string, FileType> types = new Dictionary<string, FileType>();
+        private static readonly Dictionary<string, FileType> types = new Dictionary<string, FileType>();
 
-        public static readonly FileType UNKNOWN = new FileType("UNKNOWN", new string[] { "*.*" }, "Unknown Files");
-        public static readonly FileType ALL = new FileType("ALL", new string[] { "*.*" }, "All Files");
-        public static readonly FileType TXT = new FileType("TXT", new string[] { "*.txt" }, "Text Files");
-        public static readonly FileType LOG = new FileType("LOG", new string[] { "*.log", "*.txt" }, "Log Files");
-        public static readonly FileType RTF = new FileType("RTF", new string[] { "*.rtf" }, "Rich Text Files");
+        public static readonly FileType Unknown = new FileType("UNKNOWN", new string[] { "*.*" }, "Unknown Files");
+        public static readonly FileType All = new FileType("ALL", new string[] { "*.*" }, "All Files");
+        public static readonly FileType Text = new FileType("TXT", new string[] { "*.txt" }, "Text Files");
+        public static readonly FileType Log = new FileType("LOG", new string[] { "*.log", "*.txt" }, "Log Files");
+        public static readonly FileType Rtf = new FileType("RTF", new string[] { "*.rtf" }, "Rich Text Files");
 
-        internal static IDictionary<string, FileType> Types { get { return types; } }
-
-        internal static string CombineFilters(params FileType[] types)
+        private FileType(string id, string[] patterns, string filterText)
         {
-            FileType[] combinedTypes = null;
-            return CombineFilters(out combinedTypes, types);
-        }
+            if (patterns == null || patterns.Length == 0) throw new ArgumentException($"{nameof(patterns)} cannot be null or empty", nameof(patterns));
+            if (string.IsNullOrEmpty(id)) throw new ArgumentException($"{nameof(id)} cannot be null or empty", nameof(id));
+            if (types.ContainsKey(id)) throw new ArgumentException($"This id ({id}) is already registred", nameof(id));
 
-        internal static string CombineFilters(out FileType[] combinedTypes, params FileType[] types)
-        {
-            if ((types == null) || (types.Length == 0))
+            if (string.IsNullOrEmpty(filterText)) filterText = patterns[0] + " Files";
+
+            for (var i = 0; i < patterns.Length; i++)
             {
-                combinedTypes = new FileType[] { ALL };
-                return ALL.Filter;
+                if (!patterns[i].StartsWith("*.")) 
+                    patterns[i] = "*." + patterns[i];
             }
 
-            bool containsFilter = ALL.IsFilterInArray(types);
+            TypeId = id;
+            Patterns = patterns;
+            Filter = BuildFilter(filterText);
 
-            int combinedTypesCount = types.Length;
-            if (!containsFilter) combinedTypesCount++;
+            types.Add(TypeId, this);
+        }
+
+        internal static IDictionary<string, FileType> Types => types;
+
+        public string[] Patterns { get; }
+        public string Filter { get; }
+        public string FilterWithAll => TypeId == All.TypeId ? Filter : $"{Filter}|{All.Filter}";
+
+        internal string TypeId { get; }
+
+        internal static string CombineFilters(params FileType[] types) => CombineFilters(out _, types);
+
+        [SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "Not that many strings")]
+        internal static string CombineFilters(out FileType[] combinedTypes, params FileType[] types)
+        {
+            if (types == null || types.Length == 0)
+            {
+                combinedTypes = new FileType[] { All };
+                return All.Filter;
+            }
+
+            var alreadyContainsStarFilter = types.Any(ft => ft.Filter == All.Filter);
+
+            var combinedTypesCount = types.Length;
+            if (!alreadyContainsStarFilter) combinedTypesCount++;
+
             combinedTypes = new FileType[combinedTypesCount];
             types.CopyTo(combinedTypes, 0);
-            if (!containsFilter) combinedTypes[types.Length] = ALL;
+            if (!alreadyContainsStarFilter) 
+                combinedTypes[types.Length] = All;
 
-            string filter = string.Empty;
-            foreach (FileType type in combinedTypes) filter += type.Filter + "|";
-            return filter.Substring(0, filter.Length - 1);
+            var combinedFilter = string.Empty;
+            foreach (var type in combinedTypes) combinedFilter += type.Filter + "|";
+            return combinedFilter.Substring(0, combinedFilter.Length - 1);
         }
 
-        private string typeId = string.Empty;
-        private string[] patterns = null;
-        private string filter = null;
-
-        internal string TypeId { get { return typeId; } }
-
-        public string[] Patterns { get { return patterns; } }
-        public string Filter { get { return filter; } }
-        public string FilterWithAll 
-        { 
-            get 
-            {
-                if (typeId == ALL.TypeId) return filter;
-                else return filter + "|" + ALL.Filter; 
-            } 
-        }
-
-        internal bool IsFilterInArray(params FileType[] types)
-        {
-            foreach (FileType ft in types) { if (ft == this) return true; }
-            return false;
-        }
-
-        public bool Matches(string filename)
-        {
-            foreach (string pattern in patterns)
-            {
-                if (MatchesNoCase(filename.ToUpper(), pattern.ToUpper())) return true;
-            }            
-            return false;
-        }
+        public bool Matches(string filename) => Patterns.Any(pattern => 
+            MatchesCaseSensitive(filename.ToUpperInvariant(), pattern.ToUpperInvariant()));
 
         public override bool Equals(object obj)
         {
             if (obj == null) return false;
-            if (obj is FileType) return ((FileType)obj).typeId == typeId;
-            else return obj.ToString() == typeId;
+            return obj is FileType ft ? ft.TypeId == TypeId : obj.ToString() == TypeId;
         }
 
-        public override int GetHashCode() { return typeId.GetHashCode(); }
+        public override int GetHashCode() => TypeId.GetHashCode();
 
-        private FileType(string id, string[] patts, string filterText)
+        [SuppressMessage("Minor Code Smell", "S1643:Strings should not be concatenated using '+' in a loop", Justification = "Not that many strings")]
+        private string BuildFilter(string filterText)
         {
-            if ((patts == null) || (patts.Length == 0)) throw new ArgumentNullException("patts");
-            if (string.IsNullOrEmpty(id)) throw new ArgumentNullException("id");
-            if (types.ContainsKey(id)) throw new ArgumentException("This id (" + id + ") is already registred", "id");
+            var patternsList = string.Empty;
+            foreach (var pattern in Patterns)
+                patternsList += pattern + ";";
 
-            if (string.IsNullOrEmpty(filterText)) filterText = patts[0] + " Files";
-
-            for (int i=0; i<patts.Length; i++)
-            {
-                if (!patts[i].StartsWith("*.")) patts[i] = "*." + patts[i];
-            }
-
-            typeId = id;
-            patterns = patts;
-            filter = filterText;
-
-            BuildFilter();
-
-            types.Add(typeId, this);
-        }
-
-        private void BuildFilter()
-        {
-            string patternsList = string.Empty;
-            foreach (string pattern in patterns) patternsList += pattern + ";";
             patternsList = patternsList.Substring(0, patternsList.Length - 1);
 
-            StringBuilder sb = new StringBuilder();   
-            sb.Append(filter);
-            sb.Append(" (");
-            sb.Append(patternsList);
-            sb.Append(" )|");
-            sb.Append(patternsList);
-
-            filter = sb.ToString();
+            return new StringBuilder()   
+                .Append(filterText)
+                .Append(" (")
+                .Append(patternsList)
+                .Append(" )|")
+                .Append(patternsList)
+                .ToString();
         }
 
-        //TODO : revoir les algos Match...
-
-        private bool MatchesNoCase(string filename, string pattern)
+        private bool MatchesCaseSensitive(string filename, string pattern)
         {
             if (pattern == "*.*") return true;
             if (pattern[0] == '*')
             {
-                int flength = filename.Length;
-                int plength = pattern.Length;
+                var flength = filename.Length;
+                var plength = pattern.Length;
 
                 while (--plength > 0)
                 {
-                    if (pattern[plength] == '*') return MatchesNoCase(filename, pattern, 0, 0);
+                    if (pattern[plength] == '*') return MatchesCaseSensitive(filename, pattern, 0, 0);
                     if (flength-- == 0) return false;
-                    if ((pattern[plength] != filename[flength]) && (pattern[plength] != '?')) return false;
+                    if (pattern[plength] != filename[flength] && pattern[plength] != '?') return false;
                 }
                 return true;
             }
-            else return MatchesNoCase(filename, pattern, 0, 0);
+            else return MatchesCaseSensitive(filename, pattern, 0, 0);
         }
 
-        private bool MatchesNoCase(string filename, string pattern, int findex, int pindex)
+        private bool MatchesCaseSensitive(string filename, string pattern, int findex, int pindex)
         {
-            int flength = filename.Length;
-            int plength = pattern.Length;
+            var flength = filename.Length;
+            var plength = pattern.Length;
             char next;
             while(true)
             {
-                if (pindex == plength) return (findex == flength);
+                if (pindex == plength) return findex == flength;
                 next = pattern[pindex++];
                 if (next == '?')
                 {
@@ -168,13 +144,13 @@ namespace Delta.CertXplorer.IO
                     if (pindex == plength) return true;
                     while (findex < flength)
                     {
-                        if (MatchesNoCase(filename, pattern, findex, pindex)) return true;
+                        if (MatchesCaseSensitive(filename, pattern, findex, pindex)) return true;
                         findex++;
                     }
                 }
                 else
                 {
-                    if ((findex == flength) || (filename[findex] != next)) return false;
+                    if (findex == flength || filename[findex] != next) return false;
                     findex++;
                 }
             }

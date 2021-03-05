@@ -185,12 +185,12 @@ namespace Delta.CertXplorer.Logging
                 tracingFilePath = DefaultPath;
                 try
                 {
-                    tracingFileName = This.Application.EntryAssembly.FullName.Split(',')[0];
+                    tracingFileName = Assembly.GetEntryAssembly().FullName.Split(',')[0];
                 }
                 catch (Exception ex)
                 {
                     // we couldn't determine the file name from the entry assembly, so use "defaultLog", and eat the exception!
-                    System.Diagnostics.Debug.WriteLine(string.Format("ERROR: {0}", ex));                    
+                    Debug.WriteLine($"ERROR: {ex}");
                     tracingFileName = "defaultLog";
                 }
 
