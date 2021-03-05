@@ -83,23 +83,24 @@ namespace Delta.CertXplorer.CertManager
 
             openCertificateAction.Run += (s, ev) =>
             {
-                X509Object x509 = null;
-                var certificate = GetSelectedCertificate();
-                if (certificate != null) x509 = X509Object.Create(
-                    certificate.X509, CurrentStoreName, CurrentStoreLocation);
-                else
+                X509Object retrieveSelection()
                 {
+                    var certificate = GetSelectedCertificate();
+                    if (certificate != null)
+                        return X509Object.Create(certificate.X509, CurrentStoreName, CurrentStoreLocation);
+
                     var crl = GetSelectedCrl();
-                    if (crl != null) x509 = X509Object.Create(
-                        crl, CurrentStoreName, CurrentStoreLocation);
-                    else
-                    {
-                        var ctl = GetSelectedCtl();
-                        if (ctl != null) x509 = X509Object.Create(
-                            ctl, CurrentStoreName, CurrentStoreLocation);
-                    }
+                    if (crl != null)
+                        return X509Object.Create(crl, CurrentStoreName, CurrentStoreLocation);
+
+                    var ctl = GetSelectedCtl();
+                    if (ctl != null)
+                        return X509Object.Create(ctl, CurrentStoreName, CurrentStoreLocation);
+
+                    return null;
                 }
 
+                var x509 = retrieveSelection();
                 if (x509 != null) Commands.RunVerb(Verbs.OpenCertificate, x509);
             };
 
@@ -108,20 +109,20 @@ namespace Delta.CertXplorer.CertManager
                 var certificate = GetSelectedCertificate();
                 if (certificate != null)
                 {
-                    certificate.ShowCertificateDialog(base.Handle);
+                    certificate.ShowCertificateDialog(Handle);
                     return;
                 }
 
                 var crl = GetSelectedCrl();
                 if (crl != null)
                 {
-                    crl.ShowCrlDialog(base.Handle);
+                    crl.ShowCrlDialog(Handle);
                     return;
                 }
 
                 var ctl = GetSelectedCtl();
                 if (ctl != null)
-                    ctl.ShowCtlDialog(base.Handle);
+                    ctl.ShowCtlDialog(Handle);
             };
         }
 
@@ -173,8 +174,7 @@ namespace Delta.CertXplorer.CertManager
                     CertificateTrustLists = store.GetCertificateTrustLists();
 
                     store.Close();
-
-                    FilterList();
+                    RefreshListView();
                 }
             };
 
@@ -188,109 +188,49 @@ namespace Delta.CertXplorer.CertManager
             SelectionChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void FilterList()
-        {
-            static bool match(string input, string filter) => input.ToUpperInvariant().Contains(filter.ToUpperInvariant());
-
-            bool certificateFilter(Certificate c) =>
-                match(FormatDN(c.IssuerName), filterBox.Text) ||
-                match(FormatDate(c.X509.NotBefore), filterBox.Text) ||
-                match(FormatDate(c.X509.NotAfter), filterBox.Text) ||
-                match(c.FriendlyName, filterBox.Text);
-
-            bool crlFilter(CertificateRevocationList c) =>
-                match(FormatDN(c.IssuerName), filterBox.Text) ||
-                match(FormatDate(c.PublicationDate), filterBox.Text) ||
-                match(FormatDate(c.NextUpdate), filterBox.Text) ||
-                match(c.FriendlyName, filterBox.Text);
-
-            bool ctlFilter(CertificateTrustList c) =>
-                match(FormatDate(c.PublicationDate), filterBox.Text) ||
-                match(FormatDate(c.NextUpdate), filterBox.Text) ||
-                match(c.FriendlyName, filterBox.Text);
-
-            var certificates = Certificates;
-            var certificateRevocationLists = CertificateRevocationLists;
-            var certificateTrustLists = CertificateTrustLists;
-
-            if (!string.IsNullOrEmpty(filterBox.Text))
-            {
-                certificates = certificates.Where(certificateFilter);
-                certificateRevocationLists = certificateRevocationLists.Where(crlFilter);
-                certificateTrustLists = certificateTrustLists.Where(ctlFilter);
-            }
-
-            FillList(certificates, certificateRevocationLists, certificateTrustLists);
-        }
-
-        private void FillList(
-            IEnumerable<Certificate> certificates,
-            IEnumerable<CertificateRevocationList> crls,
-            IEnumerable<CertificateTrustList> ctls)
+        private void RefreshListView()
         {
             const int certificateImageIndex = 0;
             const int certificateWithPrivateKeyImageIndex = 1;
             const int crlImageIndex = 2;
             const int ctlImageIndex = 3;
 
-            var items = certificates.Select(certificate =>
+            // Transform certificates, crls and ctls into something close to the resulting ListViewItems
+            var x509Items =
+                Certificates.Select(c => new X509Item(c)).Concat(
+                CertificateRevocationLists.Select(c => new X509Item(c))).Concat(
+                CertificateTrustLists.Select(c => new X509Item(c)));
+
+            // Filter if needed
+            if (!string.IsNullOrEmpty(filterBox.Text))
+                x509Items = x509Items.Where(item => item.Match(filterBox.Text));
+
+            var items = x509Items.Select(x509item =>
             {
-                var item = new ListViewItem(FormatDN(certificate.SubjectName));
-                // TODO: don't use X509Certificate class, but the Certificate wrapper 
-                // (and replace "new Certificate(certificate).IsValid" by "certificate.IsValid"
-                if (!certificate.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = certificate.HasPrivateKey ? certificateWithPrivateKeyImageIndex : certificateImageIndex;
-                item.Tag = certificate;
+                var item = new ListViewItem(x509item.IssuedTo);
+                if (!x509item.IsValid) item.ForeColor = Color.Red;
+                item.ImageIndex = item.Tag switch
+                {
+                    Certificate => x509item.HasPrivateKey ? certificateWithPrivateKeyImageIndex : certificateImageIndex,
+                    CertificateRevocationList => crlImageIndex,
+                    CertificateTrustList => ctlImageIndex,
+                    _ => 0
+                };
+
+                item.Tag = x509item.Tag;
                 item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
                 {
-                    new ListViewItem.ListViewSubItem(item, FormatDN(certificate.IssuerName)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotBefore)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(certificate.X509.NotAfter)),
-                    new ListViewItem.ListViewSubItem(item, certificate.FriendlyName)
-                });
-
-                return item;
-            });
-
-            var crlItems = crls.Select(crl =>
-            {
-                var item = new ListViewItem("Revocation List");
-                if (!crl.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = crlImageIndex;
-                item.Tag = crl;
-                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
-                {
-                    new ListViewItem.ListViewSubItem(item, FormatDN(crl.IssuerName)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(crl.PublicationDate)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(crl.NextUpdate)),
-                    new ListViewItem.ListViewSubItem(item, crl.FriendlyName)
-                });
-
-                return item;
-            });
-
-            var ctlItems = ctls.Select(ctl =>
-            {
-                var item = new ListViewItem("Trust List");
-                if (!ctl.IsValid) item.ForeColor = Color.Red;
-                item.ImageIndex = ctlImageIndex;
-                item.Tag = ctl;
-                item.SubItems.AddRange(new ListViewItem.ListViewSubItem[]
-                {
-                    new ListViewItem.ListViewSubItem(item, string.Empty),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(ctl.PublicationDate)),
-                    new ListViewItem.ListViewSubItem(item, FormatDate(ctl.NextUpdate)),
-                    new ListViewItem.ListViewSubItem(item, ctl.FriendlyName)
+                    new ListViewItem.ListViewSubItem(item, x509item.IssuedBy),
+                    new ListViewItem.ListViewSubItem(item, x509item.From),
+                    new ListViewItem.ListViewSubItem(item, x509item.To),
+                    new ListViewItem.ListViewSubItem(item, x509item.FriendlyName)
                 });
 
                 return item;
             });
 
             listView.Items.Clear();
-
             foreach (var item in items) _ = listView.Items.Add(item);
-            foreach (var item in crlItems) _ = listView.Items.Add(item);
-            foreach (var item in ctlItems) _ = listView.Items.Add(item);
         }
 
         private Certificate GetSelectedCertificate()
@@ -320,21 +260,6 @@ namespace Delta.CertXplorer.CertManager
             return null;
         }
 
-        private string FormatDN(X500DistinguishedName dn)
-        {
-            var cn = dn.ExtractRdn("cn");
-            if (!string.IsNullOrEmpty(cn)) return cn;
-
-            var ou = dn.ExtractRdn("ou");
-            if (!string.IsNullOrEmpty(ou)) return ou;
-
-            return dn.Name;
-        }
-
-        private string FormatDate(DateTime date) => date == DateTime.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
-
-        private string FormatDate(DateTimeOffset date) => date == DateTimeOffset.MinValue ? string.Empty : date.ToString("yyyy/MM/dd");
-
-        private void filterBox_TextChanged(object sender, EventArgs e) => FilterList();
+        private void filterBox_TextChanged(object sender, EventArgs e) => RefreshListView();
     }
 }
