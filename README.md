@@ -12,6 +12,8 @@
 
 * Now using Windows-1252 encoding (instead of UTF-8) when decoding **ASN.1 Printable String** objects
 * Being less strict with empty **ASN.1** sub-arrays (only emits a warning to the log)
+* Column headers in Certificates View now support sorting
+* The Certificates View supports filtering of its contents by a string
 
 ### 2.4.16 - 2021/02/11
 
