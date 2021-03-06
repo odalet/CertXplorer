@@ -9,7 +9,7 @@ using Delta.CertXplorer.Extensibility.UI;
 
 namespace CertToolsPlugin
 {
-    internal class CertMmcPlugin : BaseGlobalPlugin
+    internal sealed class CertMmcPlugin : BaseGlobalPlugin
     {
         private static readonly CertMmcPluginInfo pluginInfo = new CertMmcPluginInfo();
 
@@ -38,10 +38,8 @@ namespace CertToolsPlugin
 
                 try
                 {
-                    if (userDataDir == null)
-                        userDataDir = Path.GetTempPath();
-                    if (File.Exists(userDataDir))
-                        File.Delete(userDataDir);
+                    if (userDataDir == null) userDataDir = Path.GetTempPath();
+                    if (File.Exists(userDataDir)) File.Delete(userDataDir);
                     if (!Directory.Exists(userDataDir))
                         _ = Directory.CreateDirectory(userDataDir);
                 }

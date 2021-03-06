@@ -35,7 +35,7 @@ namespace Pluralsight.Crypto.UI
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(GenerateSelfSignedCertForm));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.lnkKeithRecommends = new System.Windows.Forms.LinkLabel();
+            this.labelKeithRecommends = new System.Windows.Forms.Label();
             this.dtpValidTo = new System.Windows.Forms.DateTimePicker();
             this.dtpValidFrom = new System.Windows.Forms.DateTimePicker();
             this.cboKeySize = new System.Windows.Forms.ComboBox();
@@ -61,7 +61,7 @@ namespace Pluralsight.Crypto.UI
             this.btnCancel = new System.Windows.Forms.Button();
             this.label9 = new System.Windows.Forms.Label();
             this.lnkAbout = new System.Windows.Forms.LinkLabel();
-            this.lnkVersion = new System.Windows.Forms.LinkLabel();
+            this.labelVersion = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -70,7 +70,7 @@ namespace Pluralsight.Crypto.UI
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.lnkKeithRecommends);
+            this.groupBox1.Controls.Add(this.labelKeithRecommends);
             this.groupBox1.Controls.Add(this.dtpValidTo);
             this.groupBox1.Controls.Add(this.dtpValidFrom);
             this.groupBox1.Controls.Add(this.cboKeySize);
@@ -87,18 +87,16 @@ namespace Pluralsight.Crypto.UI
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "certificate info";
             // 
-            // lnkKeithRecommends
+            // labelKeithRecommends
             // 
-            this.lnkKeithRecommends.AutoSize = true;
-            this.lnkKeithRecommends.LinkArea = new System.Windows.Forms.LinkArea(0, 5);
-            this.lnkKeithRecommends.Location = new System.Drawing.Point(286, 57);
-            this.lnkKeithRecommends.Name = "lnkKeithRecommends";
-            this.lnkKeithRecommends.Size = new System.Drawing.Size(182, 17);
-            this.lnkKeithRecommends.TabIndex = 5;
-            this.lnkKeithRecommends.TabStop = true;
-            this.lnkKeithRecommends.Text = "Keith recommends 2048 or greater!";
-            this.lnkKeithRecommends.UseCompatibleTextRendering = true;
-            this.lnkKeithRecommends.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkKeithRecommends_LinkClicked);
+            this.labelKeithRecommends.AutoSize = true;
+            this.labelKeithRecommends.Location = new System.Drawing.Point(286, 57);
+            this.labelKeithRecommends.Name = "labelKeithRecommends";
+            this.labelKeithRecommends.Size = new System.Drawing.Size(182, 17);
+            this.labelKeithRecommends.TabIndex = 5;
+            this.labelKeithRecommends.TabStop = true;
+            this.labelKeithRecommends.Text = "Keith recommends 2048 or greater!";
+            this.labelKeithRecommends.UseCompatibleTextRendering = true;
             // 
             // dtpValidTo
             // 
@@ -340,16 +338,15 @@ namespace Pluralsight.Crypto.UI
             this.lnkAbout.UseCompatibleTextRendering = true;
             this.lnkAbout.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkAbout_LinkClicked);
             // 
-            // lnkVersion
+            // labelVersion
             // 
-            this.lnkVersion.AutoSize = true;
-            this.lnkVersion.Location = new System.Drawing.Point(482, 364);
-            this.lnkVersion.Name = "lnkVersion";
-            this.lnkVersion.Size = new System.Drawing.Size(47, 13);
-            this.lnkVersion.TabIndex = 9;
-            this.lnkVersion.TabStop = true;
-            this.lnkVersion.Text = "(version)";
-            this.lnkVersion.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.lnkVersion_LinkClicked);
+            this.labelVersion.AutoSize = true;
+            this.labelVersion.Location = new System.Drawing.Point(482, 364);
+            this.labelVersion.Name = "labelVersion";
+            this.labelVersion.Size = new System.Drawing.Size(47, 13);
+            this.labelVersion.TabIndex = 9;
+            this.labelVersion.TabStop = true;
+            this.labelVersion.Text = "(version)";
             // 
             // GenerateSelfSignedCertForm
             // 
@@ -357,7 +354,7 @@ namespace Pluralsight.Crypto.UI
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
             this.ClientSize = new System.Drawing.Size(557, 386);
-            this.Controls.Add(this.lnkVersion);
+            this.Controls.Add(this.labelVersion);
             this.Controls.Add(this.lnkAbout);
             this.Controls.Add(this.label9);
             this.Controls.Add(this.btnCancel);
@@ -375,7 +372,6 @@ namespace Pluralsight.Crypto.UI
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Pluralsight\'s Self-Cert";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
-            this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
@@ -410,14 +406,14 @@ namespace Pluralsight.Crypto.UI
         private System.Windows.Forms.DateTimePicker dtpValidTo;
         private System.Windows.Forms.DateTimePicker dtpValidFrom;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.LinkLabel lnkKeithRecommends;
+        private System.Windows.Forms.Label labelKeithRecommends;
         private System.Windows.Forms.ComboBox cboStoreName;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox cboStoreLocation;
         private System.Windows.Forms.Button btnCancel;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.LinkLabel lnkAbout;
-        private System.Windows.Forms.LinkLabel lnkVersion;
+        private System.Windows.Forms.Label labelVersion;
     }
 }
 

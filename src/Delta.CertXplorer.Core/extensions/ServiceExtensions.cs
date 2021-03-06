@@ -8,7 +8,6 @@ namespace Delta.CertXplorer
     /// <summary>
     /// Extension method allowing to use generic forms of <c>GetService</c> on <see cref="IServiceProvider"/> instances,
     /// and generic forms of <c>AddService</c> and <c>RemoveService</c> on <see cref="IServiceContainer"/> instances.
-    /// 
     /// </summary>
     public static class ServiceExtensions
     {

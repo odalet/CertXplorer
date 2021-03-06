@@ -3,15 +3,12 @@
 namespace Delta.CertXplorer.Logging
 {
     // Is this really thread-safe?
-    public class ThreadSafeLogServiceWrapper : LogServiceWrapper
+    public sealed class ThreadSafeLogServiceWrapper : LogServiceWrapper
     {
-        private ILogService logger = null;
+        private readonly ILogService logger;
 
         public ThreadSafeLogServiceWrapper(ILogService logService)
-            : base(logService)
-        {
-            logger = logService;
-        }
+            : base(logService) => logger = logService;
 
         public override void Log(LogEntry entry)
         {
