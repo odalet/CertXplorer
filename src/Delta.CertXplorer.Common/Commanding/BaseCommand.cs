@@ -28,8 +28,8 @@ namespace Delta.CertXplorer.Commanding
             Verb = verb ?? NullVerb.Instance;
 
             var targetAsString = "NO TARGET";
-            if (arguments != null && arguments.Length == 0)
-                targetAsString = arguments[0] == null ? "NULL" : arguments[0].ToString();
+            if (arguments == null || arguments.Length == 0)
+                targetAsString = "NULL";
 
             var message = $"Command [{Name}] invoked on target [{targetAsString}] with verb [{Verb.Name}]";
             if (arguments != null && arguments.Length > 1)

@@ -89,16 +89,21 @@ namespace Delta.CertXplorer
 
         protected override Form CreateMainForm()
         {
-            var chrome = new Chrome();
+            var chrome = new MainForm();
             Globals.MainForm = chrome;
 
+            const bool doApplyTheme = false; // Testing VS2015 theming
+
             // Set the theme
-            var themingService = This.GetService<IThemingService>();
-            if (themingService != null)
+            if (doApplyTheme)
             {
-                const string themeId = "Delta.CertXplorer";
-                if (themingService.ContainsTheme(themeId))
-                    themingService.ApplyTheme(themeId);
+                var themingService = This.GetService<IThemingService>();
+                if (themingService != null)
+                {
+                    const string themeId = "Delta.CertXplorer";
+                    if (themingService.ContainsTheme(themeId))
+                        themingService.ApplyTheme(themeId);
+                }
             }
 
             This.AddService(DocumentFactory.CreateDocumentManagerService(chrome));
