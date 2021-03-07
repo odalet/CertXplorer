@@ -34,12 +34,6 @@ namespace Delta.CertXplorer.UI.ToolWindows
 
         protected override DockState DefaultDockState => DockState.DockBottom;
 
-        protected ToolStripRenderMode RenderMode
-        {
-            get => logControl.RenderMode;
-            set => logControl.RenderMode = value;
-        }
-
         private void HandleUrl(string url)
         {
             if (string.IsNullOrEmpty(url)) return;

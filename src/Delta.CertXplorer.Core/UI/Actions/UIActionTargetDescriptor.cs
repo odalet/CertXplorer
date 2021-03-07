@@ -12,21 +12,18 @@ using System.Collections.Generic;
 
 namespace Delta.CertXplorer.UI.Actions
 {
-    public class UIActionTargetDescriptor
+    public sealed class UIActionTargetDescriptor
     {
-        private Dictionary<string, PropertyInfo> properties = null;
-        private Type targetType = null;
+        private readonly Dictionary<string, PropertyInfo> properties = new Dictionary<string, PropertyInfo>();
 
         public UIActionTargetDescriptor(Type type)
         {
-            properties = new Dictionary<string,PropertyInfo>();
-            targetType = type;
-
-            foreach (PropertyInfo property in targetType.GetProperties())
+            TargetType = type;
+            foreach (var property in TargetType.GetProperties())
                 properties.Add(property.Name, property);
-        }        
+        }
 
-        public Type TargetType { get { return targetType; } }
+        public Type TargetType { get; }
 
         internal void SetValue(string propertyName, object target, object value)
         {
@@ -34,12 +31,7 @@ namespace Delta.CertXplorer.UI.Actions
                 properties[propertyName].SetValue(target, value, null);
         }
 
-        internal object GetValue(string propertyName, object source)
-        {
-            if (properties.ContainsKey(propertyName))
-                return properties[propertyName].GetValue(source, null);
-                
-            return null;
-        }
+        internal object GetValue(string propertyName, object source) => 
+            properties.ContainsKey(propertyName) ? properties[propertyName].GetValue(source, null) : null;
     }
 }

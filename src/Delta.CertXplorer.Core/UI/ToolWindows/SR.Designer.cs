@@ -117,23 +117,5 @@ namespace Delta.CertXplorer.UI.ToolWindows {
                 return ResourceManager.GetString("PropertiesWindow", resourceCulture);
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Toolbox.
-        /// </summary>
-        internal static string Toolbox {
-            get {
-                return ResourceManager.GetString("Toolbox", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Toolbox Window.
-        /// </summary>
-        internal static string ToolboxWindow {
-            get {
-                return ResourceManager.GetString("ToolboxWindow", resourceCulture);
-            }
-        }
     }
 }

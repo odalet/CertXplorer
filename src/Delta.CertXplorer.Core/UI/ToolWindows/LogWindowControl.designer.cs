@@ -52,6 +52,8 @@ namespace Delta.CertXplorer.UI.ToolWindows
             this.clearAllToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.toggleWordWrapToolStripButton = new System.Windows.Forms.ToolStripButton();
             this.tb = new Delta.CertXplorer.UI.LogTextBox();
+            this.visualStudioToolStripExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
+            this.vs2015BlueTheme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
             this.cm.SuspendLayout();
             this.ts.SuspendLayout();
             this.SuspendLayout();
@@ -219,6 +221,10 @@ namespace Delta.CertXplorer.UI.ToolWindows
             this.tb.ReadOnly = true;
             this.tb.ShowSelectionMargin = true;
             // 
+            // visualStudioToolStripExtender
+            // 
+            this.visualStudioToolStripExtender.DefaultRenderer = null;
+            // 
             // LogWindowControl
             // 
             resources.ApplyResources(this, "$this");
@@ -257,5 +263,7 @@ namespace Delta.CertXplorer.UI.ToolWindows
         private System.Windows.Forms.ToolStripMenuItem printToolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem printPreviewToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem pageSetupToolStripMenuItem;
+        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender visualStudioToolStripExtender;
+        private WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme vs2015BlueTheme;
     }
 }

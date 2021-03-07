@@ -1,8 +1,5 @@
-using System;
-using System.Windows.Forms;
 using System.ComponentModel;
-
-using Delta.CertXplorer.UI.Theming;
+using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
@@ -21,32 +18,16 @@ namespace Delta.CertXplorer.UI
         /// </summary>
         public PropertyGridEx() : base()
         {
-            // Properties' default values
-            CanOverrideRenderer = true;
             ProtectConnectionStrings = true;
-            
             InitializeComponentModel();
-            
-            ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
-            {
-                if (CanOverrideRenderer)
-                {
-                    if (renderer is ToolStripProfessionalRenderer)
-                        ((ToolStripProfessionalRenderer)renderer).RoundedEdges = false;
-
-                    base.ToolStripRenderer = renderer;
-                }
-            });
+            ToolStripRenderer = VS2015ThemeProvider.Renderer;
         }
 
-        /// <summary>
-        /// Gets or sets the renderer used by this control's toolstrip and menu.
-        /// </summary>
-        /// <value>The renderer.</value>
+        [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
         public ToolStripRenderer Renderer
         {
-            get { return base.ToolStripRenderer; }
-            set { base.ToolStripRenderer = value; }
+            get => ToolStripRenderer;
+            set => ToolStripRenderer = value;
         }
 
         /// <summary>
@@ -62,16 +43,6 @@ namespace Delta.CertXplorer.UI
         /// </value>
         [DefaultValue(true)]
         public bool ProtectConnectionStrings { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the global toolstrip renderer 
-        /// can be overriden in this control.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this control can override renderer; otherwise, <c>false</c>.
-        /// </value>
-        [DefaultValue(true)]
-        public bool CanOverrideRenderer { get; set; }
 
         /// <summary>
         /// Gets or sets the object for which the grid displays properties.

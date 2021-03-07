@@ -11,7 +11,6 @@ using Delta.CertXplorer.Configuration;
 using Delta.CertXplorer.DocumentModel;
 using Delta.CertXplorer.Logging;
 using Delta.CertXplorer.PluginsManagement;
-using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer
 {
@@ -91,20 +90,6 @@ namespace Delta.CertXplorer
         {
             var chrome = new MainForm();
             Globals.MainForm = chrome;
-
-            const bool doApplyTheme = false; // Testing VS2015 theming
-
-            // Set the theme
-            if (doApplyTheme)
-            {
-                var themingService = This.GetService<IThemingService>();
-                if (themingService != null)
-                {
-                    const string themeId = "Delta.CertXplorer";
-                    if (themingService.ContainsTheme(themeId))
-                        themingService.ApplyTheme(themeId);
-                }
-            }
 
             This.AddService(DocumentFactory.CreateDocumentManagerService(chrome));
 

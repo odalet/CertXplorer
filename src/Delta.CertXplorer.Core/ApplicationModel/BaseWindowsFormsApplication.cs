@@ -7,7 +7,6 @@ using Delta.CertXplorer.Diagnostics;
 using Delta.CertXplorer.Logging;
 using Delta.CertXplorer.Logging.log4net;
 using Delta.CertXplorer.UI;
-using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer.ApplicationModel
 {
@@ -54,7 +53,6 @@ namespace Delta.CertXplorer.ApplicationModel
 
             _ = AddService(CreateLayoutService());
             
-            AddThemingService();
             AddOtherServices();
             if (OnBeforeCreateMainForm()) ShowMainForm();
         }
@@ -76,23 +74,6 @@ namespace Delta.CertXplorer.ApplicationModel
         protected override ILogService CreateLogService() => Log4NetServiceFactory.CreateService(LoggingSettingsFileName);
 
         protected override ISettingsService CreateSettingsService() => new SettingsService();
-
-        protected virtual IThemingService CreateThemingService() => new ThemingService();
-
-        protected virtual void AddThemingService()
-        {
-            var service = CreateThemingService();
-            if (service != null)
-            {
-                _ = AddService(service);
-
-                // Try to read the default theme from the application settings file.
-                var settingsService = This.GetService<ISettingsService>(true);
-                var theme = settingsService.GetApplicationSettingsStore<ThemingSettings>().Theme;
-                if (!string.IsNullOrEmpty(theme) && service.ContainsTheme(theme))
-                    service.ApplyTheme(theme);
-            }
-        }
 
         protected abstract Form CreateMainForm();
 

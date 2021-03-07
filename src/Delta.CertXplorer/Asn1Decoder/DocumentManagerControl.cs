@@ -53,7 +53,8 @@ namespace Delta.CertXplorer.Asn1Decoder
         public DocumentManagerControl() 
         {
             InitializeComponent();
-            //tvExplorer.AllowDrag = false;
+
+            mstrip.Renderer = VS2015ThemeProvider.Renderer;
 
             tvExplorer.ContextMenuStripProvider = new MenuProvider(mstrip);
         }

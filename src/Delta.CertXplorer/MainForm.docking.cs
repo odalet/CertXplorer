@@ -14,7 +14,7 @@ namespace Delta.CertXplorer
         private void CreateToolWindows()
         {
             void register<T>() where T : ToolWindow, new() =>
-                RegisterToolWindow(new ToolWindowInfo<T> { ToolWindow = new T() });
+                RegisterToolWindow(new ToolWindowInfo<T>(new T()));
 
             register<LogWindow>();
             register<CertificateStoreWindow>();
@@ -23,7 +23,7 @@ namespace Delta.CertXplorer
             register<CertificateListWindow>();
         }
 
-        private void RegisterToolWindow(ToolWindowInfo windowInfo)
+        private void RegisterToolWindow(IToolWindowInfo windowInfo)
         {
             CheckToolWindow(windowInfo);
 
@@ -40,7 +40,7 @@ namespace Delta.CertXplorer
                 CreateToolWindowMenu(info);
         }
 
-        private void CreateToolWindowMenu(ToolWindowInfo windowInfo)
+        private void CreateToolWindowMenu(IToolWindowInfo windowInfo)
         {
             if (windowInfo.ToolWindow == null) return;
 
@@ -70,7 +70,7 @@ namespace Delta.CertXplorer
         private void UpdateViewMenu() => viewToolStripMenuItem.Visible = viewToolStripMenuItem
             .DropDownItems
             .Cast<ToolStripMenuItem>()
-            .Any(item => item.Tag is ToolWindowInfo windowInfo && windowInfo.IsEnabled);
+            .Any(item => item.Tag is IToolWindowInfo windowInfo && windowInfo.IsEnabled);
 
         private void InitializeDocking()
         {
@@ -86,22 +86,22 @@ namespace Delta.CertXplorer
 
         private bool RestoreDockingState() => LayoutService != null && LayoutService.RestoreDockingState(FormId);
 
-        private bool IsToolWindowEnabled(ToolWindowInfo windowInfo) => windowInfo != null && windowInfo.IsEnabled;
+        private bool IsToolWindowEnabled(IToolWindowInfo windowInfo) => windowInfo != null && windowInfo.IsEnabled;
 
-        private void ShowToolWindow(ToolWindowInfo windowInfo, bool dockDefault = false)
+        private void ShowToolWindow(IToolWindowInfo windowInfo, bool dockDefault = false)
         {
             CheckToolWindow(windowInfo);
             windowInfo.ToolWindow.Show(workspace);
             if (dockDefault) windowInfo.ToolWindow.DockDefault();
         }
 
-        private void HideToolWindow(ToolWindowInfo windowInfo)
+        private void HideToolWindow(IToolWindowInfo windowInfo)
         {
             CheckToolWindow(windowInfo);
             windowInfo.ToolWindow.Hide();
         }
 
-        private void CheckToolWindow(ToolWindowInfo windowInfo)
+        private void CheckToolWindow(IToolWindowInfo windowInfo)
         {
             if (windowInfo == null) throw new ArgumentNullException(nameof(windowInfo));
             if (windowInfo.ToolWindow == null) throw new ArgumentException(

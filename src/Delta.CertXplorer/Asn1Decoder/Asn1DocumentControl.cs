@@ -1,9 +1,5 @@
 ﻿using System;
 using System.Windows.Forms;
-using System.ComponentModel;
-
-using Delta.CertXplorer.UI.Theming;
-using Delta.CertXplorer.DocumentModel;
 
 namespace Delta.CertXplorer.Asn1Decoder
 {
@@ -17,15 +13,7 @@ namespace Delta.CertXplorer.Asn1Decoder
         public Asn1DocumentControl()
         {
             InitializeComponent();
-
-            ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
-            {
-                if (renderer is ToolStripProfessionalRenderer)
-                    ((ToolStripProfessionalRenderer)renderer).RoundedEdges = false;
-                tstrip.Renderer = renderer;
-            });
-
-            tstrip.SetRoundedEdges(false);
+            tstrip.Renderer = VS2015ThemeProvider.Renderer;
         }
 
         public void SetData(byte[] bytes)

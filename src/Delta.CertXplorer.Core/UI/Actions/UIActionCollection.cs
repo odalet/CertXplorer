@@ -4,27 +4,25 @@
  * Original namespace: Crad.Windows.Forms.Actions
  * License: Common Public License Version 1.0
  * 
- */ 
+ */
 
-using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing.Design;
+using Delta.CertXplorer.UI.Design;
 
 namespace Delta.CertXplorer.UI.Actions
 {
-    [Editor(typeof(Delta.CertXplorer.UI.Design.UIActionCollectionEditor), typeof(UITypeEditor))]
-    public class UIActionCollection: Collection<UIAction>
+    [Editor(typeof(UIActionCollectionEditor), typeof(UITypeEditor))]
+    public class UIActionCollection : Collection<UIAction>
     {
-        private UIActionsManager parent = null;
+        public UIActionCollection(UIActionsManager parentList) => Parent = parentList;
 
-        public UIActionCollection(UIActionsManager parentList) { parent = parentList; }
-        
-        public UIActionsManager Parent { get { return parent; } }
+        public UIActionsManager Parent { get; }
 
         protected override void ClearItems()
         {
-            foreach (UIAction action in this) action.ActionList = null;
+            foreach (var action in this) action.ActionList = null;
             base.ClearItems();
         }
 
@@ -32,7 +30,7 @@ namespace Delta.CertXplorer.UI.Actions
         {
             // This check is needed because Delta.CertXplorer.ApplicationModel.BaseDockingForm may add the
             // same item multiple times...
-            if (base.Contains(item)) return;
+            if (Contains(item)) return;
 
             base.InsertItem(index, item);
             item.ActionList = Parent;
@@ -46,7 +44,7 @@ namespace Delta.CertXplorer.UI.Actions
 
         protected override void SetItem(int index, UIAction item)
         {
-            if (base.Count > index) this[index].ActionList = null;
+            if (Count > index) this[index].ActionList = null;
             base.SetItem(index, item);
 
             item.ActionList = Parent;

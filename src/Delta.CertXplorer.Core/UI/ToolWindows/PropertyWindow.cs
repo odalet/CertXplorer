@@ -1,12 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-
 using WeifenLuo.WinFormsUI.Docking;
 
 namespace Delta.CertXplorer.UI.ToolWindows
@@ -17,25 +9,20 @@ namespace Delta.CertXplorer.UI.ToolWindows
         {
             InitializeComponent();
 
-            base.Icon = Properties.Resources.PropertiesIcon;
-            base.TabText = base.Text = SR.Properties;
-            base.ToolTipText = SR.PropertiesWindow;
+            Icon = Properties.Resources.PropertiesIcon;
+            TabText = SR.Properties;
+            Text = SR.Properties;
+            ToolTipText = SR.PropertiesWindow;
         }
 
-        public override Guid Guid
+        public override Guid Guid => new Guid("{1797B309-958E-4fcd-875F-6FD251FDD811}");
+
+        public object SelectedObject
         {
-            get { return new Guid("{1797B309-958E-4fcd-875F-6FD251FDD811}"); }
+            get => propertyControl.SelectedObject;
+            set => propertyControl.SelectedObject = value;
         }
 
-        public object SelectedObject     
-        {
-            get { return propertyControl.SelectedObject; }
-            set { propertyControl.SelectedObject = value; }
-        }
-
-        protected override DockState DefaultDockState
-        {
-            get { return DockState.DockRight; }
-        }
+        protected override DockState DefaultDockState => DockState.DockRight;
     }
 }

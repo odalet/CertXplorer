@@ -171,7 +171,7 @@ namespace Delta.CertXplorer.ApplicationModel
                             log.Info(string.Format("Unable to load window with guid {0}.", target));
                             return null;
                         }
-                        else return window.ToDockableWindow();
+                        else return window;
 
                     }, false);
 

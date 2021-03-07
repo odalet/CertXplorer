@@ -31,8 +31,6 @@ namespace Delta.CertXplorer.UI
                 return;
             }
 
-            ////const int WM_PAINT = 0x000F;
-
             switch (m.Msg)
             {
                 case WM_PAINT:

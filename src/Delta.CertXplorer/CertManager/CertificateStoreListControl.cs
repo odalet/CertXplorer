@@ -7,7 +7,6 @@ using System.Windows.Forms;
 using Delta.CapiNet;
 using Delta.CertXplorer.Services;
 using Delta.CertXplorer.UI;
-using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer.CertManager
 {
@@ -32,14 +31,7 @@ namespace Delta.CertXplorer.CertManager
             ShowPhysicalStores = false; // default value
             ShowOtherLocations = false; // default value
 
-            ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
-            {
-                if (renderer is ToolStripProfessionalRenderer tspRenderer)
-                    tspRenderer.RoundedEdges = false;
-                tstrip.Renderer = renderer;
-            });
-
-            tstrip.SetRoundedEdges(false);
+            tstrip.Renderer = VS2015ThemeProvider.Renderer;
         }
 
         public event EventHandler SelectionChanged;

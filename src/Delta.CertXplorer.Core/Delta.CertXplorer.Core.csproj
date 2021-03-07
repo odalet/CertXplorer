@@ -11,6 +11,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UI\Theming\**" />
+    <EmbeddedResource Remove="UI\Theming\**" />
+    <None Remove="UI\Theming\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="UI\Actions\UIAction.bmp" />
     <None Remove="UI\Actions\UIActionsManager.bmp" />
   </ItemGroup>
@@ -134,6 +140,7 @@
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
     <PackageReference Include="DockPanelSuite" Version="3.1.0-beta7" />
+    <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0-beta7" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.6.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -100,20 +100,20 @@ namespace Delta.CertXplorer.Asn1Decoder
             this.openToolStripMenuItem,
             this.closeToolStripMenuItem});
             this.mstrip.Name = "mstrip";
-            this.mstrip.Size = new System.Drawing.Size(113, 48);
+            this.mstrip.Size = new System.Drawing.Size(181, 70);
             // 
             // openToolStripMenuItem
             // 
             this.actions.SetAction(this.openToolStripMenuItem, this.openAction);
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem.Text = "&Open...";
             // 
             // closeToolStripMenuItem
             // 
             this.actions.SetAction(this.closeToolStripMenuItem, this.closeAction);
             this.closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            this.closeToolStripMenuItem.Size = new System.Drawing.Size(112, 22);
+            this.closeToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.closeToolStripMenuItem.Text = "&Close";
             // 
             // actions

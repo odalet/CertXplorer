@@ -14,7 +14,7 @@ namespace Delta.CertXplorer
 {
     public partial class MainForm : Form, IDocumentBasedUI
     {
-        private readonly Dictionary<Guid, ToolWindowInfo> toolWindowInfos = new Dictionary<Guid, ToolWindowInfo>();
+        private readonly Dictionary<Guid, IToolWindowInfo> toolWindowInfos = new Dictionary<Guid, IToolWindowInfo>();
         private IDocumentView activeDocumentView;
         private bool toolstripPanelsFixed = false;
 
@@ -117,7 +117,7 @@ namespace Delta.CertXplorer
 
         private void OnActiveDocumentChanged() { /* Placeholder */ }
         private void InitializeStatusStrip() { /* Placeholder */ }
-        private void OnToolWindowInfoRegistered(ToolWindowInfo windowInfo) { /* Placeholder */ }
+        private void OnToolWindowInfoRegistered(IToolWindowInfo windowInfo) { /* Placeholder */ }
 
         private void InitializeActions()
         {
@@ -214,10 +214,9 @@ namespace Delta.CertXplorer
             bottomToolStripPanel.BackColor = vs2015ToolStripBackground;
             leftToolStripPanel.BackColor = vs2015ToolStripBackground;
             rightToolStripPanel.BackColor = vs2015ToolStripBackground;
-
-            vsThemeToolSTripExtender.SetStyle(menuStrip, VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme);
-            vsThemeToolSTripExtender.SetStyle(toolStrip, VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme);
-            vsThemeToolSTripExtender.SetStyle(statusStrip, VisualStudioToolStripExtender.VsVersion.Vs2015, vS2015BlueTheme);
+            menuStrip.Renderer = VS2015ThemeProvider.Renderer;
+            toolStrip.Renderer = VS2015ThemeProvider.Renderer;
+            statusStrip.Renderer = VS2015ThemeProvider.Renderer;
         }
     }
 }

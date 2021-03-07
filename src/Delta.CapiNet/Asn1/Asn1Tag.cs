@@ -107,20 +107,6 @@ namespace Delta.CapiNet.Asn1
             return string.Format("0x{0:X2}", tagClass);
         }
 
-        ////// TODO: store the relationship between a tag and its tag name
-        ////public static string GetAsn1TagName(this ushort tag)
-        ////{
-        ////    var tagValue = tag.GetAsn1TagValue();
-        ////    if (Enum.GetValues(typeof(Asn1Tags)).Cast<byte>().Contains(tagValue))
-        ////        return ((Asn1Tags)tagValue).ToString();
-        ////    return string.Format("0x{0:X2}", tag);
-        ////}
-
-        private static byte ExtractFirstByte(ushort tag)
-        {
-            if (tag <= byte.MaxValue)
-                return (byte)tag;
-            return (byte)(tag >> 8);
-        }
+        private static byte ExtractFirstByte(ushort tag) => tag <= byte.MaxValue ? (byte)tag : (byte)(tag >> 8);
     }
 }

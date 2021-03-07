@@ -4,11 +4,9 @@
  * Original namespace: Crad.Windows.Forms.Actions
  * License: Common Public License Version 1.0
  * 
- */ 
+ */
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Delta.CertXplorer.UI.Actions
 {

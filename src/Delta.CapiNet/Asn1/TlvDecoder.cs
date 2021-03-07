@@ -14,14 +14,9 @@ namespace Delta.CapiNet.Asn1
     {
         public struct Data
         {
-            ////public int TagLength { get; internal set; }
-
             public byte[] Tag { get; set; }
-
             public int LengthLength { get; internal set; }
-
             public int Length { get; set; }
-
             public byte[] Value { get; set; }
         }
         
@@ -127,16 +122,14 @@ namespace Delta.CapiNet.Asn1
             if ((firstByte & multiBytesOrIndefiniteLengthMask) != multiBytesOrIndefiniteLengthMask) // single-byte length
                 return new byte[] { firstByte };
 
-            var list = new List<byte>();
-
-            list.Add(firstByte);
+            var list = new List<byte> { firstByte };
             // How many bytes should we read to complete the length array?
-            var bytesToReadCount = (int)(firstByte & lengthMask);
+            var bytesToReadCount = firstByte & lengthMask;
 
             if (bytesToReadCount > maxLengthLength) throw new InvalidDataException(string.Format(
                 "Invalid TLV structure: Length Length > {0} are not supported.", maxLengthLength));
 
-            for (int i = 0; i < bytesToReadCount; i++)
+            for (var i = 0; i < bytesToReadCount; i++)
             {
                 var currentByte = ReadNextByte(bytes, out eos);
                 if (eos) 
@@ -147,28 +140,6 @@ namespace Delta.CapiNet.Asn1
             
             return list.ToArray();
         }
-
-        ////private static ushort DecodeTag(byte[] data)
-        ////{
-        ////    if (data == null || data.Length == 0)
-        ////        throw new InvalidDataException("No Raw Tag data");
-
-        ////    if (data.Length == 1)
-        ////        return (ushort)data[0];
-
-        ////    // In multi-byte scenarios, the first byte is a marker and therefore is ignored.
-        ////    ushort result = 0;
-        ////    for (int i = 1; i < data.Length; i++)
-        ////    {
-        ////        // Remove bit 8
-        ////        var temp = data[i] & 0x7F;
-
-        ////        result += temp;
-        ////        result |= data[i];
-        ////    }
-
-        ////    return result;
-        ////}
 
         private static int DecodeLength(byte[] data)
         {

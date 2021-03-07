@@ -13,7 +13,6 @@ using Delta.CertXplorer.DocumentModel;
 using Delta.CertXplorer.Services;
 using Delta.CertXplorer.UI;
 using Delta.CertXplorer.UI.Actions;
-using Delta.CertXplorer.UI.Theming;
 
 namespace Delta.CertXplorer.CertManager
 {
@@ -30,14 +29,8 @@ namespace Delta.CertXplorer.CertManager
         {
             InitializeComponent();
 
-            ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
-            {
-                if (renderer is ToolStripProfessionalRenderer tsp)
-                    tsp.RoundedEdges = false;
-                tstrip.Renderer = renderer;
-            });
-
-            tstrip.SetRoundedEdges(false);
+            tstrip.Renderer = VS2015ThemeProvider.Renderer;
+            listContextMenu.Renderer = VS2015ThemeProvider.Renderer;
 
             InitializeViewMenu();
             UpdateViewMenu();

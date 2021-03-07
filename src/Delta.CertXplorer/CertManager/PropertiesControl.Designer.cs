@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.propertyGrid = new Delta.CertXplorer.CertManager.CertificatePropertyGrid();
+            this.propertyGrid = new Delta.CertXplorer.UI.PropertyGridEx();
             this.SuspendLayout();
             // 
             // propertyGrid
@@ -52,7 +52,7 @@
 
         #endregion
 
-        private Delta.CertXplorer.CertManager.CertificatePropertyGrid propertyGrid;
+        private Delta.CertXplorer.UI.PropertyGridEx propertyGrid;
 
     }
 }

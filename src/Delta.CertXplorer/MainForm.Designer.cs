@@ -29,10 +29,9 @@ namespace Delta.CertXplorer
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.workspace = new WeifenLuo.WinFormsUI.Docking.DockPanel();
-            this.vS2015BlueTheme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
+            this.vs2015BlueTheme = new WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +55,6 @@ namespace Delta.CertXplorer
             this.openCertificateDocumentAction = new Delta.CertXplorer.UI.Actions.UIAction();
             this.exitAction = new Delta.CertXplorer.UI.Actions.UIAction();
             this.aboutAction = new Delta.CertXplorer.UI.Actions.UIAction();
-            this.vsThemeToolSTripExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             this.menuStrip.SuspendLayout();
             this.topToolStripPanel.SuspendLayout();
             this.toolStrip.SuspendLayout();
@@ -73,7 +71,7 @@ namespace Delta.CertXplorer
             this.workspace.ShowAutoHideContentOnHover = false;
             this.workspace.Size = new System.Drawing.Size(604, 420);
             this.workspace.TabIndex = 6;
-            this.workspace.Theme = this.vS2015BlueTheme;
+            this.workspace.Theme = this.vs2015BlueTheme;
             // 
             // menuStrip
             // 
@@ -172,7 +170,7 @@ namespace Delta.CertXplorer
             this.aboutToolStripButton});
             this.toolStrip.Location = new System.Drawing.Point(3, 0);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(112, 25);
+            this.toolStrip.Size = new System.Drawing.Size(81, 25);
             this.toolStrip.TabIndex = 12;
             this.toolStrip.Text = "toolStrip1";
             // 
@@ -239,10 +237,6 @@ namespace Delta.CertXplorer
             this.actionsManager.Actions.Add(this.aboutAction);
             this.actionsManager.ContainerControl = this;
             // 
-            // vsThemeToolSTripExtender
-            // 
-            this.vsThemeToolSTripExtender.DefaultRenderer = null;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -280,7 +274,7 @@ namespace Delta.CertXplorer
         protected System.Windows.Forms.ToolStripPanel rightToolStripPanel;
         protected System.Windows.Forms.ToolStripPanel bottomToolStripPanel;
         private UI.Actions.UIActionsManager actionsManager;
-        private WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme vS2015BlueTheme;
+        private WeifenLuo.WinFormsUI.Docking.VS2015BlueTheme vs2015BlueTheme;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openFileToolStripMenuItem;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
@@ -293,7 +287,6 @@ namespace Delta.CertXplorer
         private UI.Actions.UIAction exitAction;
         private UI.Actions.UIAction openCertificateDocumentAction;
         private UI.Actions.UIAction aboutAction;
-        private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsThemeToolSTripExtender;
         private System.Windows.Forms.ToolStrip toolStrip;
         private System.Windows.Forms.ToolStripButton openFileToolStripButton;
         private System.Windows.Forms.ToolStripButton openCertificateToolStripButton;

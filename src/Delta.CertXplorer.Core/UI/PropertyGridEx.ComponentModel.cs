@@ -182,8 +182,7 @@ namespace Delta.CertXplorer.UI
             private ServiceContainer services = null;
             private PropertyGridEx grid = null;
 
-            public PropertyGridExContainer(PropertyGridEx parentGrid)
-                : base()
+            public PropertyGridExContainer(PropertyGridEx parentGrid) : base()
             {
                 if (parentGrid == null) throw new ArgumentNullException("parentGrid");
                 grid = parentGrid;

@@ -8,8 +8,6 @@ using System.Security.Permissions;
 using Delta.CertXplorer.Internals;
 
 // I did not write the HexViewer control, though I can't remember where it's from...
-
-
 namespace Delta.CertXplorer.UI
 {
     /// <summary>
@@ -520,7 +518,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(false), Category("Hex"), Description("Gets or sets the visibility of a vertical scroll bar.")]
         public bool VScrollBarVisible
         {
-            get { return this._vScrollBarVisible; }
+            get => _vScrollBarVisible;
             set
             {
                 if (_vScrollBarVisible == value)
@@ -538,7 +536,8 @@ namespace Delta.CertXplorer.UI
 
                 OnVScrollBarVisibleChanged(EventArgs.Empty);
             }
-        } bool _vScrollBarVisible;
+        }
+        bool _vScrollBarVisible;
 
         /// <summary>
         /// Gets or sets the visibility of a line info.
@@ -774,7 +773,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(typeof(Color), "White")]
         public override Color BackColor
         {
-            get { return base.BackColor; }
+            get => base.BackColor;
             set { base.BackColor = value; }
         }
 
@@ -832,31 +831,10 @@ namespace Delta.CertXplorer.UI
                 case BorderStyle.Fixed3D:
                     if (VisualStylesEnabled())
                     {
-                        //// draw xp themed border
-                        //int partId = Interop.EP_EDITTEXT;
-
-                        //int stateId;
-                        //if (Enabled) stateId = Interop.ETS_NORMAL;
-                        //else stateId = Interop.ETS_DISABLED;
-
-                        //var rect = Rect.FromRectangle(this.ClientRectangle);
-
-                        //IntPtr hTheme = Interop.OpenThemeData(this.Handle, "EDIT");
-
-                        //IntPtr hDC = e.Graphics.GetHdc();
-
-                        //Interop.DrawThemeBackground(hTheme, hDC, partId, stateId, ref rect, IntPtr.Zero);
-
-                        //e.Graphics.ReleaseHdc(hDC);
-
-                        //Interop.CloseThemeData(hTheme);
-
                         var element = Enabled ? VisualStyleElement.TextBox.TextEdit.Normal :
                             VisualStyleElement.TextBox.TextEdit.Disabled;
                         var renderer = new VisualStyleRenderer(element);
                         renderer.DrawBackground(e.Graphics, ClientRectangle);
-
-
                     } // draw default border
                     else ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, Border3DStyle.Sunken);
                     break;
