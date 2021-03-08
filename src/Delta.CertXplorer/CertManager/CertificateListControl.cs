@@ -65,8 +65,7 @@ namespace Delta.CertXplorer.CertManager
                 else
                 {
                     var selectedItem = listView.SelectedItems[0];
-                    NotifySelectionChanged(
-                        ObjectWrapper.Wrap(selectedItem.Tag));
+                    NotifySelectionChanged(Wrap(selectedItem.Tag));
                 }
             };
 
@@ -254,5 +253,15 @@ namespace Delta.CertXplorer.CertManager
         }
 
         private void filterBox_TextChanged(object sender, EventArgs e) => RefreshListView();
+
+        private static object Wrap(object item) => item switch
+        {
+            Certificate x => new CapiCertificateWrapper(x),
+            CertificateRevocationList x => new CapiCrlWrapper(x),
+            CertificateTrustList x => new CapiCtlWrapper(x),
+            X509Certificate2 x => new X509CertificateWrapper2(x),
+            X509Certificate x => new X509CertificateWrapper(x),
+            _ => item,
+        };
     }
 }
