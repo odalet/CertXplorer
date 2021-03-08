@@ -15,7 +15,7 @@ namespace Delta.CertXplorer.CertManager
             {
                 Tag = certificate;
                 IssuedTo = FormatDN(certificate.SubjectName);
-                IssuedBy = FormatDN(certificate.SubjectName);
+                IssuedBy = FormatDN(certificate.IssuerName);
                 From = FormatDate(certificate.X509.NotBefore);
                 To = FormatDate(certificate.X509.NotAfter);
                 FriendlyName = certificate.FriendlyName;
