@@ -5,17 +5,20 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace Delta.CertXplorer.CertManager.Wrappers
 {
-    internal class X509CertificateWrapper2 : X509CertificateWrapper
+    internal class X509CertificateWrapper2 : BaseWrapper
     {
         private readonly X509Certificate2 x509;
         private X509ExtensionWrapper[] extensions = null;
 
-        public X509CertificateWrapper2(X509Certificate2 certificate) : base(certificate)
+        public X509CertificateWrapper2(X509Certificate2 certificate)
         {
             x509 = certificate;
             FillExtensions();
         }
 
+        // NB: do not try to retrieve the private key. Either it will throw if there is one, or it will return null if there is none
+        // In any case, HasPrivateKey is enough information
+        public IntPtr Handle => TryGet(() => x509.Handle);
         public bool Archived => x509.Archived;
         public X509ExtensionWrapper[] Extensions => TryGet(() => extensions);
         public string FriendlyName => TryGet(() => x509.FriendlyName);
@@ -23,7 +26,6 @@ namespace Delta.CertXplorer.CertManager.Wrappers
         public string IssuerName => TryGet(() => x509.IssuerName.Name);
         public DateTime NotAfter => TryGet(() => x509.NotAfter);
         public DateTime NotBefore => TryGet(() => x509.NotBefore);
-        public AsymmetricAlgorithm PrivateKey => TryGet(() => x509.PrivateKey);
         public PublicKey PublicKey => TryGet(() => x509.PublicKey);
         public byte[] RawData => TryGet(() => x509.RawData);
         public string SerialNumber => TryGet(() => x509.SerialNumber);
