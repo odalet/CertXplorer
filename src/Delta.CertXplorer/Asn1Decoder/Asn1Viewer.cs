@@ -84,7 +84,7 @@ namespace Delta.CertXplorer.Asn1Decoder
             try
             {
                 content = data;
-                hexViewer.Data = content;
+                hexViewer.Load(content);
             }
             catch (Exception ex)
             {

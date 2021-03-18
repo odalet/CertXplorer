@@ -20,201 +20,63 @@ namespace Delta.CertXplorer.UI
         /// </summary>
         private struct BytePositionInfo
         {
-            private int location;
-            private long index;
-
-            /// <summary>
-            /// Initializes a new instance of the <see cref="BytePositionInfo"/> struct.
-            /// </summary>
-            /// <param name="characterIndex">Index of the character.</param>
-            /// <param name="characterLocation">The character location.</param>
             public BytePositionInfo(long characterIndex, int characterLocation)
             {
-                index = characterIndex;
-                location = characterLocation;
+                Index = characterIndex;
+                Location = characterLocation;
             }
 
-            /// <summary>
-            /// Gets the character position.
-            /// </summary>
-            /// <value>The character position.</value>
-            public int Location
-            {
-                get { return location; }
-            }
-
-            /// <summary>
-            /// Gets the index.
-            /// </summary>
-            /// <value>The index.</value>
-            public long Index
-            {
-                get { return index; }
-            }
+            public int Location { get; }
+            public long Index { get; }
         }
 
-        #region Fields
+        private readonly StringFormat _stringFormat; // Contains string format information for text drawing
+        private readonly VScrollBar vScrollBar; // Contains a vertical scroll
+        private Rectangle _recContent; // Contains the hole content bounds of all text
+        private Rectangle _recLineInfo; // Contains the line info bounds
+        private Rectangle _recHex; // Contains the hex data bounds
+        private Rectangle _recStringView; // Contains the string view bounds
+        private SizeF _charSize; // Contains the width and height of a single char
+        private int hexMaxHBytes; // Contains the maximum of visible horizontal bytes
+        private int hexMaxVBytes; // Contains the maximum of visible vertical bytes
+        private int hexMaxBytes; // Contains the maximum of visible bytes.
+        private long scrollVmin; // Contains the scroll bars minimum value
+        private long scrollVmax; // Contains the scroll bars maximum value
+        private long scrollVpos; // Contains the scroll bars current position        
+        private int recBorderLeft = SystemInformation.Border3DSize.Width; // Contains the border´s left shift
+        private int recBorderRight = SystemInformation.Border3DSize.Width; // Contains the border´s right shift
+        private int recBorderTop = SystemInformation.Border3DSize.Height; // Contains the border´s top shift
+        private int recBorderBottom = SystemInformation.Border3DSize.Height; // Contains the border bottom shift
+        private long startByte; // Contains the index of the first visible byte
+        private long endByte; // Contains the index of the last visible byte
+        private long bytePosition = -1; // Contains the current byte position
+        private int byteCharacterPosition; // Contains the current char position in one byte
+        private string hexStringFormat = "X"; // Contains string format information for hex values
+        private IKeyInterpreter currentKeyInterpreter; // Contains the current key interpreter
+        private EmptyKeyInterpreter emptyKeyInterpreter; // Contains an empty key interpreter without functionality
+        private KeyInterpreter keyInterpreter; // Contains the default key interpreter
+        private StringKeyInterpreter stringKeyInterpreter; // Contains the string key interpreter
+        private bool caretVisible; // Contains True if caret is visible
+        private bool abortFind; // Contains true, if the find (Find method) should be aborted.
+        private long findingPos; // Contains a value of the current finding position.
+        private bool _insertActive; // Contains a state value about Insert or Write mode. When this value is true and the ByteProvider SupportsInsert is true bytes are inserted instead of overridden.
+        private int _currentPositionInLine;
+        private long _currentLine;
+        private Color _shadowSelectionColor = Color.FromArgb(100, 60, 188, 255);
+        private bool _shadowSelectionVisible = true;
+        private Color _selectionForeColor = Color.White;
+        private Color _selectionBackColor = Color.Blue;
+        private long _selectionLength;
+        private bool _stringViewVisible;
+        private BorderStyle _borderStyle = BorderStyle.Fixed3D;
+        private bool _lineInfoVisible;
+        bool _vScrollBarVisible;
+        bool _useFixedBytesPerLine;
+        int _bytesPerLine = 16;
+        private bool _readOnly;
+        private byte[] data;
+        private IByteProvider _byteProvider;
 
-        /// <summary>
-        /// Contains the hole content bounds of all text
-        /// </summary>
-        private Rectangle _recContent;
-
-        /// <summary>
-        /// Contains the line info bounds
-        /// </summary>
-        private Rectangle _recLineInfo;
-
-        /// <summary>
-        /// Contains the hex data bounds
-        /// </summary>
-        private Rectangle _recHex;
-
-        /// <summary>
-        /// Contains the string view bounds
-        /// </summary>
-        private Rectangle _recStringView;
-
-        /// <summary>
-        /// Contains string format information for text drawing
-        /// </summary>
-        private StringFormat _stringFormat;
-
-        /// <summary>
-        /// Contains the width and height of a single char
-        /// </summary>
-        private SizeF _charSize;
-
-        /// <summary>
-        /// Contains the maximum of visible horizontal bytes
-        /// </summary>
-        private int hexMaxHBytes;
-
-        /// <summary>
-        /// Contains the maximum of visible vertical bytes
-        /// </summary>
-        private int hexMaxVBytes;
-
-        /// <summary>
-        /// Contains the maximum of visible bytes.
-        /// </summary>
-        private int hexMaxBytes;
-
-        /// <summary>
-        /// Contains the scroll bars minimum value
-        /// </summary>
-        private long scrollVmin;
-
-        /// <summary>
-        /// Contains the scroll bars maximum value
-        /// </summary>
-        private long scrollVmax;
-
-        /// <summary>
-        /// Contains the scroll bars current position
-        /// </summary>
-        private long scrollVpos;
-
-        /// <summary>
-        /// Contains a vertical scroll
-        /// </summary>
-        private VScrollBar vScrollBar;
-
-        /// <summary>
-        /// Contains the border´s left shift
-        /// </summary>
-        private int recBorderLeft = SystemInformation.Border3DSize.Width;
-
-        /// <summary>
-        /// Contains the border´s right shift
-        /// </summary>
-        private int recBorderRight = SystemInformation.Border3DSize.Width;
-
-        /// <summary>
-        /// Contains the border´s top shift
-        /// </summary>
-        private int recBorderTop = SystemInformation.Border3DSize.Height;
-
-        /// <summary>
-        /// Contains the border bottom shift
-        /// </summary>
-        private int recBorderBottom = SystemInformation.Border3DSize.Height;
-
-        /// <summary>
-        /// Contains the index of the first visible byte
-        /// </summary>
-        private long startByte;
-
-        /// <summary>
-        /// Contains the index of the last visible byte
-        /// </summary>
-        private long endByte;
-
-        /// <summary>
-        /// Contains the current byte position
-        /// </summary>
-        private long bytePosition = -1;
-
-        /// <summary>
-        /// Contains the current char position in one byte
-        /// </summary>
-        /// <example>
-        /// "1A"
-        /// "1" = char position of 0
-        /// "A" = char position of 1
-        /// </example>
-        private int byteCharacterPosition;
-
-        /// <summary>
-        /// Contains string format information for hex values
-        /// </summary>
-        private string hexStringFormat = "X";
-
-        /// <summary>
-        /// Contains the current key interpreter
-        /// </summary>
-        private IKeyInterpreter currentKeyInterpreter;
-
-        /// <summary>
-        /// Contains an empty key interpreter without functionality
-        /// </summary>
-        private EmptyKeyInterpreter emptyKeyInterpreter;
-
-        /// <summary>
-        /// Contains the default key interpreter
-        /// </summary>
-        private KeyInterpreter keyInterpreter;
-
-        /// <summary>
-        /// Contains the string key interpreter
-        /// </summary>
-        private StringKeyInterpreter stringKeyInterpreter;
-
-        /// <summary>
-        /// Contains True if caret is visible
-        /// </summary>
-        private bool caretVisible;
-
-        /// <summary>
-        /// Contains true, if the find (Find method) should be aborted.
-        /// </summary>
-        private bool abortFind;
-
-        /// <summary>
-        /// Contains a value of the current finding position.
-        /// </summary>
-        private long findingPos;
-
-        /// <summary>
-        /// Contains a state value about Insert or Write mode. When this value is true and the ByteProvider SupportsInsert is true bytes are inserted instead of overridden.
-        /// </summary>
-        private bool _insertActive;
-
-        #endregion
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="HexViewer"/> class.
-        /// </summary>
         public HexViewer()
         {
             InitializeComponent();
@@ -256,9 +118,11 @@ namespace Delta.CertXplorer.UI
             };
 
             BackColor = Color.White;
-            Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, ((byte)(0)));
-            _stringFormat = new StringFormat(StringFormat.GenericTypographic);
-            _stringFormat.FormatFlags = StringFormatFlags.MeasureTrailingSpaces;
+            Font = new Font("Courier New", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            _stringFormat = new StringFormat(StringFormat.GenericTypographic)
+            {
+                FormatFlags = StringFormatFlags.MeasureTrailingSpaces
+            };
 
             ActivateEmptyKeyInterpreter();
 
@@ -268,180 +132,29 @@ namespace Delta.CertXplorer.UI
             SetStyle(ControlStyles.ResizeRedraw, true);
         }
 
-        #region Events
-
-        /// <summary>
-        /// Occurs, when the value of ReadOnly property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of ReadOnly property has changed.")]
         public event EventHandler ReadOnlyChanged;
-
-        /// <summary>
-        /// Occurs, when the value of ByteProvider property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of ByteProvider property has changed.")]
         public event EventHandler ByteProviderChanged;
-
-        /// <summary>
-        /// Occurs, when the value of SelectionStart property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of SelectionStart property has changed.")]
         public event EventHandler SelectionStartChanged;
-
-        /// <summary>
-        /// Occurs, when the value of SelectionLength property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of SelectionLength property has changed.")]
         public event EventHandler SelectionLengthChanged;
-
-        /// <summary>
-        /// Occurs, when the value of LineInfoVisible property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of LineInfoVisible property has changed.")]
         public event EventHandler LineInfoVisibleChanged;
-
-        /// <summary>
-        /// Occurs, when the value of StringViewVisible property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of StringViewVisible property has changed.")]
         public event EventHandler StringViewVisibleChanged;
-
-        /// <summary>
-        /// Occurs, when the value of BorderStyle property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of BorderStyle property has changed.")]
         public event EventHandler BorderStyleChanged;
-
-        /// <summary>
-        /// Occurs, when the value of BytesPerLine property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of BytesPerLine property has changed.")]
         public event EventHandler BytesPerLineChanged;
-
-        /// <summary>
-        /// Occurs, when the value of UseFixedBytesPerLine property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of UseFixedBytesPerLine property has changed.")]
         public event EventHandler UseFixedBytesPerLineChanged;
-
-        /// <summary>
-        /// Occurs, when the value of VScrollBarVisible property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of VScrollBarVisible property has changed.")]
         public event EventHandler VScrollBarVisibleChanged;
-
-        /// <summary>
-        /// Occurs, when the value of Casing property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of Casing property has changed.")]
         public event EventHandler CasingChanged;
-
-        /// <summary>
-        /// Occurs, when the value of HorizontalByteCount property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of HorizontalByteCount property has changed.")]
         public event EventHandler HorizontalByteCountChanged;
-
-        /// <summary>
-        /// Occurs, when the value of VerticalByteCount property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of VerticalByteCount property has changed.")]
         public event EventHandler VerticalByteCountChanged;
-
-        /// <summary>
-        /// Occurs, when the value of CurrentLine property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of CurrentLine property has changed.")]
         public event EventHandler CurrentLineChanged;
-
-        /// <summary>
-        /// Occurs, when the value of CurrentPositionInLine property has changed.
-        /// </summary>
-        [Description("Occurs, when the value of CurrentPositionInLine property has changed.")]
         public event EventHandler CurrentPositionInLineChanged;
 
-        #endregion
-
         #region Properties
-
-        private IByteProvider _byteProvider;
-
-        /// <summary>
-        /// Gets or sets the ByteProvider.
-        /// </summary>
-        [Browsable(false), DefaultValue(null)]
-        private IByteProvider ByteProvider
-        {
-            get { return _byteProvider; }
-            set
-            {
-                if (_byteProvider == value)
-                    return;
-
-                if (value == null)
-                    ActivateEmptyKeyInterpreter();
-                else
-                    ActivateKeyInterpreter();
-
-                if (_byteProvider != null)
-                    _byteProvider.LengthChanged -= new EventHandler(OnByteProviderLengthChanged);
-
-                _byteProvider = value;
-                if (_byteProvider != null)
-                    _byteProvider.LengthChanged += new EventHandler(OnByteProviderLengthChanged);
-
-                OnByteProviderChanged(EventArgs.Empty);
-
-                if (value == null) // do not raise events if value is null
-                {
-                    bytePosition = -1;
-                    byteCharacterPosition = 0;
-                    _selectionLength = 0;
-
-                    DestroyCaret();
-                }
-                else
-                {
-                    SetPosition(0, 0);
-                    SetSelectionLength(0);
-
-                    if (caretVisible && Focused) UpdateCaret();
-                    else CreateCaret();
-                }
-
-                CheckCurrentLineChanged();
-                CheckCurrentPositionInLineChanged();
-
-                scrollVpos = 0;
-
-                UpdateVisibilityBytes();
-                UpdateRectanglePositioning();
-
-                Invalidate();
-            }
-        }
-
-        private byte[] data = null;
-
-        [Browsable(false), DefaultValue(null), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public byte[] Data
-        {
-            get { return data; }
-            set
-            {
-                data = value;
-                ByteProvider = new ByteArrayProvider(data);
-            }
-        }
 
         /// <summary>
         /// Gets a value that indicates the current position during Find method execution.
         /// </summary>
         [DefaultValue(0), Browsable(false)]
-        public long CurrentFindingPosition
-        {
-            get { return findingPos; }
-        }
+        public long CurrentFindingPosition => findingPos;
 
         /// <summary>
         /// Gets or sets if the count of bytes in one line is fix.
@@ -452,7 +165,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(false), Category("Hex"), Description("Gets or sets if the count of bytes in one line is fix.")]
         public bool ReadOnly
         {
-            get { return _readOnly; }
+            get => _readOnly;
             set
             {
                 if (_readOnly == value)
@@ -464,8 +177,6 @@ namespace Delta.CertXplorer.UI
             }
         }
 
-        private bool _readOnly;
-
         /// <summary>
         /// Gets or sets the maximum count of bytes in one line.
         /// </summary>
@@ -475,7 +186,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(16), Category("Hex"), Description("Gets or sets the maximum count of bytes in one line.")]
         public int BytesPerLine
         {
-            get { return _bytesPerLine; }
+            get => _bytesPerLine;
             set
             {
                 if (_bytesPerLine == value)
@@ -487,7 +198,7 @@ namespace Delta.CertXplorer.UI
                 UpdateRectanglePositioning();
                 Invalidate();
             }
-        } int _bytesPerLine = 16;
+        }
 
         /// <summary>
         /// Gets or sets if the count of bytes in one line is fix.
@@ -498,7 +209,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(false), Category("Hex"), Description("Gets or sets if the count of bytes in one line is fix.")]
         public bool UseFixedBytesPerLine
         {
-            get { return _useFixedBytesPerLine; }
+            get => _useFixedBytesPerLine;
             set
             {
                 if (_useFixedBytesPerLine == value)
@@ -510,7 +221,7 @@ namespace Delta.CertXplorer.UI
                 UpdateRectanglePositioning();
                 Invalidate();
             }
-        } bool _useFixedBytesPerLine;
+        }
 
         /// <summary>
         /// Gets or sets the visibility of a vertical scroll bar.
@@ -537,7 +248,6 @@ namespace Delta.CertXplorer.UI
                 OnVScrollBarVisibleChanged(EventArgs.Empty);
             }
         }
-        bool _vScrollBarVisible;
 
         /// <summary>
         /// Gets or sets the visibility of a line info.
@@ -545,7 +255,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(false), Category("Hex"), Description("Gets or sets the visibility of a line info.")]
         public bool LineInfoVisible
         {
-            get { return _lineInfoVisible; }
+            get => _lineInfoVisible;
             set
             {
                 if (_lineInfoVisible == value)
@@ -557,7 +267,7 @@ namespace Delta.CertXplorer.UI
                 UpdateRectanglePositioning();
                 Invalidate();
             }
-        } bool _lineInfoVisible;
+        }
 
         /// <summary>
         /// Gets or sets the hex box´s border style.
@@ -565,7 +275,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(typeof(BorderStyle), "Fixed3D"), Category("Hex"), Description("Gets or sets the hex box´s border style.")]
         public BorderStyle BorderStyle
         {
-            get { return _borderStyle; }
+            get => _borderStyle;
             set
             {
                 if (_borderStyle == value)
@@ -587,11 +297,9 @@ namespace Delta.CertXplorer.UI
                 }
 
                 UpdateRectanglePositioning();
-
                 OnBorderStyleChanged(EventArgs.Empty);
-
             }
-        } BorderStyle _borderStyle = BorderStyle.Fixed3D;
+        }
 
         /// <summary>
         /// Gets or sets the visibility of the string view.
@@ -599,7 +307,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(false), Category("Hex"), Description("Gets or sets the visibility of the string view.")]
         public bool StringViewVisible
         {
-            get { return _stringViewVisible; }
+            get => _stringViewVisible;
             set
             {
                 if (_stringViewVisible == value)
@@ -611,7 +319,7 @@ namespace Delta.CertXplorer.UI
                 UpdateRectanglePositioning();
                 Invalidate();
             }
-        } bool _stringViewVisible;
+        }
 
         /// <summary>
         /// Gets or sets whether the HexBox control displays the hex characters in upper or lower case.
@@ -619,13 +327,10 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(typeof(CharacterCasing), "Upper"), Category("Hex"), Description("Gets or sets whether the HexBox control displays the hex characters in upper or lower case.")]
         public CharacterCasing Casing
         {
-            get
-            {
-                return (hexStringFormat == "X" ? CharacterCasing.Upper : CharacterCasing.Lower);
-            }
+            get => hexStringFormat == "X" ? CharacterCasing.Upper : CharacterCasing.Lower;
             set
             {
-                string format = (value == CharacterCasing.Upper ? "X" : "x");
+                var format = value == CharacterCasing.Upper ? "X" : "x";
 
                 if (hexStringFormat == format)
                     return;
@@ -643,7 +348,7 @@ namespace Delta.CertXplorer.UI
         [Browsable(false), DefaultValue(0)]
         public long SelectionStart
         {
-            get { return bytePosition; }
+            get => bytePosition;
             set
             {
                 SetPosition(value, 0);
@@ -658,15 +363,14 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(0)]
         public long SelectionLength
         {
-            get { return _selectionLength; }
+            get => _selectionLength;
             set
             {
                 SetSelectionLength(value);
                 ScrollByteIntoView();
                 Invalidate();
             }
-        } long _selectionLength;
-
+        }
 
         /// <summary>
         /// Gets or sets the background color for the selected bytes.
@@ -674,9 +378,13 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(typeof(Color), "Blue"), Category("Hex"), Description("Gets or sets the background color for the selected bytes.")]
         public Color SelectionBackColor
         {
-            get { return _selectionBackColor; }
-            set { _selectionBackColor = value; Invalidate(); }
-        } Color _selectionBackColor = Color.Blue;
+            get => _selectionBackColor;
+            set
+            {
+                _selectionBackColor = value;
+                Invalidate();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the foreground color for the selected bytes.
@@ -684,9 +392,13 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(typeof(Color), "White"), Category("Hex"), Description("Gets or sets the foreground color for the selected bytes.")]
         public Color SelectionForeColor
         {
-            get { return _selectionForeColor; }
-            set { _selectionForeColor = value; Invalidate(); }
-        } Color _selectionForeColor = Color.White;
+            get => _selectionForeColor;
+            set
+            {
+                _selectionForeColor = value;
+                Invalidate();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the visibility of a shadow selection.
@@ -694,7 +406,7 @@ namespace Delta.CertXplorer.UI
         [DefaultValue(true), Category("Hex"), Description("Gets or sets the visibility of a shadow selection.")]
         public bool ShadowSelectionVisible
         {
-            get { return _shadowSelectionVisible; }
+            get => _shadowSelectionVisible;
             set
             {
                 if (_shadowSelectionVisible == value)
@@ -702,7 +414,7 @@ namespace Delta.CertXplorer.UI
                 _shadowSelectionVisible = value;
                 Invalidate();
             }
-        } bool _shadowSelectionVisible = true;
+        }
 
         /// <summary>
         /// Gets or sets the color of the shadow selection. 
@@ -714,107 +426,84 @@ namespace Delta.CertXplorer.UI
         [Category("Hex"), Description("Gets or sets the color of the shadow selection.")]
         public Color ShadowSelectionColor
         {
-            get { return _shadowSelectionColor; }
-            set { _shadowSelectionColor = value; Invalidate(); }
-        } Color _shadowSelectionColor = Color.FromArgb(100, 60, 188, 255);
+            get => _shadowSelectionColor;
+            set
+            {
+                _shadowSelectionColor = value;
+                Invalidate();
+            }
+        }
 
         /// <summary>
         /// Gets the number bytes drawn horizontally.
         /// </summary>
         [DefaultValue(true), Browsable(false)]
-        public int HorizontalByteCount
-        {
-            get { return hexMaxHBytes; }
-        }
+        public int HorizontalByteCount => hexMaxHBytes;
 
         /// <summary>
         /// Gets the number bytes drawn vertically.
         /// </summary>
         [DefaultValue(true), Browsable(false)]
-        public int VerticalByteCount
-        {
-            get { return hexMaxVBytes; }
-        }
+        public int VerticalByteCount => hexMaxVBytes;
 
         /// <summary>
         /// Gets the current line
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public long CurrentLine
-        {
-            get { return _currentLine; }
-        } long _currentLine;
+        public long CurrentLine => _currentLine;
+
 
         /// <summary>
         /// Gets the current position in the current line
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public long CurrentPositionInLine
-        {
-            get { return _currentPositionInLine; }
-        } int _currentPositionInLine;
+        public long CurrentPositionInLine => _currentPositionInLine;
+
 
         /// <summary>
         /// Gets the a value if insertion mode is active or not.
         /// </summary>
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-        public bool InsertActive
-        {
-            get { return _insertActive; }
-        }
+        public bool InsertActive => _insertActive;
 
         #endregion
 
-        #region Overridden properties
-
-        /// <summary>
-        /// Gets or sets the background color for the control.
-        /// </summary>
-        [DefaultValue(typeof(Color), "White")]
-        public override Color BackColor
+        public void Load(byte[] bytes)
         {
-            get => base.BackColor;
-            set { base.BackColor = value; }
-        }
+            data = bytes;
+            var provider = new ByteArrayProvider(data);
 
-        /// <summary>
-        /// The font used to display text in the hexbox.
-        /// </summary>
-        [Editor(typeof(FixedSizeFontEditor), typeof(System.Drawing.Design.UITypeEditor))]
-        public override Font Font
-        {
-            get { return base.Font; }
-            set { base.Font = value; }
-        }
+            if (_byteProvider == provider)
+                return;
 
-        /// <summary>
-        /// Not used.
-        /// </summary>
-        [DefaultValue(""),
-        Browsable(false),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden),
-        EditorBrowsable(EditorBrowsableState.Never),
-        Bindable(false)]
-        public override string Text
-        {
-            get { return base.Text; }
-            set { base.Text = value; }
-        }
+            ActivateKeyInterpreter();
 
-        /// <summary>
-        /// Not used.
-        /// </summary>
-        [Browsable(false),
-        DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden),
-        EditorBrowsable(EditorBrowsableState.Never),
-        Bindable(false)]
-        public override RightToLeft RightToLeft
-        {
-            get { return base.RightToLeft; }
-            set { base.RightToLeft = value; }
-        }
+            if (_byteProvider != null)
+                _byteProvider.LengthChanged -= new EventHandler(OnByteProviderLengthChanged);
 
-        #endregion
+            _byteProvider = provider;
+            _byteProvider.LengthChanged += new EventHandler(OnByteProviderLengthChanged);
+
+            OnByteProviderChanged(EventArgs.Empty);
+
+            SetPosition(0, 0);
+            SetSelectionLength(0);
+
+            if (caretVisible && Focused)
+                UpdateCaret();
+            else
+                CreateCaret();
+
+            CheckCurrentLineChanged();
+            CheckCurrentPositionInLineChanged();
+
+            scrollVpos = 0;
+
+            UpdateVisibilityBytes();
+            UpdateRectanglePositioning();
+
+            Invalidate();
+        }
 
         #region Paint methods
 
@@ -1896,18 +1585,11 @@ namespace Delta.CertXplorer.UI
 
         #region Misc
 
-        void SetPosition(long bytePos)
-        {
-            SetPosition(bytePos, byteCharacterPosition);
-        }
+        void SetPosition(long bytePos) => SetPosition(bytePos, byteCharacterPosition);
 
         void SetPosition(long bytePos, int characterPos)
         {
-            if (byteCharacterPosition != characterPos)
-            {
-                byteCharacterPosition = characterPos;
-            }
-
+            byteCharacterPosition = characterPos;
             if (bytePos != bytePosition)
             {
                 bytePosition = bytePos;

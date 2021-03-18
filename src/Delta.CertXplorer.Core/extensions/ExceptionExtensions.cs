@@ -58,18 +58,20 @@ namespace Delta.CertXplorer
             const string tab = "   ";
             const string leafEx = " + ";
             const string leafTr = " | ";
-            string indent = string.Empty;
+            var indent = string.Empty;
 
             var builder = new StringBuilder();
             for (var currentException = exception; currentException != null; currentException = currentException.InnerException)
             {
-                builder.Append(indent);
-                builder.Append(leafEx);
-                builder.Append("[");
-                builder.Append(currentException.GetType().ToString());
-                builder.Append("] ");
-                builder.Append(currentException.Message);
-                builder.Append(Environment.NewLine);
+                _ = builder
+                    .Append(indent)
+                    .Append(leafEx)
+                    .Append("[")
+                    .Append(currentException.GetType().ToString())
+                    .Append("] ")
+                    .Append(currentException.Message)
+                    .Append(Environment.NewLine)
+                    ;
 
                 indent += tab;
 
@@ -79,16 +81,17 @@ namespace Delta.CertXplorer
                 var stackTrace = currentException.StackTrace
                     .Replace(Environment.NewLine, "\n").Split('\n');
 
-
-                for (int i = 0; i < stackTrace.Length; i++)
+                for (var i = 0; i < stackTrace.Length; i++)
                 {
                     var current = stackTrace[i];
                     if (string.IsNullOrEmpty(current)) continue;
 
-                    builder.Append(indent);
-                    builder.Append(leafTr);
-                    builder.Append(current.Trim());
-                    builder.Append(Environment.NewLine);
+                    _ = builder
+                        .Append(indent)
+                        .Append(leafTr)
+                        .Append(current.Trim())
+                        .Append(Environment.NewLine)
+                        ;
                 }
             }
 
@@ -97,35 +100,29 @@ namespace Delta.CertXplorer
 
         public static string GetFullDiagnosticsInformation(this object exceptionObject)
         {
-            if (exceptionObject == null)
-                exceptionObject = "NO EXCEPTION DATA";
+            if (exceptionObject == null) exceptionObject = "NO EXCEPTION DATA";
             try
             {
-                if (exceptionObject is Exception)
+                return exceptionObject switch
                 {
-                    var exception = (Exception)exceptionObject;
-                    return GetFullDiagnosticsText(exception.ToFormattedString());
-                }
-                else
-                {
-                    var exceptionMessage = exceptionObject == null ? "?" : exceptionObject.ToString();
-                    return GetFullDiagnosticsText(exceptionMessage);
-                }
+                    Exception exception => GetFullDiagnosticsText(exception.ToFormattedString()),
+                    _ => GetFullDiagnosticsText(exceptionObject.ToString()),
+                };
             }
             catch (Exception ex)
             {
-                var debugException = ex;
-                return string.Format("Could not retrieve diagnostics data: {0}\r\n{1}", ex.Message, ex.ToFormattedString());
+                return $"Could not retrieve diagnostics data: {ex.Message}\r\n{ex.ToFormattedString()}";
             }
         }
 
         private static string GetFullDiagnosticsText(string initialString)
         {
-            var builder = new StringBuilder();
-            builder.AppendLine(initialString);
-            builder.AppendLine();
-            builder.AppendLine(new string('-', 80));
-            builder.AppendLine("Current AppDomain's loaded assemblies:");
+            var builder = new StringBuilder()
+                .AppendLine(initialString)
+                .AppendLine()
+                .AppendLine(new string('-', 80))
+                .AppendLine("Current AppDomain's loaded assemblies:")
+                ;
 
             try
             {
@@ -133,8 +130,7 @@ namespace Delta.CertXplorer
             }
             catch (Exception ex)
             {
-                builder.AppendLine(string.Format("Error: Unable to retrieve the loaded assemblies list:{0}\r\n{1}",
-                    ex.Message, ex.ToFormattedString()));
+                _ = builder.AppendLine($"Error: Unable to retrieve the loaded assemblies list: {ex.Message}\r\n{ex.ToFormattedString()}");
             }
 
             return builder.ToString();

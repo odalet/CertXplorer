@@ -434,7 +434,7 @@ namespace Delta.CertXplorer.Logging
             string typeName = GetCallingMethod();
 
             string sourceName = string.Empty;
-            if (currentSourceName != DefaultSourceName) sourceName = currentSourceName;
+            if (currentSourceName != defaultSourceName) sourceName = currentSourceName;
 
             // Traces the message
             if (string.IsNullOrEmpty(sourceName)) writer.WriteLine(string.Format("{0} - {1} - {2}",

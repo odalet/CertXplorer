@@ -8,9 +8,9 @@ using PCSC.Iso7816;
 
 namespace Delta.SmartCard
 {
-    public class PcscSmartCardReader : IDisposable
+    public sealed class PcscSmartCardReader : IDisposable
     {
-        private static ILogService log = LogManager.GetLogger<PcscSmartCardReader>();
+        private static readonly ILogService log = LogManager.GetLogger<PcscSmartCardReader>();
 
         // What does this change???
         private const SCardReaderDisposition disconnectAction = SCardReaderDisposition.Leave;
@@ -26,8 +26,8 @@ namespace Delta.SmartCard
 
         internal PcscSmartCardReader(string readerName, SCardScope scardScope = SCardScope.System)
         {
-            if (string.IsNullOrEmpty("readerName"))
-                throw new ArgumentNullException("readerName");
+            if (string.IsNullOrEmpty(readerName))
+                throw new ArgumentNullException(nameof(readerName));
 
             name = readerName;
             scope = scardScope;
@@ -195,8 +195,7 @@ namespace Delta.SmartCard
             if (IsCardOpened)
                 return;
 
-            TryPcsc(() =>
-                reader.Connect(name, shareMode, protocol));
+            _ = TryPcsc(() => reader.Connect(name, shareMode, protocol));
         }
 
         public void CloseCard()
@@ -204,7 +203,7 @@ namespace Delta.SmartCard
             if (!IsCardOpened)
                 return;
 
-            scReader.Disconnect(disconnectAction);
+            _ = scReader.Disconnect(disconnectAction);
         }
 
         public bool IsCardOpened => scReader != null && scReader.IsConnected;
@@ -268,7 +267,7 @@ namespace Delta.SmartCard
         {
             context = new SCardContext();
             context.Establish(scope);
-            context.EnsureOK();
+            _ = context.EnsureOK();
 
             reader = new IsoReader(context);
             scReader = new SCardReader(context);

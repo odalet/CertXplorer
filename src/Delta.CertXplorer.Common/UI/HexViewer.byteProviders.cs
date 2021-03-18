@@ -100,10 +100,7 @@ namespace Delta.CertXplorer.UI
             /// Initializes a new instance of the <see cref="ByteArrayProvider"/> class.
             /// </summary>
             /// <param name="content">The content.</param>
-            public ByteArrayProvider(byte[] content)
-            {
-                Content = content;
-            }
+            public ByteArrayProvider(byte[] content) => Content = content;
 
             #region IByteProvider Members
 
