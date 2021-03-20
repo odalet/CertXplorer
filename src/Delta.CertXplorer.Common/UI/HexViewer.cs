@@ -648,7 +648,6 @@ namespace Delta.CertXplorer.UI
             var intern_endByte = Math.Min(_byteProvider.Length - 1, endByte + hexMaxHBytes);
 
             var isKeyInterpreterActive = currentKeyInterpreter == null || currentKeyInterpreter.GetType() == typeof(KeyInterpreter);
-            var isStringKeyInterpreterActive = currentKeyInterpreter is StringKeyInterpreter;
 
             for (var i = startByte; i < intern_endByte + 1; i++)
             {

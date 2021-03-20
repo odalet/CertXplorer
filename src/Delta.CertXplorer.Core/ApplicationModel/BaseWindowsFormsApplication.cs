@@ -12,11 +12,6 @@ namespace Delta.CertXplorer.ApplicationModel
 {
     public abstract class BaseWindowsFormsApplication : BaseApplication
     {
-        private sealed class ThemingSettings
-        {
-            public string Theme { get; set; }
-        }
-
         private const string defaultLoggingSettingsFileName = "log4net.config";
         private const string defaultLayoutSettingsFileName = "app.layout.xml";
 
