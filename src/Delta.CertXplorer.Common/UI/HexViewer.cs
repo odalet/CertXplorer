@@ -644,31 +644,30 @@ namespace Delta.CertXplorer.UI
             Brush selBrush = new SolidBrush(_selectionForeColor);
             Brush selBrushBack = new SolidBrush(_selectionBackColor);
 
-            int counter = -1;
-            long intern_endByte = Math.Min(_byteProvider.Length - 1, endByte + hexMaxHBytes);
+            var counter = -1;
+            var intern_endByte = Math.Min(_byteProvider.Length - 1, endByte + hexMaxHBytes);
 
-            bool isKeyInterpreterActive = currentKeyInterpreter == null || currentKeyInterpreter.GetType() == typeof(KeyInterpreter);
-            bool isStringKeyInterpreterActive = currentKeyInterpreter != null && currentKeyInterpreter.GetType() == typeof(StringKeyInterpreter);
+            var isKeyInterpreterActive = currentKeyInterpreter == null || currentKeyInterpreter.GetType() == typeof(KeyInterpreter);
+            var isStringKeyInterpreterActive = currentKeyInterpreter is StringKeyInterpreter;
 
-            for (long i = startByte; i < intern_endByte + 1; i++)
+            for (var i = startByte; i < intern_endByte + 1; i++)
             {
                 counter++;
-                Point gridPoint = GetGridBytePoint(counter);
-                PointF byteStringPointF = GetByteStringPointF(gridPoint);
-                byte b = _byteProvider.ReadByte(i);
+                var gridPoint = GetGridBytePoint(counter);
+                var byteStringPointF = GetByteStringPointF(gridPoint);
+                var b = _byteProvider.ReadByte(i);
 
-                bool isSelectedByte = i >= bytePosition && i <= (bytePosition + _selectionLength - 1) && _selectionLength != 0;
+                var isSelectedByte =
+                    i >= bytePosition &&
+                    i <= bytePosition + _selectionLength - 1 &&
+                    _selectionLength != 0;
 
                 if (isSelectedByte && isKeyInterpreterActive)
                     PaintHexStringSelected(g, b, selBrush, selBrushBack, gridPoint);
                 else PaintHexString(g, b, brush, gridPoint);
 
-                string s;
-                if (b > 0x1F && !(b > 0x7E && b < 0xA0))
-                    s = ((char)b).ToString();
-                else s = ".";
-
-                if (isSelectedByte && isStringKeyInterpreterActive)
+                var s = b > 0x1F && !(b > 0x7E && b < 0xA0) ? ((char)b).ToString() : ".";
+                if (isSelectedByte && currentKeyInterpreter is StringKeyInterpreter)
                 {
                     g.FillRectangle(selBrushBack, byteStringPointF.X, byteStringPointF.Y, _charSize.Width, _charSize.Height);
                     g.DrawString(s, Font, selBrush, byteStringPointF, _stringFormat);
@@ -1199,10 +1198,10 @@ namespace Delta.CertXplorer.UI
                 return;
 
             if (currentKeyInterpreter != null)
-                currentKeyInterpreter.Deactivate();
+                currentKeyInterpreter.DeactivateMouseEvents();
 
             currentKeyInterpreter = emptyKeyInterpreter;
-            currentKeyInterpreter.Activate();
+            currentKeyInterpreter.ActivateMouseEvents();
         }
 
         private void ActivateKeyInterpreter()
@@ -1214,10 +1213,10 @@ namespace Delta.CertXplorer.UI
                 return;
 
             if (currentKeyInterpreter != null)
-                currentKeyInterpreter.Deactivate();
+                currentKeyInterpreter.DeactivateMouseEvents();
 
             currentKeyInterpreter = keyInterpreter;
-            currentKeyInterpreter.Activate();
+            currentKeyInterpreter.ActivateMouseEvents();
         }
 
         private void ActivateStringKeyInterpreter()
@@ -1229,10 +1228,10 @@ namespace Delta.CertXplorer.UI
                 return;
 
             if (currentKeyInterpreter != null)
-                currentKeyInterpreter.Deactivate();
+                currentKeyInterpreter.DeactivateMouseEvents();
 
             currentKeyInterpreter = stringKeyInterpreter;
-            currentKeyInterpreter.Activate();
+            currentKeyInterpreter.ActivateMouseEvents();
         }
 
         #endregion
@@ -1286,16 +1285,10 @@ namespace Delta.CertXplorer.UI
             if (_byteProvider == null || currentKeyInterpreter == null)
                 return;
 
-            long pos = bytePosition;
-            int cp = byteCharacterPosition;
-
             if (_recHex.Contains(p))
             {
-                BytePositionInfo bpi = GetHexBytePositionInfo(p);
-                pos = bpi.Index;
-                cp = bpi.Location;
-
-                SetPosition(pos, cp);
+                var bpi = GetHexBytePositionInfo(p);
+                SetPosition(bpi.Index, bpi.Location);
 
                 ActivateKeyInterpreter();
                 UpdateCaret();
@@ -1303,11 +1296,8 @@ namespace Delta.CertXplorer.UI
             }
             else if (_recStringView.Contains(p))
             {
-                BytePositionInfo bpi = GetStringBytePositionInfo(p);
-                pos = bpi.Index;
-                cp = bpi.Location;
-
-                SetPosition(pos, cp);
+                var bpi = GetStringBytePositionInfo(p);
+                SetPosition(bpi.Index, bpi.Location);
 
                 ActivateStringKeyInterpreter();
                 UpdateCaret();
@@ -1373,21 +1363,21 @@ namespace Delta.CertXplorer.UI
         /// <summary>
         /// Preprocesses windows messages.
         /// </summary>
-        /// <param name="m">the message to process.</param>
+        /// <param name="msg">the message to process.</param>
         /// <returns>true, if the message was processed</returns>
         [SecurityPermission(SecurityAction.LinkDemand, UnmanagedCode = true),
         SecurityPermission(SecurityAction.InheritanceDemand, UnmanagedCode = true)]
-        public override bool PreProcessMessage(ref Message m)
+        public override bool PreProcessMessage(ref Message msg)
         {
-            switch (m.Msg)
+            switch (msg.Msg)
             {
                 case NativeMethods.WM_KEYDOWN:
-                    return currentKeyInterpreter.PreProcessWmKeyDown(ref m);
+                    return currentKeyInterpreter.PreProcessWmKeyDown(ref msg);
                 case NativeMethods.WM_CHAR:
-                    return currentKeyInterpreter.PreProcessWmChar(ref m);
+                    return currentKeyInterpreter.PreProcessWmChar(ref msg);
                 case NativeMethods.WM_KEYUP:
-                    return currentKeyInterpreter.PreProcessWmKeyUp(ref m);
-                default: return base.PreProcessMessage(ref m);
+                    return currentKeyInterpreter.PreProcessWmKeyUp(ref msg);
+                default: return base.PreProcessMessage(ref msg);
             }
         }
 

@@ -12,8 +12,14 @@
 
   <ItemGroup>
     <Compile Remove="UI\Theming\**" />
+    <Compile Remove="UI\ToolboxImplementation\**" />
+    <Compile Remove="UI\ToolboxModel\**" />
     <EmbeddedResource Remove="UI\Theming\**" />
+    <EmbeddedResource Remove="UI\ToolboxImplementation\**" />
+    <EmbeddedResource Remove="UI\ToolboxModel\**" />
     <None Remove="UI\Theming\**" />
+    <None Remove="UI\ToolboxImplementation\**" />
+    <None Remove="UI\ToolboxModel\**" />
   </ItemGroup>
 
   <ItemGroup>

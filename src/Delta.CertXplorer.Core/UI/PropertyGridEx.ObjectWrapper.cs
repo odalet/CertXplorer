@@ -1,7 +1,7 @@
 using System;
-using System.Linq;
-using System.Diagnostics;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
 
 namespace Delta.CertXplorer.UI
 {
@@ -64,10 +64,7 @@ namespace Delta.CertXplorer.UI
             {
                 if (properties == null)
                 {
-                    var baseProperties = attributes == null
-                        ? TypeDescriptor.GetProperties(wrappedObject, true)
-                        : TypeDescriptor.GetProperties(wrappedObject, attributes, true);
-
+                    var baseProperties = TypeDescriptor.GetProperties(wrappedObject, attributes, true);
                     properties = new PropertyDescriptorCollection(baseProperties
                         .Cast<PropertyDescriptor>()
                         .Select(p => new InnerPropertyDescriptor(wrappedObject, p))

@@ -27,8 +27,6 @@ namespace Delta.CertXplorer.Asn1Decoder
 
             // We shouldn't sort nodes as they must appear in the order they are defined in data
             base.Sorted = false; 
-
-            //base.AllowDrag = false;
             base.AllowDrop = false;
         }
 
@@ -72,7 +70,6 @@ namespace Delta.CertXplorer.Asn1Decoder
 
         private int GetImageIndex(Asn1Object asn)
         {
-            // TODO: support icon sets by theme
             if (asn == null) return emptyImageIndex;
             if (asn is Asn1InvalidObject) return invalidImageIndex;
             if (asn is Asn1Sequence) return sequenceImageIndex;

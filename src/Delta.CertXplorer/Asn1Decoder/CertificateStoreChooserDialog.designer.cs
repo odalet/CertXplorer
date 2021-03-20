@@ -85,7 +85,6 @@ namespace Delta.CertXplorer.Asn1Decoder
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Choose a certificate store";
-            this.Load += new System.EventHandler(this.CertificateStoreChooser_Load);
             this.ResumeLayout(false);
 
         }

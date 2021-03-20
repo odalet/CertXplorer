@@ -1,45 +1,23 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
     partial class TreeViewEx
     {
-        protected class Sorter : System.Collections.IComparer, IComparer<TreeNode>
+        protected class Sorter : IComparer, IComparer<TreeNode>
         {
             public Sorter() { }
 
-            #region IComparer Members
+            int IComparer.Compare(object x, object y) => x is TreeNode xn && y is TreeNode yn ? DoCompare(xn, yn) : 0;
+            int IComparer<TreeNode>.Compare(TreeNode x, TreeNode y) => DoCompare(x, y);
 
-            int System.Collections.IComparer.Compare(object x, object y)
-            {
-                if ((x is TreeNode) && (y is TreeNode))
-                    return DoCompare((TreeNode)x, (TreeNode)y);
-                else return 0;
-            }
-
-            #endregion
-
-            #region IComparer<SolutionTreeNode> Members
-
-            int IComparer<TreeNode>.Compare(TreeNode x, TreeNode y) { return DoCompare(x, y); }
-
-            #endregion
-
-            protected virtual int DoCompare(TreeNode x, TreeNode y)
-            {
-                Debug.Assert(x != null);
-                Debug.Assert(y != null);
-
-                TreeNodeEx node1 = x as TreeNodeEx;
-                TreeNodeEx node2 = y as TreeNodeEx;
-
-                if (node1 == null || node2 == null) return x.Text.CompareTo(y.Text);
-
-                return node1.CompareTo(node2);
-            }
+            protected virtual int DoCompare(TreeNode x, TreeNode y) =>
+                x is TreeNodeEx node1 && y is TreeNodeEx node2 ?
+                node1.CompareTo(node2) :
+                x.Text.CompareTo(y.Text);
         }
     }
 }

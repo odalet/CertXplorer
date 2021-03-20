@@ -10,105 +10,93 @@ namespace Delta.CertXplorer.UI
     /// </summary>
     public class TreeNodeEx : TreeNode, IComparable<TreeNodeEx>, IEditActionsHandler
     {
-        private bool allowLabelEdit = true;        
-        
         private DateTime dragOverTimer = DateTime.MaxValue;
-        private bool delayedDragOverAction = true;
-        private TimeSpan dragOverActionDelay = new TimeSpan(0, 0, 1);
         private EditActionState editActionState = EditActionState.None;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TreeNodeEx"/> class.
-        /// </summary>
-        public TreeNodeEx() : base() { }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TreeNodeEx"/> class.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        public TreeNodeEx(string text) : base(text) { }
-
-        #region IComparable<TreeNodeEx> Members
-
-        public virtual int CompareTo(TreeNodeEx other)
+        public TreeNodeEx() : this(null) { }
+        public TreeNodeEx(string text) : base(text)
         {
-            if (NodeOrder != other.NodeOrder) return NodeOrder - other.NodeOrder;
-            return base.Text.CompareTo(other.Text);
+            DelayedDragOverAction = true;
+            DragOverActionDelay = new(0, 0, 1);
+            LabelEdit = true;
         }
 
-        #endregion
+        public bool DelayedDragOverAction { get; set; }
+        public TimeSpan DragOverActionDelay { get; set; }
+        public bool LabelEdit { get; set; }
 
-        #region Search
+        public TreeViewEx TreeViewEx => TreeView as TreeViewEx;
+        public IEnumerable<TreeNode> AllNodes => this.Find(null);
 
-        /// <summary>
-        /// Gets recursively all the child nodes of this tree node.
-        /// </summary>
-        /// <value>All this tree node's child nodes.</value>
-        public IEnumerable<TreeNode> AllNodes
+        public EditActionState EditActionState
         {
-            get { return this.Find(null); }
+            get => editActionState;
+            set
+            {
+                if (value == editActionState) return;
+
+                editActionState = value;
+                OnEditActionStateChanged(editActionState);
+
+                foreach (TreeNode tn in Nodes)
+                {
+                    if (tn is TreeNodeEx nodeEx) nodeEx.EditActionState = value;
+                }
+            }
         }
 
-        #endregion
+        public virtual bool CanCut => false;
+        public virtual bool CanCopy => false;
+        public virtual bool CanPaste => false;
+        public virtual bool CanDelete => false;
+        public virtual bool CanSelectAll => false;
 
-        #region Label Edit
-        public bool LabelEdit { get { return allowLabelEdit; } set { allowLabelEdit = value; } }
+        protected virtual int NodeOrder => 0;
+
+        private bool IsDragOverTimerReset => dragOverTimer == DateTime.MaxValue;
+        private bool IsDragOverTimeElapsed => DateTime.Now - dragOverTimer >= DragOverActionDelay;
+
+        public void Activate() => TreeViewEx.ActivateNode(this);
+
+        public virtual int CompareTo(TreeNodeEx other) =>
+            NodeOrder != other.NodeOrder ?
+            NodeOrder - other.NodeOrder :
+            Text.CompareTo(other.Text);
+
+        public virtual void Cut() { }
+        public virtual void Copy() { }
+        public virtual void Paste() { }
+        public virtual void Delete() { }
+        public virtual void SelectAll() { }
 
         protected internal virtual void OnBeforeLabelEdit() { }
-        protected internal virtual void OnAfterLabelEdit(string newLabel) 
-        {
-            base.Text = newLabel;
-        }
-
-        #endregion
-
-        public TreeViewEx TreeViewEx { get { return base.TreeView as TreeViewEx; } }
-
-        public bool DelayedDragOverAction { get { return delayedDragOverAction; } set { delayedDragOverAction = value; } }
-        public TimeSpan DragOverActionDelay { get { return dragOverActionDelay; } set { dragOverActionDelay = value; } }
-        
-        protected virtual int NodeOrder { get { return 0; } }
-
-        #region Expand / Collapse
-
+        protected internal virtual void OnAfterLabelEdit(string newLabel) => Text = newLabel;
         protected internal virtual void Expanding(TreeViewCancelEventArgs e) { }
-        protected internal virtual void Collapsing(TreeViewCancelEventArgs e) { }   
-
-        #endregion
-
-        #region Node activation
-
-        public void Activate() { TreeViewEx.ActivateNode(this); }
-
-        internal void ActivateInternal(CancelEventArgs e) { OnActivate(e); }
-        
+        protected internal virtual void Collapsing(TreeViewCancelEventArgs e) { }
         protected virtual void OnActivate(CancelEventArgs e) { }
+        protected internal virtual void DoDragDrop(DragEventArgs drgevent) => OnDragDrop(drgevent);
+        protected virtual void OnEditActionStateChanged(EditActionState state) { }
 
-        #endregion
-
-        #region drag'n drop
-
-        protected internal virtual DataObject GetDataObject()
-        {
+#pragma warning disable IDE0022 // Use expression body for methods
+        protected internal virtual DataObject GetDataObject() =>
 #if DEBUG
-            return new DataObject(ToString());
+            new(ToString());
 #else
-            return null;
+            null;
 #endif
-        }
 
-        protected internal virtual DragDropEffects FilterEffect(DragDropEffects defaultEffect)
-        {
+
+        protected internal virtual DragDropEffects FilterEffect(DragDropEffects defaultEffect) =>
 #if DEBUG
-            return defaultEffect;
+            defaultEffect;
 #else
-            return DragDropEffects.None;
+            DragDropEffects.None;
 #endif
-        }
 
         protected virtual void OnDragOver(DragEventArgs drgevent)
         {
 #if DEBUG
+
             Expand();
 #endif
         }
@@ -119,10 +107,13 @@ namespace Delta.CertXplorer.UI
             Expand();
 #endif
         }
+#pragma warning restore IDE0022 // Use expression body for methods
+
+        internal void ActivateInternal(CancelEventArgs e) => OnActivate(e);
 
         internal void DoDragOver(DragEventArgs drgevent)
         {
-            if (delayedDragOverAction)
+            if (DelayedDragOverAction)
             {
                 if (IsDragOverTimerReset) InitializeDragOverTimer();
                 else
@@ -137,54 +128,9 @@ namespace Delta.CertXplorer.UI
             else OnDragOver(drgevent);
         }
 
-        internal void DoDragLeave(DragEventArgs drgevent) { ResetDragOverTimer(); }
-
-        protected internal virtual void DoDragDrop(DragEventArgs drgevent) { OnDragDrop(drgevent); }
-
-        private void ResetDragOverTimer() { dragOverTimer = DateTime.MaxValue; }
-        private void InitializeDragOverTimer() { dragOverTimer = DateTime.Now; }
-        private bool IsDragOverTimerReset { get { return (dragOverTimer == DateTime.MaxValue); } }
-        private bool IsDragOverTimeElapsed { get { return ((DateTime.Now - dragOverTimer) >= dragOverActionDelay); } }
-
-        #endregion
-
-        #region Edit actions
-
-        protected virtual void OnEditActionStateChanged(EditActionState state) { }
-
-        #region IEditActionsHandler Members
-
-        public EditActionState EditActionState
-        {
-            get { return editActionState; }
-            set
-            {
-                if (value != editActionState)
-                {
-                    editActionState = value;
-                    OnEditActionStateChanged(editActionState);
-
-                    foreach (TreeNode tn in base.Nodes)
-                    {
-                        if (tn is TreeNodeEx) ((TreeNodeEx)tn).EditActionState = value;
-                    }
-                }
-            }
-        }
-
-        public virtual bool CanCut { get { return false; } }
-        public virtual bool CanCopy { get { return false; } }
-        public virtual bool CanPaste { get { return false; } }
-        public virtual bool CanDelete { get { return false; } }
-        public virtual bool CanSelectAll { get { return false; } }
-        public virtual void Cut() { }
-        public virtual void Copy() { }
-        public virtual void Paste() { }
-        public virtual void Delete() { }
-        public virtual void SelectAll() { }
-
-        #endregion
-
-        #endregion
+        internal void DoDragLeave(DragEventArgs _) => ResetDragOverTimer();
+        
+        private void ResetDragOverTimer() => dragOverTimer = DateTime.MaxValue;
+        private void InitializeDragOverTimer() => dragOverTimer = DateTime.Now;
     }
 }

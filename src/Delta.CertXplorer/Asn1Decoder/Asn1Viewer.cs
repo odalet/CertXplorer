@@ -168,6 +168,14 @@ namespace Delta.CertXplorer.Asn1Decoder
 
         private void ShowSelection()
         {
+            static string formatBytes(byte[] data, int maxCount)
+            {
+                if (data == null) return "Null";
+                if (data.Length == 0) return "Empty";
+                var count = Math.Min(data.Length, maxCount);
+                return string.Join(" ", data.Take(count).Select(b => b.ToString("X2")).ToArray());
+            }
+
             if (asnTreeView.SelectedNode == null || asnTreeView.SelectedNode.Tag == null)
                 return;
 
@@ -182,7 +190,7 @@ namespace Delta.CertXplorer.Asn1Decoder
             {
                 data = asn1Object.Workload;
                 index = asn1Object.WorkloadOffset;
-                This.Logger.Debug(string.Format("Node {0}: index={1}, length={2}, data={3}", asn1Object, index, data.Length, data.ToDebugString(5)));
+                This.Logger.Debug($"Node {asn1Object}: index={index}, length={data.Length}, data={formatBytes(data, 5)}");
             }
 
             if (data == null) data = new byte[0]; // Safety net

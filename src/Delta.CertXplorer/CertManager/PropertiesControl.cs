@@ -6,16 +6,7 @@ namespace Delta.CertXplorer.CertManager
 {
     public partial class PropertiesControl : ServicedUserControl
     {
-        public PropertiesControl()
-        {
-            InitializeComponent();
-            //ThemesManager.RegisterThemeAwareControl(this, (renderer) =>
-            //{
-            //    if (renderer is ToolStripProfessionalRenderer)
-            //        ((ToolStripProfessionalRenderer)renderer).RoundedEdges = false;
-            //    property.Renderer = renderer;
-            //});
-        }
+        public PropertiesControl() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {

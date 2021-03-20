@@ -1,63 +1,39 @@
 using System;
-using System.Windows.Forms;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Windows.Forms;
 using Delta.CapiNet;
 
 namespace Delta.CertXplorer.Asn1Decoder
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Winforms conventions")]
     public partial class CertificateStoreChooserDialog : Form
     {
-        public class CertificateStoreChooserValue
+        public interface ICertificateStoreChooserValue
         {
-            public string StoreName = string.Empty;
-            public StoreLocation StoreLocation = StoreLocation.CurrentUser;
+            string StoreName { get; }
+            StoreLocation StoreLocation { get; }
+            X509Certificate2Collection GetCertificates();
+        }
 
-            public CertificateStoreChooserValue(StoreName name, StoreLocation location) :
-                this(name.ToString(), location) { }
-
-            public CertificateStoreChooserValue(string name, StoreLocation location)
+        private sealed class CertificateStoreChooserValue : ICertificateStoreChooserValue
+        {
+            public CertificateStoreChooserValue(StoreName name, StoreLocation location)
             {
-                StoreName = name;
+                StoreName = name.ToString();
                 StoreLocation = location;
             }
 
-            public string NameWithCount
-            {
-                get
-                {
-                    return string.Format("{0} [{1}]", StoreName, CertificateCount);
-                }
-            }
+            public string StoreName { get; }
+            public StoreLocation StoreLocation { get; }
 
-            public int CertificateCount
-            {
-                get 
-                {
-                    return Do(store => store.Certificates.Count, StoreName, StoreLocation);
-                    //return GetCertificateCount(StoreName, StoreLocation); 
-                }
-            }
+            public string NameWithCount => $"{StoreName} [{CertificateCount}]";
 
-            public X509Certificate2Collection GetCertificates()
-            {
-                return Do(store => store.Certificates, StoreName, StoreLocation);
-            }
+            public int CertificateCount => Execute(store => store.Certificates.Count, StoreName, StoreLocation);
 
-            //private int GetCertificateCount(string storeName, StoreLocation storeLocation)
-            //{
-            //    return Do(store => store.Certificates.Count, storeName, storeLocation);
-            //    //var store = Capi32.GetCertificateStore(storeName, storeLocation);
-            //    //var x509Store = store.GetX509Store();
+            public X509Certificate2Collection GetCertificates() => Execute(store => store.Certificates, StoreName, StoreLocation);
 
-            //    //x509Store.Open(OpenFlags.ReadOnly);
-            //    //var count = x509Store.Certificates.Count;
-            //    //x509Store.Close();
-
-            //    //return count;
-            //}
-
-            private T Do<T>(Func<X509Store, T> function, string storeName, StoreLocation storeLocation)
+            private T Execute<T>(Func<X509Store, T> function, string storeName, StoreLocation storeLocation)
             {
                 var store = Capi32.GetCertificateStore(storeName, storeLocation);
                 var x509Store = store.GetX509Store();
@@ -68,27 +44,33 @@ namespace Delta.CertXplorer.Asn1Decoder
                 {
                     result = function(x509Store);
                 }
-                finally { x509Store.Close(); }
+                finally 
+                {
+                    x509Store.Close(); 
+                }
 
                 return result;
             }
         }
 
-        private CertificateStoreChooserValue value = null;
-        private TreeNode tnCurrentUser = null;
-        private TreeNode tnLocalMachine = null;
+        private TreeNode currentUserTreeNode;
+        private TreeNode localMachineTreeNode;
 
-        public CertificateStoreChooserDialog() { InitializeComponent(); }
-        
-        private void CertificateStoreChooser_Load(object sender, EventArgs e)
+        public CertificateStoreChooserDialog() => InitializeComponent();
+
+        public ICertificateStoreChooserValue SelectedValue { get; private set; }
+
+        protected override void OnLoad(EventArgs e)
         {
+            base.OnLoad(e);
             Cursor = Cursors.WaitCursor;
             try
             {
-                tnCurrentUser = new TreeNode("Current User");
-                tnLocalMachine = new TreeNode("Local Machine");
-                tvStores.Nodes.Add(tnCurrentUser);
-                tvStores.Nodes.Add(tnLocalMachine);
+                currentUserTreeNode = new TreeNode("Current User");
+                _ = tvStores.Nodes.Add(currentUserTreeNode);
+
+                localMachineTreeNode = new TreeNode("Local Machine");
+                _ = tvStores.Nodes.Add(localMachineTreeNode);
 
                 foreach (StoreName name in Enum.GetValues(typeof(StoreName)))
                 {
@@ -96,46 +78,32 @@ namespace Delta.CertXplorer.Asn1Decoder
                     CreateNode(name, StoreLocation.LocalMachine);
                 }
 
-                tnCurrentUser.Expand();
-                tnLocalMachine.Expand();
+                currentUserTreeNode.Expand();
+                localMachineTreeNode.Expand();
             }
-            finally { Cursor = Cursors.Default; }
+            finally
+            {
+                Cursor = Cursors.Default;
+            }
         }
 
         private void CreateNode(StoreName name, StoreLocation location)
         {
-            TreeNode tn = null;
-            CertificateStoreChooserValue cscv = 
-                new CertificateStoreChooserValue(name, location);
+            var cscv = new CertificateStoreChooserValue(name, location);
+            if (cscv.CertificateCount <= 0) return;
 
-            if (cscv.CertificateCount > 0)
-            {
-                tn = new TreeNode(cscv.NameWithCount);
-                tn.Tag = cscv;
-            }
-
-            if (tn == null) return;
-
-            if (location == StoreLocation.CurrentUser)
-                tnCurrentUser.Nodes.Add(tn);
-            else tnLocalMachine.Nodes.Add(tn);
-
+            var rootNode = location == StoreLocation.CurrentUser ? currentUserTreeNode : localMachineTreeNode;
+            _ = rootNode.Nodes.Add(new TreeNode(cscv.NameWithCount) { Tag = cscv });
         }
 
-        public CertificateStoreChooserValue SelectedValue { get { return value; } }
-
-        private void tvStores_AfterSelect(object sender, TreeViewEventArgs e)
-        {
-            value = e.Node.Tag as CertificateStoreChooserValue;
-        }
+        private void tvStores_AfterSelect(object sender, TreeViewEventArgs e) => 
+            SelectedValue = e.Node.Tag as CertificateStoreChooserValue;
 
         private void tvStores_NodeMouseDoubleClick(object sender, TreeNodeMouseClickEventArgs e)
         {
-            if (value != null)
-            {
-                DialogResult = DialogResult.OK;
-                Close();
-            }
-        }        
+            if (SelectedValue == null) return;
+            DialogResult = DialogResult.OK;
+            Close();
+        }
     }
 }
