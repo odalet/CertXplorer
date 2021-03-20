@@ -1,26 +1,24 @@
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
-    /// <summary>
-    /// Cette <see cref="System.Windows.Forms.PropertyGrid"/> utilise
-    /// <see cref="System.Windows.Forms.ToolStripManager"/> pour dessiner sa barre d'outils
-    /// </summary>
     public partial class PropertyGridEx : PropertyGrid
     {
-        private object[] wrappedObjects = null;
-        private object selectedObject = null;
-        private object[] selectedObjects = null;
+        private readonly DesignerVerbCollection verbs;
+        private PropertyGridExContainer container;
+        private object[] wrappedObjects;
+        private object selectedObject;
+        private object[] selectedObjects;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyGridEx"/> class.
-        /// </summary>
         public PropertyGridEx() : base()
         {
-            ProtectConnectionStrings = true;
-            InitializeComponentModel();
+            verbs = new DesignerVerbCollection();
             ToolStripRenderer = VS2015ThemeProvider.Renderer;
+            InitializeComponentModel();            
         }
 
         [Browsable(false), DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
@@ -30,84 +28,79 @@ namespace Delta.CertXplorer.UI
             set => ToolStripRenderer = value;
         }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether to protect connection strings.
-        /// </summary>
-        /// <remarks>
-        /// If set to <c>true</c>, we search for a property named <c>ConnectionString</c>
-        /// in the selected objects, if it is found, then it is displayed read-only and 
-        /// possible password inside the connection string is hidden (replaced with stars).
-        /// </remarks>
-        /// <value>
-        /// 	<c>true</c> if connection strings should be protected; otherwise, <c>false</c>.
-        /// </value>
-        [DefaultValue(true)]
-        public bool ProtectConnectionStrings { get; set; }
-
-        /// <summary>
-        /// Gets or sets the object for which the grid displays properties.
-        /// </summary>
-        /// <value></value>
-        /// <returns>The first object in the object list. If there is no currently selected object the return is null.</returns>
-        public new object SelectedObject { get { return selectedObject; } set { SelectObject(value); } }
-
-        /// <summary>
-        /// Gets or sets the currently selected objects.
-        /// </summary>
-        /// <value></value>
-        /// <returns>An array of type <see cref="T:System.Object"/>. The default is an empty array.</returns>
-        /// <exception cref="T:System.ArgumentException">One of the items in the array of objects had a null value. </exception>
-        public new object[] SelectedObjects { get { return selectedObjects; } set { SelectObjects(value); } }
-
-        /// <summary>
-        /// Creates an object wrapper around the original object.
-        /// </summary>
-        /// <param name="o">The original object.</param>
-        /// <returns>Wrapped object.</returns>
-        protected virtual ObjectWrapper CreateObjectWrapper(object o) 
+        public new object SelectedObject
         {
-            return new ObjectWrapper(this, o); 
+            get => selectedObject;
+            set => SelectObject(value);
         }
 
-        /// <summary>
-        /// Creates the property descriptor used to describe the wrapped object.
-        /// </summary>
-        /// <param name="toWrap">The wrapped object.</param>
-        /// <param name="originalDescriptor">The original property descriptor.</param>
-        /// <returns>A Property descriptor.</returns>
-        protected internal virtual PropertyDescriptor CreatePropertyDescriptor(object toWrap, PropertyDescriptor originalDescriptor)
+        public new object[] SelectedObjects
         {
-            return new InnerPropertyDescriptor(toWrap, originalDescriptor, ProtectConnectionStrings);
+            get => selectedObjects;
+            set => SelectObjects(value);
         }
 
-        private void SelectObject(object o)
+        public void AddVerb(DesignerVerb verb)
         {
-            if (o == null) selectedObject = base.SelectedObject = null;
-            else
+            if (verb != null) _ = verbs.Add(verb);
+        }
+
+        public void RemoveVerb(DesignerVerb verb)
+        {
+            if (verbs.Contains(verb)) verbs.Remove(verb);
+        }
+
+        private void InitializeComponentModel()
+        {
+            container = new PropertyGridExContainer();
+            container.Services.AddService<IMenuCommandService>(new MenuCommandService(verbs));
+        }
+
+        private void OnSelectionAboutToChange()
+        {
+            // We clear the components
+            var components = new List<IComponent>(container.Components.Cast<IComponent>());
+            components.ForEach(c => container.Remove(c));
+
+            // We add the new selection to the container.
+            foreach (var c in wrappedObjects.Cast<IComponent>())
             {
-                selectedObject = o;
-
-                wrappedObjects = new object[1];
-                wrappedObjects[0] = CreateObjectWrapper(o);
-                OnSelectionAboutToChange();
-                base.SelectedObject = wrappedObjects[0];                
+                c.Site = new PropertyGridExContainer.Site(c, null, container);
+                container.Add(c);
             }
         }
 
-        private void SelectObjects(object[] objects)
+        private void SelectObject(object selection)
         {
-            if (objects == null) selectedObjects = base.SelectedObjects = null;
-            else
+            if (selection == null)
             {
-                selectedObjects = objects;
-                wrappedObjects = new object[objects.Length];
-
-                for (int i = 0; i < objects.Length; i++)
-                    wrappedObjects[i] = CreateObjectWrapper(objects[i]);
-
-                OnSelectionAboutToChange();
-                base.SelectedObjects = wrappedObjects;
+                selectedObject = null;
+                base.SelectedObject = null;
+                return;
             }
+
+            selectedObject = selection;
+
+            var wrapped = new ObjectWrapper(selection);
+            wrappedObjects = new[] { wrapped };
+            OnSelectionAboutToChange();
+            base.SelectedObject = wrapped;
+        }
+
+        private void SelectObjects(object[] selection)
+        {
+            if (selection == null)
+            {
+                selectedObjects = null;
+                base.SelectedObjects = null;
+                return;
+            }
+
+            selectedObjects = selection;
+            wrappedObjects = selection.Select(o => new ObjectWrapper(o)).ToArray();
+            OnSelectionAboutToChange();
+
+            base.SelectedObjects = wrappedObjects;
         }
     }
 }
