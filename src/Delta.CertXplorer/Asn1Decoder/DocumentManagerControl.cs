@@ -61,11 +61,7 @@ namespace Delta.CertXplorer.Asn1Decoder
             base.OnLoad(e);
             if (DesignMode) return;
 
-            var root = new TreeNode("Documents")
-            {
-                ImageIndex = documentsIndex
-            };
-
+            var root = new TreeNode("Documents") { ImageIndex = documentsIndex };
             filesRoot = CreateFolderTreeNode("Files");
             certificatesRoot = CreateFolderTreeNode("Certificates");
 
@@ -78,6 +74,11 @@ namespace Delta.CertXplorer.Asn1Decoder
                 .GetOrCreateSelectionService(Services)
                 .AddSource(this);
 
+            CreateEventHandlers();
+        }
+
+        private void CreateEventHandlers()
+        {
             openAction.Run += (s, ev) =>
             {
                 var doc = SelectedDocument;

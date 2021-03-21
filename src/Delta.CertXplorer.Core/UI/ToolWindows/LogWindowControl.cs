@@ -2,19 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
-using Delta.CertXplorer.IO;
 using Delta.CertXplorer.Logging;
-using WeifenLuo.WinFormsUI.Docking;
 
 namespace Delta.CertXplorer.UI.ToolWindows
 {
     [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Winforms convention")]
     public partial class LogWindowControl : UserControl
     {
-        private readonly List<ToolStripItem> items = new List<ToolStripItem>();
+        private readonly List<ToolStripItem> items = new();
         private LogLevel selectedLevel = LogLevel.All;
         private ITextBoxAppender appender = null;
-        private IFileService fileService = null;
 
         public LogWindowControl()
         {
@@ -69,7 +66,7 @@ namespace Delta.CertXplorer.UI.ToolWindows
             levels.Sort((l1, l2) => (int)l1 - (int)l2);
             levels.ForEach(level => logLevelList.Items.Add(level));
 
-            //TODO: select the log level depending on a settings file.
+            // TODO: select the log level depending on a settings file.
             logLevelList.SelectedItem = selectedLevel;
 
             foreach (ToolStripItem item in cm.Items) items.Add(item);
@@ -94,7 +91,7 @@ namespace Delta.CertXplorer.UI.ToolWindows
 
         private void CopyLog()
         {
-            if (tb.SelectionLength == 0)
+            if (tb.SelectionLength != 0)
             {
                 tb.Copy();
                 return;
@@ -117,52 +114,41 @@ namespace Delta.CertXplorer.UI.ToolWindows
 
         private void SaveLog()
         {
-            var fs = GetFileService();
-            if (fs == null)
+            using var dialog = new SaveFileDialog
             {
-                This.Logger.Error("Can't get an IFileService instance");
-                return;
+                Filter = "Log Files (*.log, *.txt)|*.log;*.txt|Rich Text Files (*.rtf)|*.rtf|All Files|*.*",
+                FilterIndex = 0,
+                DefaultExt = "*.log",
+                OverwritePrompt = true,
+                SupportMultiDottedExtensions = true,
+                CheckPathExists = true,
+                ValidateNames = true
+            };
+
+            if (dialog.ShowDialog(this) == DialogResult.OK)
+            {
+                var filename = string.Empty;
+                try
+                {
+                    filename = dialog.FileName;
+
+                    var streamType = filename.EndsWith(".rtf") ?
+                        RichTextBoxStreamType.RichText :
+                        RichTextBoxStreamType.UnicodePlainText;
+                    tb.SaveFile(filename, streamType);
+                }
+                catch (Exception ex)
+                {
+                    This.Logger.Error($"Error while saving data into file file://{filename}: {ex.Message}", ex);
+                    _ = ErrorBox.Show(this, $"An error occurred while saving a file: {ex.Message}");
+                }
             }
-
-            var result = fs.SafeSave((filename, type) =>
-            {
-                if (string.IsNullOrEmpty(filename)) return;
-
-                var streamType = type == FileType.Rtf || FileType.Rtf.Matches(filename) ?
-                    RichTextBoxStreamType.RichText :
-                    RichTextBoxStreamType.UnicodePlainText;
-                tb.SaveFile(filename, streamType);
-            },
-            "log.rtf",
-            new[] { FileType.Log, FileType.Rtf, FileType.All }, 1, "Save Log As");
-
-            if (result == OperationResult.Failed)
-                This.Logger.Error("Unable to save log to a file");
         }
 
         private void Print() => tb.Print();
         private void PrintWithUI() => tb.Print(true);
         private void PrintPreview() => tb.PrintPreview();
         private void PageSetup() => tb.PageSetup();
-
-        private IFileService GetFileService()
-        {
-            fileService = This.GetService<IFileService>();
-            if (fileService == null) // We create our own service privately ...
-            {
-                try
-                {
-                    fileService = new FileService(This.Services);
-                }
-                catch (Exception ex)
-                {
-                    This.Logger.Error(string.Format(
-                        "Unable to create a file service: {0}", ex.Message), ex);
-                }
-            }
-
-            return fileService;
-        }
 
         private void DisposeAppender()
         {
