@@ -1,152 +1,79 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-
 using Delta.CapiNet.Internals;
 
 namespace Delta.CapiNet
 {
     public static class Capi32
     {
-        private class EnumSystemStore
+        private sealed class EnumSystemStore
         {
-            private uint flags = (uint)0;
-            private List<string> tempSystemStoreList = null;
+            private readonly uint flags;
+            private List<string> tempSystemStoreList;
 
-            public EnumSystemStore(uint locationFlags)
-            {
-                flags = locationFlags;
-            }
+            public EnumSystemStore(uint locationFlags) => flags = locationFlags;
 
-            /// <summary>
-            /// Gets the system stores.
-            /// </summary>
-            /// <returns>An array of strings (never null).</returns>
-            public string[] GetSystemStores()
+            public string[] GetStores()
             {
                 tempSystemStoreList = new List<string>();
-                bool ok = NativeMethods.CertEnumSystemStore(flags, 0, IntPtr.Zero,
-                    new NativeMethods.CertEnumSystemStoreCallback(CertEnumSystemStoreCallback));
+                var cb = new NativeMethods.CertEnumSystemStoreCallback(CertEnumSystemStoreCallback);
+                var ok = NativeMethods.CertEnumSystemStore(flags, 0, IntPtr.Zero, cb);
 
-                string[] array = null;
-                if (ok) array = tempSystemStoreList.ToArray();
-                else array = new string[] { };
-
+                var array = ok ? tempSystemStoreList.ToArray() : (new string[] { });
                 tempSystemStoreList = null;
                 return array;
             }
 
-            private bool CertEnumSystemStoreCallback(
-                        string pvSystemStore,
-                        uint dwFlags,
-                        ref CERT_SYSTEM_STORE_INFO pStoreInfo,
-                        uint pvReserved,
-                        IntPtr pvArg)
+            private bool CertEnumSystemStoreCallback(string pvSystemStore, uint dwFlags, ref CERT_SYSTEM_STORE_INFO pStoreInfo, uint pvReserved, IntPtr pvArg)
             {
                 tempSystemStoreList.Add(pvSystemStore);
                 return true;
             }
         }
 
-        private class EnumPhysicalStore
+        private sealed class EnumPhysicalStore
         {
-            private string systemStoreName = string.Empty;
-            private List<string> tempPhysicalStoreList = null;
+            private readonly string systemStoreName;
+            private List<string> tempPhysicalStoreList;
 
-            public EnumPhysicalStore(string parent)
-            {
-                systemStoreName = parent;
-            }
+            public EnumPhysicalStore(string parent) => systemStoreName = parent;
 
-            /// <summary>
-            /// Gets the system stores.
-            /// </summary>
-            /// <param name="flags">The Flags representing a System Stores Location.</param>
-            /// <returns>An array of strings (never null).</returns>
-            public string[] GetPhysicalStores()
+            public string[] GetStores()
             {
                 tempPhysicalStoreList = new List<string>();
                 var cb = new NativeMethods.CertEnumPhysicalStoreCallback(CertEnumPhysicalStoreCallback);
-                bool ok = NativeMethods.CertEnumPhysicalStore(
-                    systemStoreName,
-                    CapiConstants.CERT_SYSTEM_STORE_CURRENT_USER,
-                    IntPtr.Zero,
-                    cb);
+                var ok = NativeMethods.CertEnumPhysicalStore(systemStoreName, CapiConstants.CERT_SYSTEM_STORE_CURRENT_USER, IntPtr.Zero, cb);
 
-                string[] array = null;
-
-                if (ok) array = tempPhysicalStoreList.ToArray();
-                else array = new string[] { };
-
+                var array = ok ? tempPhysicalStoreList.ToArray() : (new string[] { });
                 tempPhysicalStoreList = null;
                 return array;
             }
 
-            private bool CertEnumPhysicalStoreCallback(
-                string pvSystemStore,
-                uint dwFlags,
-                string pwszStoreName,
-                ref CERT_PHYSICAL_STORE_INFO pStoreInfo,
-                uint pvReserved,
-                IntPtr pvArg)
+            private bool CertEnumPhysicalStoreCallback(string pvSystemStore, uint dwFlags, string pwszStoreName, ref CERT_PHYSICAL_STORE_INFO pStoreInfo, uint pvReserved, IntPtr pvArg)
             {
                 tempPhysicalStoreList.Add(pwszStoreName);
                 return true;
             }
         }
-        
-        #region GetPhysicalStores
 
-        /// <summary>
-        /// Gets the 'My' physical stores.
-        /// </summary>
-        /// <returns>An array of strings (never null).</returns>
-        public static IEnumerable<string> GetPhysicalStores()
-        {
-            return GetPhysicalStores("My");
-        }
+        public static IEnumerable<string> GetPhysicalStores() => GetPhysicalStores("My");
+        public static IEnumerable<string> GetPhysicalStores(string systemStoreName) => 
+            new EnumPhysicalStore(systemStoreName).GetStores();
 
-        /// <summary>
-        /// Gets the physical stores for the specified system store.
-        /// </summary>
-        /// <param name="systemStoreName">Name of the system store.</param>
-        /// <returns>An array of strings (never null).</returns>
-        public static IEnumerable<string> GetPhysicalStores(string systemStoreName)
-        {
-            return new EnumPhysicalStore(systemStoreName).GetPhysicalStores();
-        }      
-
-        #endregion
-
-        #region GetSystemStores
-
-        /// <summary>
-        /// Gets the system stores for the current user location.
-        /// </summary>
-        /// <returns>An array of strings (never null).</returns>
         public static IEnumerable<CertificateStore> GetSystemStores()        
         {
-            var names = new EnumSystemStore(CapiConstants.CERT_SYSTEM_STORE_CURRENT_USER).GetSystemStores();
+            var names = new EnumSystemStore(CapiConstants.CERT_SYSTEM_STORE_CURRENT_USER).GetStores();
             return names.Select(name => new CertificateStore(name, CertificateStoreLocation.FromId(CapiConstants.CERT_SYSTEM_STORE_CURRENT_USER_ID)));
         }
 
-        /// <summary>
-        /// Gets the system stores present in the specified Location.
-        /// </summary>
-        /// <param name="storeLocation">The System Stores Location.</param>
-        /// <returns>An array of strings (never null).</returns>
         public static IEnumerable<CertificateStore> GetSystemStores(StoreLocation storeLocation) => 
             GetSystemStores(CertificateStoreLocation.FromStoreLocation(storeLocation));
 
-        /// <summary>
-        /// Gets the system stores present in the specified Location.
-        /// </summary>
-        /// <param name="systemStoreLocation">The System Stores Location.</param>
-        /// <returns>An array of strings (never null).</returns>
         public static IEnumerable<CertificateStore> GetSystemStores(CertificateStoreLocation systemStoreLocation)
         {
-            var names = new EnumSystemStore(systemStoreLocation.Flags).GetSystemStores();
+            var names = new EnumSystemStore(systemStoreLocation.Flags).GetStores();
             return names.Select(name => new CertificateStore(name, systemStoreLocation));
         }
 
@@ -154,9 +81,7 @@ namespace Delta.CapiNet
             GetCertificateStore(storeName, CertificateStoreLocation.FromStoreLocation(storeLocation));
 
         public static CertificateStore GetCertificateStore(string storeName, CertificateStoreLocation systemStoreLocation) => 
-            new CertificateStore(storeName, systemStoreLocation);
-
-        #endregion
+            new(storeName, systemStoreLocation);
 
         public static string LocalizeName(string name) => NativeMethods.CryptFindLocalizedName(name);
     }
