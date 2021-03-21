@@ -17,5 +17,7 @@ namespace Delta.CapiNet.Asn1
         public byte[] Workload => TaggedObject.Workload;
         public int WorkloadOffset => TaggedObject.WorkloadOffset;
         protected internal TaggedObject TaggedObject { get; }
+
+        public virtual void Initialize() { /* Inheritors may fill this */ }
     }
 }

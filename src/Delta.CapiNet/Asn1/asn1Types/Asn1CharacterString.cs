@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Delta.CapiNet.Asn1
+﻿namespace Delta.CapiNet.Asn1
 {
     internal class Asn1CharacterString : BaseAsn1String
     {

@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace Delta.CapiNet.Asn1
 {
     public class Asn1Document
     {
         public Asn1Document(byte[] data, bool parseOctetStrings, bool showInvalidTaggedObjects) :
-            this(data, parseOctetStrings, showInvalidTaggedObjects, null) { }
+            this(data, parseOctetStrings, showInvalidTaggedObjects, new Asn1ObjectFactory()) { }
 
         protected Asn1Document(
             byte[] data, bool parseOctetStrings, bool showInvalidTaggedObjects, Asn1ObjectFactory objectFactory)
         {
+            ObjectFactory = objectFactory ?? throw new ArgumentNullException(nameof(objectFactory));
+
             Data = data;
             ParseOctetStrings = parseOctetStrings;
             ShowInvalidTaggedObjects = showInvalidTaggedObjects;
-
-            ObjectFactory = objectFactory ?? new Asn1ObjectFactory();
 
             var taggedObjects = TaggedObject.CreateObjects(data, 0, data.Length);
             if (taggedObjects != null && taggedObjects.Length > 0)
@@ -37,8 +38,5 @@ namespace Delta.CapiNet.Asn1
         public bool ParseOctetStrings { get; }
         public bool ShowInvalidTaggedObjects { get; }        
         internal Asn1ObjectFactory ObjectFactory { get; }
-
-        public Asn1Object CreateAsn1Object(Asn1Document document, TaggedObject content, Asn1Object parent) => 
-            ObjectFactory.CreateAsn1Object(document, content, parent);
     }
 }

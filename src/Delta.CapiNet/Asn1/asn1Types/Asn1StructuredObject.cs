@@ -5,13 +5,11 @@ namespace Delta.CapiNet.Asn1
     public abstract class Asn1StructuredObject : Asn1Object
     {
         protected Asn1StructuredObject(Asn1Document document, TaggedObject content, Asn1Object parentObject)
-            : base(document, content, parentObject) => ParseContent();
+            : base(document, content, parentObject) { }
 
-        public Asn1Object[] Nodes
-        {
-            get;
-            protected set;
-        }
+        public override void Initialize() => ParseContent();
+
+        public Asn1Object[] Nodes { get; protected set; }
 
         protected virtual Asn1ObjectFactory ObjectFactory => Document.ObjectFactory;
 

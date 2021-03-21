@@ -9,20 +9,11 @@
 
         protected override void ParseContent()
         {
-            if (base.Document != null && base.Document.ParseOctetStrings)
+            if (Document != null && Document.ParseOctetStrings)
                 base.ParseContent();
-            else base.Nodes = new Asn1Object[0];
+            else Nodes = new Asn1Object[0];
         }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format("OctetString: {0}", base.Workload.ToFormattedString());
-        }
+        public override string ToString() => $"OctetString: {Workload.ToFormattedString()}";
     }
 }

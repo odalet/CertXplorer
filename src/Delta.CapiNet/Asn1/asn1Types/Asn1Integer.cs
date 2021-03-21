@@ -1,14 +1,12 @@
-﻿using System;
-
-namespace Delta.CapiNet.Asn1
+﻿namespace Delta.CapiNet.Asn1
 {
     public class Asn1Integer : Asn1Object
     {
         public Asn1Integer(Asn1Document document, TaggedObject content, Asn1Object parentObject)
             : base(document, content, parentObject)
         {
-            long value = 0L;
-            foreach (byte element in content.Workload)
+            var value = 0L;
+            foreach (var element in content.Workload)
             {
                 value <<= 8;
                 value += element;
@@ -17,25 +15,8 @@ namespace Delta.CapiNet.Asn1
             Value = value;
         }
 
-        /// <summary>
-        /// Gets this instance's value.
-        /// </summary>
-        /// <value>The value.</value>
-        public long Value
-        {
-            get; 
-            private set;
-        }
+        public long Value { get; }
 
-        /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
-        /// </returns>
-        public override string ToString()
-        {
-            return string.Format("Integer: {0} (0x{0:X})", Value);
-        }
+        public override string ToString() => $"Integer: {Value} (0x{Value:X})";
     }
 }
