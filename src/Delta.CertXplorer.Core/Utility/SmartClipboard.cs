@@ -4,7 +4,6 @@
  -----------------------------------------------------------------------------*/
 using System;
 using System.Threading;
-using System.Diagnostics;
 using System.Windows.Forms;
 
 namespace Delta.CertXplorer.Utility
@@ -34,20 +33,17 @@ namespace Delta.CertXplorer.Utility
     /// </remarks>
     public static class SmartClipboard
     {
-        private class TextGetData
+        private sealed class TextGetData
         {
-            internal TextGetData(TextDataFormat format)
+            public TextGetData(TextDataFormat format)
             {
                 Format = format;
                 Data = string.Empty;
             }
 
-            public TextDataFormat Format { get; set; }
-
+            public TextDataFormat Format { get; }
             public string Data { get; set; }
         }
-
-        #region SetText Methods
 
         /// <summary>
         /// Adds text data to the Clipboard in UnicodeText format.
@@ -55,10 +51,7 @@ namespace Delta.CertXplorer.Utility
         /// <param name="text">
         /// The text to add to the Clipboard.
         /// </param>
-        public static void SetText(string text)
-        {
-            SetText(text, TextDataFormat.UnicodeText);
-        }
+        public static void SetText(string text) => SetText(text, TextDataFormat.UnicodeText);
 
         /// <summary>
         /// Adds text data to the Clipboard in the format indicated by the 
@@ -77,39 +70,18 @@ namespace Delta.CertXplorer.Utility
         /// </exception>
         public static void SetText(string text, TextDataFormat format)
         {
-            if (string.IsNullOrEmpty(text))
-                throw new ArgumentException("Invalid parameter", "owner");
-            
-            if (!IsEnumValid((int)format, 0, 4))
-                throw new ArgumentException("Invalid parameter", "format");
+            if (string.IsNullOrEmpty(text)) throw new ArgumentException("Invalid parameter", nameof(text));
+            if (!IsEnumValid((int)format, 0, 4)) throw new ArgumentException("Invalid parameter", nameof(format));
 
             if (Thread.CurrentThread.GetApartmentState() != ApartmentState.STA)
             {
                 // Everything should be good so package up the data and let the 
                 // background thread get it to the clipboard.
-                IDataObject data = new DataObject(ConvertToDataFormats(format), text);
+                var data = new DataObject(ConvertToDataFormats(format), text);
                 StartSetThread(data);
             }
             else Clipboard.SetText(text, format); // We're on an STA thread so I can do the call directly.
         }
-
-        private static void StartSetThread(IDataObject data)
-        {
-            Thread t = new Thread(new ParameterizedThreadStart(SetThread));
-            // The whole reason for this class is because it's possible to need
-            // to put stuff on the clipboard and the thread isn't marked STA.
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start(data);
-            t.Join();
-        }
-
-        private static void SetThread(Object data)
-        {
-            IDataObject realData = data as IDataObject;
-            Clipboard.SetDataObject(realData, true);
-        }
-
-        #endregion
 
         /// <summary>
         /// Retrieves the data from the <see cref="Clipboard"/> in Unicode 
@@ -120,10 +92,7 @@ namespace Delta.CertXplorer.Utility
         /// if the <see cref="Clipboard"/> does not contain data in the 
         /// UnicodeText format.
         /// </returns>
-        public static string GetText()
-        {
-            return (GetText(TextDataFormat.UnicodeText));
-        }
+        public static string GetText() => GetText(TextDataFormat.UnicodeText);
 
         /// <summary>
         /// Retrieves text data from the <see cref="Clipboard"/> in the format 
@@ -144,64 +113,58 @@ namespace Delta.CertXplorer.Utility
         public static string GetText(TextDataFormat format)
         {
             // Check the enum value.
-            if (!IsEnumValid((int)format, 0, 4))
-                throw new ArgumentException("Invalid parameter", "format");
+            if (!IsEnumValid((int)format, 0, 4)) throw new ArgumentException("Invalid parameter", nameof(format));
 
-            string returnString;
-            if (Thread.CurrentThread.GetApartmentState() == ApartmentState.STA)
-                returnString = Clipboard.GetText(format);
-            else returnString = StartGetTextThread(format);
-            return (returnString);
+            return Thread.CurrentThread.GetApartmentState() == ApartmentState.STA ?
+                Clipboard.GetText(format) :
+                StartGetTextThread(format);
         }
-        
-        private static String StartGetTextThread(TextDataFormat format)
+
+        private static void StartSetThread(IDataObject data)
         {
-            TextGetData data = new TextGetData(format);
-            Thread t = new Thread(new ParameterizedThreadStart(GetTextThread));
+            var thread = new Thread(new ParameterizedThreadStart(SetThread));
             // The whole reason for this class is because it's possible to need
             // to put stuff on the clipboard and the thread isn't marked STA.
-            t.SetApartmentState(ApartmentState.STA);
-            t.Start(data);
-            t.Join();
-            return (data.Data);
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start(data);
+            thread.Join();
         }
 
-        private static void GetTextThread(Object data)
+        private static void SetThread(object data)
         {
-            TextGetData realData = data as TextGetData;
+            var realData = data as IDataObject;
+            Clipboard.SetDataObject(realData, true);
+        }
+
+        private static string StartGetTextThread(TextDataFormat format)
+        {
+            var data = new TextGetData(format);
+            var thread = new Thread(new ParameterizedThreadStart(GetTextThread));
+            // The whole reason for this class is because it's possible to need
+            // to put stuff on the clipboard and the thread isn't marked STA.
+            thread.SetApartmentState(ApartmentState.STA);
+            thread.Start(data);
+            thread.Join();
+            return data.Data;
+        }
+
+        private static void GetTextThread(object data)
+        {
+            var realData = data as TextGetData;
             realData.Data = Clipboard.GetText(realData.Format);
         }
 
-        #region Private Helper Methods
-
         // Stolen from the FCL source code.
-        private static string ConvertToDataFormats(TextDataFormat format)
+        private static string ConvertToDataFormats(TextDataFormat format) => format switch
         {
-            switch (format)
-            {
-                case TextDataFormat.Text: return DataFormats.Text;
-                case TextDataFormat.UnicodeText: return DataFormats.UnicodeText;
-                case TextDataFormat.Rtf: return DataFormats.Rtf;
-                case TextDataFormat.Html: return DataFormats.Html;
-                case TextDataFormat.CommaSeparatedValue: return DataFormats.CommaSeparatedValue;
-            }
+            TextDataFormat.Text => DataFormats.Text,
+            TextDataFormat.UnicodeText => DataFormats.UnicodeText,
+            TextDataFormat.Rtf => DataFormats.Rtf,
+            TextDataFormat.Html => DataFormats.Html,
+            TextDataFormat.CommaSeparatedValue => DataFormats.CommaSeparatedValue,
+            _ => DataFormats.UnicodeText,
+        };
 
-            return DataFormats.UnicodeText;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Checks if <paramref name="value"/> falls in the correct sequential 
-        /// enumeration range.
-        /// </summary>
-        /// <param name="value">The value to check.</param>
-        /// <param name="minValue">The minimum value in <paramref name="enumValue"/>.</param>
-        /// <param name="maxValue">The maximum value in <paramref name="enumValue"/>.</param>
-        /// <returns>True if correct, false otherwise.</returns>
-        private static bool IsEnumValid(int value, int minValue, int maxValue)
-        {
-            return (value >= minValue) && (value <= maxValue);
-        }
+        private static bool IsEnumValid(int value, int minValue, int maxValue) => value >= minValue && value <= maxValue;
     }
 }

@@ -1,13 +1,14 @@
-﻿using System.Linq;
-using System.Windows.Forms;
+﻿using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Security.Cryptography.X509Certificates;
-
+using System.Windows.Forms;
 using Delta.CapiNet;
 
 namespace CapiNetTestApp.Tests
 {
     internal static class CertificateAndCrlTest
     {
+        [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "OK: Test code")]
         public static void Test()
         {
             var systemStore = Capi32.GetSystemStores(CertificateStoreLocation.FromStoreLocation(StoreLocation.LocalMachine)).First();

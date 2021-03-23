@@ -1,4 +1,4 @@
-using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
@@ -7,10 +7,9 @@ namespace Delta.CertXplorer.UI
     {
         protected TreeViewEx treeView = null;
 
-        public DefaultTreeViewExContextMenuStripProvider(TreeViewEx treeView) { this.treeView = treeView; }
+        public DefaultTreeViewExContextMenuStripProvider(TreeViewEx treeView) => this.treeView = treeView;
 
-        #region ITreeViewExContextMenuStripProvider Members
-
+        [SuppressMessage("Major Code Smell", "S125:Sections of code should not be commented out", Justification = "Example code")]
         public virtual ContextMenuStrip GetContextMenuStrip(TreeNodeEx node)
         {
             // Example
@@ -21,7 +20,5 @@ namespace Delta.CertXplorer.UI
 
             return null; 
         }
-
-        #endregion
     }
 }

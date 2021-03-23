@@ -50,75 +50,66 @@ namespace Delta.SmartCard
             return result;
         }
 
-        #region Other public methods (to include in the interface!)
-
         public Dictionary<string, byte[]> GetInformation()
         {
-            if (!IsCardOpened)
-                return null;
-
             var dictionary = new Dictionary<string, byte[]>();
-            byte[] result;
+            if (!IsCardOpened)
+                return dictionary;
+
             foreach (var enumValue in Enum.GetValues(typeof(SCardAttribute)).Cast<SCardAttribute>())
             {
                 try
                 {
-                    scReader.GetAttrib(enumValue, out result);
+                    _ = scReader.GetAttrib(enumValue, out var result);
                     if (result != null)
                         dictionary.Add(enumValue.ToString(), (byte[])result.Clone());
                 }
                 catch (Exception ex)
                 {
-                    var debugEx = ex;
+                    log.Debug($"Error: {ex.Message}", ex);
                 }
-                finally { result = null; }
             }
 
             // Add Status information
-
             try
             {
-                string[] names;
-                SCardState state;
-                SCardProtocol protocol;
-                byte[] atr;
 
-                scReader.Status(out names, out state, out protocol, out atr);
+                _ = scReader.Status(out var names, out var state, out var scardProtocol, out var atr);
 
                 if (names != null && names.Length > 0) dictionary.Add("Name", Encoding.Default.GetBytes(
                     string.Join(", ", names.Where(n => !string.IsNullOrEmpty(n)).ToArray())));
+
                 dictionary.Add("State", Encoding.Default.GetBytes(state.ToString()));
-                dictionary.Add("Protocol", Encoding.Default.GetBytes(protocol.ToString()));
+                dictionary.Add("Protocol", Encoding.Default.GetBytes(scardProtocol.ToString()));
                 dictionary.Add("Atr", atr);
             }
             catch (Exception ex)
             {
-                var debugEx = ex;
+                log.Debug($"Error: {ex.Message}", ex);
             }
 
             return dictionary;
         }
 
-        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2) // Case 1
+        // Case 1
+        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2) => SendCommand(new CommandApdu(IsoCase.Case1, reader.ActiveProtocol)
         {
-            return SendCommand(new CommandApdu(IsoCase.Case1, reader.ActiveProtocol)
-            {
-                CLA = cla,
-                INS = ins,
-                P1 = p1,
-                P2 = p2
-            });
-        }
+            CLA = cla,
+            INS = ins,
+            P1 = p1,
+            P2 = p2
+        });
 
-        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2, int le) // Case 2
+        // Case 2
+        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2, int le) 
         {
             var isT0 = reader.ActiveProtocol == SCardProtocol.T0;
 
-            if (isT0 && le > byte.MaxValue) throw new ArgumentException(string.Format(
-                "Expected Length (Le) is too long (protocol is T=0). Maximum value is {0}", byte.MaxValue), "le");
+            if (isT0 && le > byte.MaxValue) throw new ArgumentException(
+                $"Expected Length (Le) is too long (protocol is T=0). Maximum value is {byte.MaxValue}", nameof(le));
 
-            if (le > ushort.MaxValue) throw new ArgumentException(string.Format(
-                "Expected Length (Le) is too long. Maximum value is {0}", ushort.MaxValue), "le");
+            if (le > ushort.MaxValue) throw new ArgumentException(
+                $"Expected Length (Le) is too long. Maximum value is {ushort.MaxValue}", nameof(le));
 
             var isoCase = le < byte.MaxValue ? IsoCase.Case2Short : IsoCase.Case2Extended;
             return SendCommand(new CommandApdu(isoCase, reader.ActiveProtocol)
@@ -131,18 +122,18 @@ namespace Delta.SmartCard
             });
         }
 
-        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2, byte[] data) // Case 3
+        // Case 3
+        public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2, byte[] data) 
         {
-            if (data == null || data.Length == 0)
-                return SendCommand(cla, ins, p1, p2); //  Case 1
+            if (data == null || data.Length == 0) return SendCommand(cla, ins, p1, p2); //  Case 1
 
             var isT0 = reader.ActiveProtocol == SCardProtocol.T0;
 
-            if (isT0 && data.Length > byte.MaxValue) throw new ArgumentException(string.Format(
-                "Data is too long (protocol is T=0). Maximum size is {0}", byte.MaxValue), "data");
+            if (isT0 && data.Length > byte.MaxValue) throw new ArgumentException(
+                $"Data is too long (protocol is T=0). Maximum size is {byte.MaxValue}", nameof(data));
 
-            if (data.Length > ushort.MaxValue) throw new ArgumentException(string.Format(
-                "Data is too long. Maximum size is {0}", ushort.MaxValue), "data");
+            if (data.Length > ushort.MaxValue) throw new ArgumentException(
+                $"Data is too long. Maximum size is {ushort.MaxValue}", nameof(data));
 
             var isoCase = data.Length < byte.MaxValue ? IsoCase.Case3Short : IsoCase.Case3Extended;
             return SendCommand(new CommandApdu(isoCase, reader.ActiveProtocol)
@@ -157,22 +148,21 @@ namespace Delta.SmartCard
 
         public byte[] SendCommand(byte cla, byte ins, byte p1, byte p2, byte[] data, int le)
         {
-            if (data == null || data.Length == 0)
-                return SendCommand(cla, ins, p1, p2, le); //  Case 2
+            if (data == null || data.Length == 0) return SendCommand(cla, ins, p1, p2, le); //  Case 2
 
             var isT0 = reader.ActiveProtocol == SCardProtocol.T0;
 
-            if (isT0 && data.Length > byte.MaxValue) throw new ArgumentException(string.Format(
-                "Data is too long (protocol is T=0). Maximum size is {0}", byte.MaxValue), "data");
+            if (isT0 && data.Length > byte.MaxValue) throw new ArgumentException(
+                $"Data is too long (protocol is T=0). Maximum size is {byte.MaxValue}", nameof(data));
 
-            if (data.Length > ushort.MaxValue) throw new ArgumentException(string.Format(
-                "Data is too long. Maximum size is {0}", ushort.MaxValue), "data");
+            if (data.Length > ushort.MaxValue) throw new ArgumentException(
+                $"Data is too long. Maximum size is {ushort.MaxValue}", nameof(data));
 
-            if (isT0 && le > byte.MaxValue) throw new ArgumentException(string.Format(
-                "Expected Length (Le) is too long (protocol is T=0). Maximum value is {0}", byte.MaxValue), "le");
+            if (isT0 && le > byte.MaxValue) throw new ArgumentException(
+                $"Expected Length (Le) is too long (protocol is T=0). Maximum value is {byte.MaxValue}", nameof(le));
 
-            if (le > ushort.MaxValue) throw new ArgumentException(string.Format(
-                "Expected Length (Le) is too long. Maximum value is {0}", ushort.MaxValue), "le");
+            if (le > ushort.MaxValue) throw new ArgumentException(
+                $"Expected Length (Le) is too long. Maximum value is {ushort.MaxValue}", nameof(le));
 
             var isoCase = data.Length < byte.MaxValue ? IsoCase.Case4Short : IsoCase.Case4Extended;
             return SendCommand(new CommandApdu(isoCase, reader.ActiveProtocol)
@@ -185,8 +175,6 @@ namespace Delta.SmartCard
                 Le = le
             });
         }
-
-        #endregion
 
         public void OpenCard()
         {
@@ -207,8 +195,6 @@ namespace Delta.SmartCard
         }
 
         public bool IsCardOpened => scReader != null && scReader.IsConnected;
-
-        #region IDisposable Members
 
         public void Dispose()
         {
@@ -260,8 +246,6 @@ namespace Delta.SmartCard
                 finally { context = null; }
             }
         }
-
-        #endregion
 
         private void CreateContextAndReader()
         {

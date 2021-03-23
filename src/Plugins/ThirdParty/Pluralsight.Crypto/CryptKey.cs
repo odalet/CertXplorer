@@ -3,26 +3,21 @@
 // Want to learn more about .NET? Visit pluralsight.com today!
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Pluralsight.Crypto
 {
     public abstract class CryptKey : DisposeableObject
     {
-        CryptContext ctx;
-        IntPtr handle;
+        private readonly CryptContext context;
 
-        internal IntPtr Handle { get { return handle; } }
-
-        internal CryptKey(CryptContext ctx, IntPtr handle)
+        protected CryptKey(CryptContext ctx, IntPtr handle)
         {
-            this.ctx = ctx;
-            this.handle = handle;
+            context = ctx;
+            Handle = handle;
         }
 
         public abstract KeyType Type { get; }
+        internal IntPtr Handle { get; }
 
         protected override void CleanUp(bool viaDispose)
         {
@@ -30,7 +25,21 @@ namespace Pluralsight.Crypto
             // so the only time I try to close an individual key is if a user
             // explicitly disposes of the key.
             if (viaDispose)
-                ctx.DestroyKey(this);
+                context.DestroyKey(this);
         }
+    }
+
+    public sealed class KeyExchangeKey : CryptKey
+    {
+        internal KeyExchangeKey(CryptContext ctx, IntPtr handle) : base(ctx, handle) { }
+
+        public override KeyType Type => KeyType.Exchange;
+    }
+
+    public sealed class SignatureKey : CryptKey
+    {
+        internal SignatureKey(CryptContext ctx, IntPtr handle) : base(ctx, handle) { }
+
+        public override KeyType Type => KeyType.Signature;
     }
 }

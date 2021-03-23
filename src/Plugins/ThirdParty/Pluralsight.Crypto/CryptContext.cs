@@ -3,9 +3,6 @@
 // Want to learn more about .NET? Visit pluralsight.com today!
 //
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 
@@ -13,16 +10,9 @@ namespace Pluralsight.Crypto
 {
     // This class has just enough functionality for generating self-signed certs.
     // In the future, I may expand it to do other things.
-    public class CryptContext : DisposeableObject
+    public sealed class CryptContext : DisposeableObject
     {
         private IntPtr handle = IntPtr.Zero;
-
-        public IntPtr Handle { get { return handle; } }
-
-        public string ContainerName { get; set; }
-        public string ProviderName { get; set; }
-        public int ProviderType { get; set; }
-        public int Flags { get; set; }
 
         /// <summary>
         /// By default, sets up to create a new randomly named key container
@@ -34,10 +24,14 @@ namespace Pluralsight.Crypto
             Flags = 8; // create new keyset
         }
 
+        private string ContainerName { get; }
+        private int ProviderType { get; }
+        private int Flags { get; }
+
         public void Open()
         {
             ThrowIfDisposed();
-            if (!Win32Native.CryptAcquireContext(out handle, ContainerName, ProviderName, ProviderType, Flags))
+            if (!Win32Native.CryptAcquireContext(out handle, ContainerName, null, ProviderType, Flags))
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
         }
 
@@ -45,33 +39,32 @@ namespace Pluralsight.Crypto
         {
             ThrowIfDisposedOrNotOpen();
 
-            GenerateKeyExchangeKey(properties.IsPrivateKeyExportable, properties.KeyBitLength);
-            //GenerateSignatureKey(properties.IsPrivateKeyExportable, properties.KeyBitLength);
+            _ = GenerateKeyExchangeKey(properties.IsPrivateKeyExportable, properties.KeyBitLength);
 
-            byte[] asnName = properties.Name.RawData;
-            GCHandle asnNameHandle = GCHandle.Alloc(asnName, GCHandleType.Pinned);
+            var asnName = properties.Name.RawData;
+            var asnNameHandle = GCHandle.Alloc(asnName, GCHandleType.Pinned);
 
             var kpi = new Win32Native.CryptKeyProviderInformation
             {
-                ContainerName = this.ContainerName,
+                ContainerName = ContainerName,
                 KeySpec = (int)KeyType.Exchange,
                 ProviderType = 1, // default RSA provider
             };
 
-            IntPtr certContext = Win32Native.CertCreateSelfSignCertificate(
-                    handle,
-                    new Win32Native.CryptoApiBlob(asnName.Length, asnNameHandle.AddrOfPinnedObject()),
-                    0, kpi, IntPtr.Zero,
-                    ToSystemTime(properties.ValidFrom),
-                    ToSystemTime(properties.ValidTo),
-                    IntPtr.Zero);
+            var certContext = Win32Native.CertCreateSelfSignCertificate(
+                handle,
+                new Win32Native.CryptoApiBlob(asnName.Length, asnNameHandle.AddrOfPinnedObject()),
+                0, kpi, IntPtr.Zero,
+                ToSystemTime(properties.ValidFrom),
+                ToSystemTime(properties.ValidTo),
+                IntPtr.Zero);
 
             asnNameHandle.Free();
 
             if (IntPtr.Zero == certContext)
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
 
-            X509Certificate2 cert = new X509Certificate2(certContext); // dups the context (increasing it's refcount)
+            var cert = new X509Certificate2(certContext); // dups the context (increasing it's refcount)
 
             if (!Win32Native.CertFreeCertificateContext(certContext))
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
@@ -81,7 +74,7 @@ namespace Pluralsight.Crypto
 
         private Win32Native.SystemTime ToSystemTime(DateTime dateTime)
         {
-            long fileTime = dateTime.ToFileTime();
+            var fileTime = dateTime.ToFileTime();
             var systemTime = new Win32Native.SystemTime();
             if (!Win32Native.FileTimeToSystemTime(ref fileTime, systemTime))
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
@@ -92,28 +85,13 @@ namespace Pluralsight.Crypto
         {
             ThrowIfDisposedOrNotOpen();
 
-            uint flags = (exportable ? 1U : 0U) | ((uint)keyBitLength) << 16;
+            var flags = (exportable ? 1U : 0U) | ((uint)keyBitLength) << 16;
 
-            IntPtr keyHandle;
-            bool result = Win32Native.CryptGenKey(handle, (int)KeyType.Exchange, flags, out keyHandle);
+            var result = Win32Native.CryptGenKey(handle, (int)KeyType.Exchange, flags, out var keyHandle);
             if (!result)
                 Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
 
             return new KeyExchangeKey(this, keyHandle);
-        }
-
-        private SignatureKey GenerateSignatureKey(bool exportable, int keyBitLength)
-        {
-            ThrowIfDisposedOrNotOpen();
-
-            uint flags = (exportable ? 1U : 0U) | ((uint)keyBitLength) << 16;
-    
-            IntPtr keyHandle;
-            bool result = Win32Native.CryptGenKey(handle, (int)KeyType.Signature, flags, out keyHandle);
-            if (!result)
-                Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
-
-            return new SignatureKey(this, keyHandle);
         }
 
         internal void DestroyKey(CryptKey key)
@@ -125,15 +103,9 @@ namespace Pluralsight.Crypto
 
         protected override void CleanUp(bool viaDispose)
         {
-            if (handle != IntPtr.Zero)
-            {
-                if (!Win32Native.CryptReleaseContext(handle, 0))
-                {
-                    // only throw exceptions if we're NOT in a finalizer
-                    if (viaDispose)
-                        Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
-                }
-            }
+            // only throw exceptions if we're NOT in a finalizer
+            if (handle != IntPtr.Zero && !Win32Native.CryptReleaseContext(handle, 0) && viaDispose)
+                Win32ErrorHelper.ThrowExceptionIfGetLastErrorIsNotZero();
         }
 
         private void ThrowIfDisposedOrNotOpen()

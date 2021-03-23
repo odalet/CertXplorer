@@ -3,11 +3,11 @@ using System.Collections.Generic;
 
 namespace Delta.CapiNet.Pem
 {
-    public class PemInfo
+    public sealed class PemInfo
     {
         internal PemInfo(PemDecoder decoder)
         {
-            if (decoder == null) throw new ArgumentNullException("reader");
+            if (decoder == null) throw new ArgumentNullException(nameof(decoder));
 
             TextData = decoder.TextData;
             Workload = decoder.Workload;
@@ -20,14 +20,14 @@ namespace Delta.CapiNet.Pem
             Warnings = decoder.Warnings ?? new string[0];
         }
 
-        public string TextData { get; private set; }
-        public byte[] Workload { get; private set; }
-        public byte[] PgpChecksum { get; private set; }
-        public PemKind Kind { get; private set; }
-        public string FullHeader { get; private set; }
-        public string FullFooter { get; private set; }
-        public string AdditionalText { get; private set; }
-        public string[] Warnings { get; private set; }
-        public IDictionary<string, string> AdditionalHeaders { get; private set; }
+        public string TextData { get; }
+        public byte[] Workload { get; }
+        public byte[] PgpChecksum { get; }
+        public PemKind Kind { get; }
+        public string FullHeader { get; }
+        public string FullFooter { get; }
+        public string AdditionalText { get; }
+        public string[] Warnings { get; }
+        public IReadOnlyDictionary<string, string> AdditionalHeaders { get; }
     }
 }

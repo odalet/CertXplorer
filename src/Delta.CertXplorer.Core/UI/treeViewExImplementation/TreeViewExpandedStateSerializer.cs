@@ -4,70 +4,48 @@ using System.Globalization;
 
 namespace Delta.CertXplorer.UI
 {
-    /// <summary>
-    /// Stocke et restaure l'état (ouvert/fermé) des noeuds d'un arbre 
-    /// </summary>
-    /// <remarks>
-    /// L'état de l'arbre est stocké dans une chaîne.
-    /// </remarks>
-    public class TreeViewExpandedStateSerializer
+    public sealed class TreeViewExpandedStateSerializer
     {
-        #region Resolvers
-        private class TextTreeNodeResolver : ITreeNodeResolver
+        private sealed class TextTreeNodeResolver : ITreeNodeResolver
         {
-            #region ITreeNodeResolver Members
-
             public TreeNode FindNode(TreeNodeCollection nodes, string key)
             {
-                foreach (TreeNode tn in nodes) { if (tn.Text == key) return tn; }
+                foreach (TreeNode tn in nodes) 
+                {
+                    if (tn.Text == key) 
+                        return tn; 
+                }
+
                 return null;
             }
 
-            public string GetNodeKey(TreeNode node) { return node.Text; }
-
-            #endregion
+            public string GetNodeKey(TreeNode node) => node.Text;
         }
 
-        private class NameTreeNodeResolver : ITreeNodeResolver
+        private sealed class NameTreeNodeResolver : ITreeNodeResolver
         {
-            #region ITreeNodeResolver Members
+            public TreeNode FindNode(TreeNodeCollection nodes, string key) => nodes.ContainsKey(key) ? nodes[key] : null;
 
-            public TreeNode FindNode(TreeNodeCollection nodes, string key)
-            {
-                if (nodes.ContainsKey(key)) return nodes[key];
-                else return null;
-            }
-
-            public string GetNodeKey(TreeNode node) { return node.Name; }
-
-            #endregion
+            public string GetNodeKey(TreeNode node) => node.Name;
         }
 
-        #endregion
-
-        private static readonly string TrueString = true.ToString(CultureInfo.InvariantCulture).ToLowerInvariant();
-
-        private TreeView treeview = null;
-        private ITreeNodeResolver treenodeResolver = null;
+        private readonly TreeView treeview;
+        private readonly ITreeNodeResolver treeNodeResolver;
 
         public TreeViewExpandedStateSerializer(TreeView tv) : this(tv, BuiltinTreeNodeResolver.Name) { }
         public TreeViewExpandedStateSerializer(TreeView tv, BuiltinTreeNodeResolver resolver) : this(tv, GetResolver(resolver)) { }
-
         public TreeViewExpandedStateSerializer(TreeView tv, ITreeNodeResolver resolver)
         {
-            if (tv == null) throw new ArgumentNullException("tv");
-            if (resolver == null) throw new ArgumentNullException("resolver");
-
-            treeview = tv;
-            treenodeResolver = resolver;
+            treeview = tv ?? throw new ArgumentNullException(nameof(tv));
+            treeNodeResolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
         }
 
-        public ITreeNodeResolver TreeNodeResolver { get { return treenodeResolver; } }
+        public ITreeNodeResolver TreeNodeResolver => treeNodeResolver;
 
         public string Serialize()
         {
-            string innerState = string.Empty;
-            if ((treeview.Nodes != null) && (treeview.Nodes.Count > 0))
+            var innerState = string.Empty;
+            if (treeview.Nodes != null && treeview.Nodes.Count > 0)
                 innerState = SerializeCollection(treeview.Nodes);
             return "{" + innerState + "}";
         }
@@ -78,28 +56,24 @@ namespace Delta.CertXplorer.UI
             DeserializeCollection(treeview.Nodes, state);
         }
 
-        private static ITreeNodeResolver GetResolver(BuiltinTreeNodeResolver builtin)
+        private static ITreeNodeResolver GetResolver(BuiltinTreeNodeResolver builtin) => builtin switch
         {
-            switch (builtin)
-            {
-                case BuiltinTreeNodeResolver.Text: return new TextTreeNodeResolver();
-                case BuiltinTreeNodeResolver.Name: return new NameTreeNodeResolver();
-            }
-
-            return null;
-        }
+            BuiltinTreeNodeResolver.Text => new TextTreeNodeResolver(),
+            BuiltinTreeNodeResolver.Name => new NameTreeNodeResolver(),
+            _ => null,
+        };
 
         private string SerializeCollection(TreeNodeCollection collection)
         {
-            string state = string.Empty;
+            var state = string.Empty;
             foreach (TreeNode tn in collection)
             {
-                if ((tn.Nodes != null) && (tn.Nodes.Count > 0)) // inutile de parcourir les noeuds sans descendants
+                if (tn.Nodes != null && tn.Nodes.Count > 0)
                 {
-                    string status = ":" + tn.IsExpanded.ToString(CultureInfo.InvariantCulture).ToLowerInvariant();
-                    string innerState = string.Empty;
+                    var status = ":" + tn.IsExpanded.ToString(CultureInfo.InvariantCulture).ToLowerInvariant();
+                    var innerState = string.Empty;
                     innerState = SerializeCollection(tn.Nodes);
-                    state += "{" + SerializeText(treenodeResolver.GetNodeKey(tn)) + status + innerState + "}";
+                    state += "{" + SerializeText(treeNodeResolver.GetNodeKey(tn)) + status + innerState + "}";
                 }
             }
 
@@ -110,25 +84,26 @@ namespace Delta.CertXplorer.UI
         {
             if (string.IsNullOrEmpty(state)) return;
 
-            while ((state[0] == '{') && (state[state.Length - 1] == '}'))
+            while (state[0] == '{' && state[state.Length - 1] == '}')
             {
                 state = state.Substring(1, state.Length - 2);
                 state = state.Trim();
             }
-            
 
             if (string.IsNullOrEmpty(state)) return;
 
-            int index = 0;
-            string currentNodeText = string.Empty;
-            TreeNode lastNode = null;
+            var index = 0;
+            var currentNodeText = string.Empty;
+            TreeNode lastNode;
             while (true)
             {
-                if (index >= state.Length) break;
-                else if (state[index] == '{')
+                if (index >= state.Length) 
+                    break;
+                
+                if (state[index] == '{')
                 {
                     lastNode = TryExpand(collection, currentNodeText.Trim());
-                    int next = FindClosingBrace(state.Substring(index)) + index;
+                    var next = FindClosingBrace(state.Substring(index)) + index;
                     if (next <= index) // on tente quand même...
                     {
                         if (lastNode != null)
@@ -149,40 +124,30 @@ namespace Delta.CertXplorer.UI
                 }
             }
 
-            TryExpand(collection, currentNodeText.Trim());
+            _ = TryExpand(collection, currentNodeText.Trim());
         }
 
         private TreeNode TryExpand(TreeNodeCollection nodes, string text)
         {
-            bool expand = true;
-            string nodetext = text;
-            
-            int index = text.IndexOf(':');
+            var trueString = true.ToString(CultureInfo.InvariantCulture).ToLowerInvariant();
+            var expand = true;
+            var nodeText = text;
+            var index = text.IndexOf(':');
             if (index != -1)
             {
-                nodetext = DeserializeText(text.Substring(0, index));
-                expand = (string.Compare(text.Substring(index + 1), TrueString, true) == 0);
+                nodeText = DeserializeText(text.Substring(0, index));
+                expand = string.Compare(text.Substring(index + 1), trueString, true) == 0;
             }
 
-            TreeNode tn = treenodeResolver.FindNode(nodes, nodetext);
-            if ((tn != null) && expand) tn.Expand();
+            var tn = treeNodeResolver.FindNode(nodes, nodeText);
+            if (tn != null && expand) tn.Expand();
             return tn;
         }
 
-        //private TreeNode FindNode(TreeNodeCollection nodes, string text)
-        //{
-        //    foreach (TreeNode tn in nodes)
-        //    {
-        //        if (tn.Text == text) return tn;
-        //    }
-
-        //    return null;
-        //}
-
         private int FindClosingBrace(string text)
         {
-            int count = 0;
-            for (int i = 0; i < text.Length; i++)
+            var count = 0;
+            for (var i = 0; i < text.Length; i++)
             {
                 if (text[i] == '{') count++;
                 if (text[i] == '}')
@@ -191,26 +156,22 @@ namespace Delta.CertXplorer.UI
                     if (count == 0) return i;
                 }
             }
-            
+
             return -1;
         }
 
-        private string SerializeText(string text)
-        {
-            text = text.Replace("\\", "\\5C");
-            text = text.Replace(":", "\\3A");
-            text = text.Replace("{", "\\7B");
-            text = text.Replace("}", "\\7D");
-            return text;
-        }
+        private string SerializeText(string text) => text
+            .Replace("\\", "\\5C")
+            .Replace(":", "\\3A")
+            .Replace("{", "\\7B")
+            .Replace("}", "\\7D")
+            ;
 
-        private string DeserializeText(string text)
-        {
-            text = text.Replace("\\7D", "}");
-            text = text.Replace("\\7B", "{");
-            text = text.Replace("\\3A", ":");
-            text = text.Replace("\\5C", "\\");
-            return text;
-        }
+        private string DeserializeText(string text) => text
+            .Replace("\\7D", "}")
+            .Replace("\\7B", "{")
+            .Replace("\\3A", ":")
+            .Replace("\\5C", "\\")
+            ;
     }
 }

@@ -5,19 +5,17 @@ namespace Delta.CertXplorer.UI
 {
     public delegate void TreeNodeExEventHandler(object sender, TreeNodeExEventArgs e);
 
-    public class TreeNodeExEventArgs : EventArgs
+    public sealed class TreeNodeExEventArgs : EventArgs
     {
-        private TreeNodeEx node = null;
-        public TreeNodeExEventArgs(TreeNodeEx bstn) : base() { node = bstn; }
-        public TreeNodeEx Node { get { return node; } }
+        public TreeNodeExEventArgs(TreeNodeEx bstn) : base() => Node = bstn;
+        public TreeNodeEx Node { get; }
     }
 
     public delegate void TreeNodeCollectionEventHandler(object sender, TreeNodeCollectionEventArgs e);
 
-    public class TreeNodeCollectionEventArgs : EventArgs
+    public sealed class TreeNodeCollectionEventArgs : EventArgs
     {
-        private TreeNodeCollection nodes = null;
-        public TreeNodeCollectionEventArgs(TreeNodeCollection coll) : base() { nodes = coll; }
-        public TreeNodeCollection Nodes { get { return nodes; } }
+        public TreeNodeCollectionEventArgs(TreeNodeCollection coll) : base() => Nodes = coll;
+        public TreeNodeCollection Nodes { get; }
     }
 }

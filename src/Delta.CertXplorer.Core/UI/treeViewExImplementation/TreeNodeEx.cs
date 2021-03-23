@@ -1,13 +1,16 @@
 using System;
-using System.Windows.Forms;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
     /// <summary>
     /// Reprents a specialized Tree node (to be used with <see cref="TreeViewEx"/>).
     /// </summary>
+    [SuppressMessage("Minor Code Smell", "S1210:\"Equals\" and the comparison operators should be overridden when implementing \"IComparable\"", Justification = "Not needed here")]
+    [SuppressMessage("Major Code Smell", "S3925:\"ISerializable\" should be implemented correctly", Justification = "Not needed here")]
     public class TreeNodeEx : TreeNode, IComparable<TreeNodeEx>, IEditActionsHandler
     {
         private DateTime dragOverTimer = DateTime.MaxValue;
@@ -24,6 +27,7 @@ namespace Delta.CertXplorer.UI
         public bool DelayedDragOverAction { get; set; }
         public TimeSpan DragOverActionDelay { get; set; }
         public bool LabelEdit { get; set; }
+        public int NodeOrder { get; set; }
 
         public TreeViewEx TreeViewEx => TreeView as TreeViewEx;
         public IEnumerable<TreeNode> AllNodes => this.Find(null);
@@ -51,17 +55,12 @@ namespace Delta.CertXplorer.UI
         public virtual bool CanDelete => false;
         public virtual bool CanSelectAll => false;
 
-        protected virtual int NodeOrder => 0;
-
         private bool IsDragOverTimerReset => dragOverTimer == DateTime.MaxValue;
         private bool IsDragOverTimeElapsed => DateTime.Now - dragOverTimer >= DragOverActionDelay;
 
         public void Activate() => TreeViewEx.ActivateNode(this);
 
-        public virtual int CompareTo(TreeNodeEx other) =>
-            NodeOrder != other.NodeOrder ?
-            NodeOrder - other.NodeOrder :
-            Text.CompareTo(other.Text);
+        public virtual int CompareTo(TreeNodeEx other) => NodeOrder != other.NodeOrder ? NodeOrder - other.NodeOrder : Text.CompareTo(other.Text);
 
         public virtual void Cut() { }
         public virtual void Copy() { }
@@ -129,7 +128,7 @@ namespace Delta.CertXplorer.UI
         }
 
         internal void DoDragLeave(DragEventArgs _) => ResetDragOverTimer();
-        
+
         private void ResetDragOverTimer() => dragOverTimer = DateTime.MaxValue;
         private void InitializeDragOverTimer() => dragOverTimer = DateTime.Now;
     }

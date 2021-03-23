@@ -15,10 +15,8 @@ namespace PemPlugin
             [TypeConverter(typeof(ExpandableObjectConverter))]
             public PemInfo Info { get; internal set; }
                         
-            // TODO: Find a means for PropertyGridEx to automatically apply this when encountering a dictionary
-            // See http://stackoverflow.com/questions/2535647/insert-custom-typeconverter-on-a-property-at-runtime-from-inside-a-custom-uityp
             [TypeConverter(typeof(ReadOnlyDictionaryConverter))]            
-            public IDictionary<string, string> AdditionalHeaders { get; internal set; }
+            public IReadOnlyDictionary<string, string> AdditionalHeaders { get; internal set; }
         }
 
         public PemData(PemInfo info)

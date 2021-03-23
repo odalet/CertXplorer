@@ -6,7 +6,7 @@ namespace Delta.CertXplorer.UI
 {
     public class ThreadSafeTextBoxWrapper
     {
-        private TextBoxBase control = null;
+        private readonly TextBoxBase control;
 
         private delegate void SetTextDelegate(string text);
         private delegate string GetTextDelegate();
@@ -15,58 +15,18 @@ namespace Delta.CertXplorer.UI
         private delegate void AppendTextDelegate(string text);
         private delegate void ScrollToCaretDelegate();
 
-        public ThreadSafeTextBoxWrapper(TextBoxBase textbox)
+        public ThreadSafeTextBoxWrapper(TextBoxBase textbox) => control = textbox ?? throw new ArgumentNullException("textbox");
+
+        public string Text 
         {
-            if (textbox == null) throw new ArgumentNullException("textbox");
-            control = textbox;
+            get => GetText(); 
+            set => SetText(value); 
         }
 
-        public string Text { get { return GetText(); } set { SetText(value); } }
-
-        public void SetText(string text)
+        public Font Font
         {
-            if (control.IsDisposed) return;
-            if (control.InvokeRequired)
-            {
-                SetTextDelegate del = new SetTextDelegate(SetText);
-                control.Invoke(del, new object[] { text });
-            }
-            else control.Text = text;
-        }
-
-        public string GetText()
-        {
-            if (control.IsDisposed) return string.Empty;
-            if (control.InvokeRequired)
-            {
-                GetTextDelegate del = new GetTextDelegate(GetText);
-                return (string)control.Invoke(del);
-            }
-            else return control.Text;
-        }
-
-        public Font Font { get { return GetFont(); } set { SetFont(value); } }
-
-        public void SetFont(Font font)
-        {
-            if (control.IsDisposed) return;
-            if (control.InvokeRequired)
-            {
-                SetFontDelegate del = new SetFontDelegate(SetFont);
-                control.Invoke(del, new object[] { font });
-            }
-            else control.Font = font;
-        }
-
-        public Font GetFont()
-        {
-            if (control.IsDisposed) return null;
-            if (control.InvokeRequired)
-            {
-                GetFontDelegate del = new GetFontDelegate(GetFont);
-                return (Font)control.Invoke(del);
-            }
-            else return control.Font;
+            get => GetFont();
+            set => SetFont(value);
         }
 
         public void AppendText(string text)
@@ -74,8 +34,8 @@ namespace Delta.CertXplorer.UI
             if (control.IsDisposed) return;
             if (control.InvokeRequired)
             {
-                AppendTextDelegate del = new AppendTextDelegate(AppendText);
-                control.Invoke(del, new object[] { text });
+                var del = new AppendTextDelegate(AppendText);
+                _ = control.Invoke(del, new object[] { text });
             }
             else control.AppendText(text);
         }
@@ -85,10 +45,54 @@ namespace Delta.CertXplorer.UI
             if (control.IsDisposed) return;
             if (control.InvokeRequired)
             {
-                ScrollToCaretDelegate del = new ScrollToCaretDelegate(ScrollToCaret);
-                control.Invoke(del);
+                var del = new ScrollToCaretDelegate(ScrollToCaret);
+                _ = control.Invoke(del);
             }
             else control.ScrollToCaret();
+        }
+
+        private void SetText(string text)
+        {
+            if (control.IsDisposed) return;
+            if (control.InvokeRequired)
+            {
+                var del = new SetTextDelegate(SetText);
+                _ = control.Invoke(del, new object[] { text });
+            }
+            else control.Text = text;
+        }
+
+        private string GetText()
+        {
+            if (control.IsDisposed) return string.Empty;
+            if (control.InvokeRequired)
+            {
+                var del = new GetTextDelegate(GetText);
+                return (string)control.Invoke(del);
+            }
+            else return control.Text;
+        }
+
+        private void SetFont(Font font)
+        {
+            if (control.IsDisposed) return;
+            if (control.InvokeRequired)
+            {
+                var del = new SetFontDelegate(SetFont);
+                _ = control.Invoke(del, new object[] { font });
+            }
+            else control.Font = font;
+        }
+
+        private Font GetFont()
+        {
+            if (control.IsDisposed) return null;
+            if (control.InvokeRequired)
+            {
+                var del = new GetFontDelegate(GetFont);
+                return (Font)control.Invoke(del);
+            }
+            else return control.Font;
         }
     }
 }

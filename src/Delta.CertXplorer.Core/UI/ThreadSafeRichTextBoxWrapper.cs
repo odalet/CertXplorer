@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
-    public class ThreadSafeRichTextBoxWrapper : ThreadSafeTextBoxWrapper
+    public sealed class ThreadSafeRichTextBoxWrapper : ThreadSafeTextBoxWrapper
     {
         private RichTextBox control = null;
 

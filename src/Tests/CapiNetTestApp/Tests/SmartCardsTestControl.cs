@@ -1,20 +1,20 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-
-using PCSC.Iso7816;
 using Delta.SmartCard;
+using PCSC.Iso7816;
 
 namespace CapiNetTestApp.Tests
 {
+    [SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "Winforms conventions")]
     public partial class SmartCardsTestControl : UserControl
     {
-        private class Apdu
+        private sealed class Apdu
         {
             public Apdu(byte cla, InstructionCode ins, byte p1, byte p2, byte? le = null) : this(cla, (byte)ins, p1, p2, le) { }
-
-            public Apdu(byte cla, byte ins, byte p1, byte p2, byte? le = null)
+            private Apdu(byte cla, byte ins, byte p1, byte p2, byte? le = null)
             {
                 Cla = cla;
                 Ins = ins;
@@ -23,71 +23,39 @@ namespace CapiNetTestApp.Tests
                 Le = le;
             }
 
-            public byte Cla { get; private set; }
-
-            public byte Ins { get; private set; }
-
-            public byte P1 { get; private set; }
-
-            public byte P2 { get; private set; }
-
-            public byte? Le { get; private set; }
-
-            public byte[] Data { get; set; }
+            public byte Cla { get; }
+            public byte Ins { get; }
+            public byte P1 { get; }
+            public byte P2 { get; }
+            public byte? Le { get; }
 
             public byte[] Execute(PcscSmartCardReader reader)
             {
                 try
                 {
-                    if (Le.HasValue)
-                    {
-                        if (Data != null && Data.Length > 0)
-                            return reader.SendCommand(Cla, Ins, P1, P2, Data, Le.Value);
-                        else return reader.SendCommand(Cla, Ins, P1, P2, Le.Value);
-                    }
-                    else
-                    {
-                        if (Data != null && Data.Length > 0)
-                            return reader.SendCommand(Cla, Ins, P1, P2, Data);
-                        else return reader.SendCommand(Cla, Ins, P1, P2);
-                    }
+                    return Le.HasValue ? 
+                        reader.SendCommand(Cla, Ins, P1, P2, Le.Value) : 
+                        reader.SendCommand(Cla, Ins, P1, P2);
                 }
                 catch (Exception ex)
                 {
                     Program.LogException(ex);
-                    return null;
+                    return new byte[0];
                 }
             }
 
             public override string ToString()
             {
-                var result = string.Format("CLA={0:X2} INS={1:X2} P1={2:X2} P2={3:X2}", Cla, Ins, P1, P2);
-
-                if (Data != null && Data.Length > 0)
-                {
-                    result += string.Format(" Lc={0:X2} <", Data.Length);
-                    const int max = 8;
-
-                    for (int i = 0; i < max; i++)
-                    {
-                        if (i >= Data.Length)
-                            break;
-                        result += string.Format(" {0:X2}", Data[i]);
-                    }
-
-                    result += Data.Length > max ? "... >" : " >";
-                }
-
+                var result = $"CLA={Cla:X2} INS={Ins:X2} P1={P1:X2} P2={P2:X2}";
                 if (Le.HasValue)
-                    result += string.Format(" Le={0:X2}", Le.Value);
-
+                    result += $" Le={Le.Value:X2}";
                 return result;
             }
         }
 
-        private class SCResult
+        private sealed class SCResult
         {
-            private byte[] data = null;
+            private readonly byte[] data;
 
             public SCResult(byte[] receivedData)
             {
@@ -96,15 +64,8 @@ namespace CapiNetTestApp.Tests
                 data = receivedData;
             }
 
-            public byte SW1
-            {
-                get { return data[data.Length - 2]; }
-            }
-
-            public byte SW2
-            {
-                get { return data[data.Length - 1]; }
-            }
+            public byte SW1 => data[data.Length - 2];
+            public byte SW2 => data[data.Length - 1];
 
             public override string ToString()
             {
@@ -114,14 +75,14 @@ namespace CapiNetTestApp.Tests
                 if (Enum.GetValues(typeof(SW1Code)).Cast<byte>().Contains(SW1))
                     sw1Meaning = ((SW1Code)SW1).ToString();
 
-                builder.AppendFormat("SW1={0:X2} [{1}], SW2={2:X2} [Remaining Bytes]", SW1, sw1Meaning, SW2);
+                _ = builder.Append($"SW1={SW1:X2} [{sw1Meaning}], SW2={SW2:X2} [Remaining Bytes]");
                 if (data.Length > 2)
                 {
-                    for (int i = 0; i < data.Length - 2; i++)
+                    for (var i = 0; i < data.Length - 2; i++)
                     {
                         if (i % 16 == 0)
                             builder.AppendLine();
-                        builder.AppendFormat("{0:X2} ", data[i]);
+                        builder.Append($"{data[i]:X2} ");
                     }
                 }
 
@@ -135,25 +96,14 @@ namespace CapiNetTestApp.Tests
             InitializeComponent();
 
             testsPanel.Enabled = false;
-
             smartCardReaderChooser.SmartCardReaderConnected += (s, _) => OnConnected();
             smartCardReaderChooser.SmartCardReaderDisconnected += (s, _) => OnDisconnected();
         }
 
-        private PcscSmartCardReader Reader
-        {
-            get { return smartCardReaderChooser.SmartCardReader; }
-        }
+        private PcscSmartCardReader Reader => smartCardReaderChooser.SmartCardReader;
 
-        private void OnConnected()
-        {
-            testsPanel.Enabled = true;
-        }
-
-        private void OnDisconnected()
-        {
-            testsPanel.Enabled = false;
-        }
+        private void OnConnected() => testsPanel.Enabled = true;
+        private void OnDisconnected() => testsPanel.Enabled = false;
 
         private void getChallengeButton_Click(object sender, EventArgs e)
         {
