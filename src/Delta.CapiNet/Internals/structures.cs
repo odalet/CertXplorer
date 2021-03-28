@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.InteropServices;
 
-using Microsoft.Win32.SafeHandles;
-
 namespace Delta.CapiNet.Internals
-{    
+{
     /// <doc>
     /// See http://msdn.microsoft.com/en-us/library/aa377568.aspx:
     /// <code>
@@ -14,10 +13,11 @@ namespace Delta.CapiNet.Internals
     /// </code>
     /// </doc>
     [StructLayout(LayoutKind.Sequential)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CERT_SYSTEM_STORE_INFO
     {
-        /// <summary>Size of this stucture in bytes.</summary>
-        uint cbSize;
+        /// <summary>Size of this stucture in bytes.</summary>                
+        internal uint cbSize;
     }
 
     /// <doc>
@@ -35,26 +35,27 @@ namespace Delta.CapiNet.Internals
     /// </code>
     /// </doc>
     [StructLayout(LayoutKind.Sequential)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CERT_PHYSICAL_STORE_INFO
     {
         /// <summary>The size, in bytes, of this structure.</summary>
-        uint cbSize;
+        internal uint cbSize;
 
         /// <summary>A pointer to a string that names a certificate store provider type.</summary>
         [MarshalAs(UnmanagedType.LPStr)]
-        string pszOpenStoreProvider;
+        internal string pszOpenStoreProvider;
 
-        uint dwOpenEncodingType;
+        internal uint dwOpenEncodingType;
 
-        uint dwOpenFlags;
+        internal uint dwOpenFlags;
 
-        CRYPT_DATA_BLOB OpenParameters;
+        internal CRYPT_DATA_BLOB OpenParameters;
 
         /// <summary></summary>
-        uint dwFlags;
-        
+        internal uint dwFlags;
+
         /// <summary></summary>
-        uint dwPriority;
+        internal uint dwPriority;
     }
 
     /// <doc>
@@ -67,18 +68,18 @@ namespace Delta.CapiNet.Internals
     /// </code>
     /// </doc>
     [StructLayout(LayoutKind.Sequential)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRYPT_DATA_BLOB
     {
         /// <summary>A DWORD variable that contains the count, in bytes, of data.</summary>
-        uint cbData;
+        internal uint cbData;
 
         /// <summary>A pointer to the data buffer.</summary>
-        IntPtr pbData;
+        internal IntPtr pbData;
     }
 
-    #region Certificate & CRL context and info structures
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CERT_CONTEXT
     {
         internal uint dwCertEncodingType;
@@ -89,6 +90,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CERT_INFO
     {
         internal uint dwVersion;
@@ -106,6 +108,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRL_CONTEXT
     {
         internal uint dwCertEncodingType;
@@ -116,6 +119,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRL_INFO
     {
         internal uint dwVersion;
@@ -130,6 +134,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CTL_CONTEXT
     {
         internal uint dwMsgAndCertEncodingType;
@@ -143,6 +148,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CTL_INFO
     {
         internal uint dwVersion;
@@ -158,13 +164,8 @@ namespace Delta.CapiNet.Internals
         internal IntPtr rgExtension;
     }
 
-    // TODO: CRL_ENTRY, CTL_ENTRY
-
-    #endregion
-
-    #region misc data structures
-
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRYPTOAPI_BLOB
     {
         internal uint cbData;
@@ -172,6 +173,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRYPT_BIT_BLOB
     {
         internal uint cbData;
@@ -180,6 +182,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRYPT_INTEGER_BLOB
     {
         internal uint cbData;
@@ -187,6 +190,7 @@ namespace Delta.CapiNet.Internals
     }
     
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CRYPT_ALGORITHM_IDENTIFIER
     {
         [MarshalAs(UnmanagedType.LPStr)]
@@ -195,6 +199,7 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CERT_PUBLIC_KEY_INFO
     {
         internal CRYPT_ALGORITHM_IDENTIFIER Algorithm;
@@ -202,11 +207,10 @@ namespace Delta.CapiNet.Internals
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    [SuppressMessage("Minor Code Smell", "S101:Types should be named in PascalCase", Justification = "Windows API Interop")]
     internal struct CTL_USAGE
     {
         internal uint cUsageIdentifier;
         internal IntPtr rgpszUsageIdentifier;
     }
-    
-    #endregion
 }

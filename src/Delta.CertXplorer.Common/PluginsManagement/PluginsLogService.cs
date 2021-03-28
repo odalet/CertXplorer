@@ -1,83 +1,45 @@
 ﻿using System;
-
 using Delta.CertXplorer.Logging;
 
 namespace Delta.CertXplorer.PluginsManagement
 {
-    internal class PluginsLogService : Delta.CertXplorer.Extensibility.Logging.ILogService
+    internal sealed class PluginsLogService : Extensibility.Logging.ILogService
     {
-        private ILogService log = null;
-        private string source = string.Empty;
+        private readonly ILogService log;
+        private readonly string source;
 
         public PluginsLogService(string pluginName)
         {
-            // Determine the plugin name & build a source
-            source = string.Format("$.{0}", pluginName);
-
-            // Get the global log service
+            source = $"$.{pluginName}";
             log = This.Logger;
         }
 
-        #region ILogService Members
+        public void Log(Extensibility.Logging.LogLevel level, string message) => log.Log(GetLevel(level), message, source);
+        public void Log(Extensibility.Logging.LogLevel level, string message, Exception exception) => log.Log(GetLevel(level), message, exception, source);
+        public void Log(Extensibility.Logging.LogLevel level, Exception exception) => log.Log(GetLevel(level), exception, source);
+        public void Log(Extensibility.Logging.LogEntry entry) => log.Log(GetEntry(entry, source));
 
-        public void Log(Delta.CertXplorer.Extensibility.Logging.LogLevel level, string message)
+        private static LogLevel GetLevel(Extensibility.Logging.LogLevel level) => level switch
         {
-            log.Log(GetLevel(level), message, source);
-        }
+            Extensibility.Logging.LogLevel.All => LogLevel.All,
+            Extensibility.Logging.LogLevel.Debug => LogLevel.Debug,
+            Extensibility.Logging.LogLevel.Error => LogLevel.Error,
+            Extensibility.Logging.LogLevel.Fatal => LogLevel.Fatal,
+            Extensibility.Logging.LogLevel.Info => LogLevel.Info,
+            Extensibility.Logging.LogLevel.Off => LogLevel.Off,
+            Extensibility.Logging.LogLevel.Verbose => LogLevel.Verbose,
+            Extensibility.Logging.LogLevel.Warning => LogLevel.Warning,
+            _ => LogLevel.Info,// default
+        };
 
-        public void Log(Delta.CertXplorer.Extensibility.Logging.LogLevel level, string message, Exception exception)
+        private static LogEntry GetEntry(Extensibility.Logging.LogEntry entry, string source) => new()
         {
-            log.Log(GetLevel(level), message, exception, source);
-        }
-
-        public void Log(Delta.CertXplorer.Extensibility.Logging.LogLevel level, Exception exception)
-        {
-            log.Log(GetLevel(level), exception, source);
-        }
-
-        public void Log(Delta.CertXplorer.Extensibility.Logging.LogEntry entry)
-        {
-            log.Log(GetEntry(entry, source));
-        }
-
-        #endregion
-
-        private LogLevel GetLevel(Delta.CertXplorer.Extensibility.Logging.LogLevel level)
-        {
-            switch (level)
-            {
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.All:
-                    return LogLevel.All;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Debug:
-                    return LogLevel.Debug;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Error:
-                    return LogLevel.Error;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Fatal:
-                    return LogLevel.Fatal;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Info:
-                    return LogLevel.Info;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Off:
-                    return LogLevel.Off;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Verbose:
-                    return LogLevel.Verbose;
-                case Delta.CertXplorer.Extensibility.Logging.LogLevel.Warning:
-                    return LogLevel.Warning;
-            }
-
-            return LogLevel.Info; // default
-        }
-
-        private LogEntry GetEntry(Delta.CertXplorer.Extensibility.Logging.LogEntry entry, string source)
-        {
-            return new LogEntry()
-            {
-                Exception = entry.Exception,
-                Level = GetLevel(entry.Level),
-                Message = entry.Message,
-                SourceName = source,
-                Tag = entry.Tag,
-                TimeStamp = entry.TimeStamp
-            };
-        }
+            Exception = entry.Exception,
+            Level = GetLevel(entry.Level),
+            Message = entry.Message,
+            SourceName = source,
+            Tag = entry.Tag,
+            TimeStamp = entry.TimeStamp
+        };
     }
 }

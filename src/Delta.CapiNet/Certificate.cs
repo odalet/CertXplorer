@@ -5,29 +5,15 @@ using System.Security.Cryptography.X509Certificates;
 namespace Delta.CapiNet
 {
     /// <summary>
-    /// This class wraps a <see cref="System.Security.Cryptography.X509Certificates.X509Certificate2"/> object.
+    /// This class wraps a <see cref="X509Certificate2"/> object.
     /// </summary>
-    public class Certificate
+    public sealed class Certificate
     {
-        private X509Certificate2 x509 = null;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Certificate"/> class.
-        /// </summary>
-        /// <param name="certificate">The certificate.</param>
-        public Certificate(X509Certificate2 certificate)
-        {
-            x509 = certificate;
-        }
-
-        #region Properties
+        public Certificate(X509Certificate2 certificate) => X509 = certificate;
 
         [Browsable(false)]
-        public X509Certificate2 X509
-        {
-            get { return x509; }
-        }
-        
+        public X509Certificate2 X509 { get; }
+
         /// <summary>
         /// Gets a value indicating whether this certificate is valid.
         /// </summary>
@@ -41,44 +27,18 @@ namespace Delta.CapiNet
             get
             {
                 var now = DateTime.Now;
-                return now >= x509.NotBefore && now <= x509.NotAfter;
+                return now >= X509.NotBefore && now <= X509.NotAfter;
             }
         }
 
-        #region X509Certificate2 forwarding properties
+        public X500DistinguishedName SubjectName => X509.SubjectName;
+        public bool HasPrivateKey => X509.HasPrivateKey;
+        public X500DistinguishedName IssuerName => X509.IssuerName;
 
-        /// <summary>
-        /// Gets the subject distinguished name of this certificate.
-        /// </summary>
-        public X500DistinguishedName SubjectName
-        {
-            get { return x509.SubjectName; }
-        }
-
-        /// <summary>
-        /// Gets a value that indicates whether this certificate contains a private key.
-        /// </summary>
-        public bool HasPrivateKey
-        {
-            get { return x509.HasPrivateKey; }
-        }
-
-        public X500DistinguishedName IssuerName 
-        {
-            get { return x509.IssuerName; }
-        }
-
-        /// <summary>
-        /// Gets or sets the associated alias for a certificate.
-        /// </summary>
         public string FriendlyName
         {
-            get { return x509.FriendlyName; }
-            set { x509.FriendlyName = value; }
+            get => X509.FriendlyName;
+            set => X509.FriendlyName = value;
         }
-
-        #endregion
-
-        #endregion
     }
 }

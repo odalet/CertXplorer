@@ -133,10 +133,8 @@ namespace Delta.CertXplorer.UI
 
             public virtual bool PreProcessWmChar(ref Message m)
             {
-                if (Control.ModifierKeys == Keys.Control)
-                {
+                if (ModifierKeys == Keys.Control)
                     return HexViewer.BasePreProcessMessage(ref m);
-                }
 
                 var sw = HexViewer._byteProvider.SupportsWriteByte;
                 var si = HexViewer._byteProvider.SupportsInsertBytes;
@@ -195,7 +193,8 @@ namespace Delta.CertXplorer.UI
                     HexViewer.Invalidate();
                     return true;
                 }
-                else return HexViewer.BasePreProcessMessage(ref m);
+                
+                return HexViewer.BasePreProcessMessage(ref m);
             }
 
             public virtual bool PreProcessWmKeyUp(ref Message m)

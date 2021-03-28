@@ -4,21 +4,13 @@ namespace Delta.CapiNet.Logging
 {
     internal static class LogManager
     {
-        private class LogServiceWrapper : ILogService
+        private sealed class LogServiceWrapper : ILogService
         {
             private readonly CapiNetLogger.ILogService originalLogger;
 
-            public LogServiceWrapper(CapiNetLogger.ILogService logger)
-            {
-                originalLogger = logger;
-            }
+            public LogServiceWrapper(CapiNetLogger.ILogService logger) => originalLogger = logger;
 
-            #region ILogService Members
-
-            public Type Type
-            {
-                get { return originalLogger.Type; }
-            }
+            public Type Type => originalLogger.Type;
 
             public void Log(string level, string message, Exception exception)
             {
@@ -26,17 +18,11 @@ namespace Delta.CapiNet.Logging
                 {
                     originalLogger.Log(level, message, exception);
                 }
-                catch { }
+                catch { /* Nothing to do here */ }
             }
-
-            #endregion
         }
 
-        public static ILogService GetLogger<T>()
-        {
-            return GetLogger(typeof(T));
-        }
-
+        public static ILogService GetLogger<T>() => GetLogger(typeof(T));
         public static ILogService GetLogger(Type type)
         {
             var service = CapiNetLogger.LogServiceBuilder(type);

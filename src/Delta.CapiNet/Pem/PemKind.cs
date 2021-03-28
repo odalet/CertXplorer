@@ -95,9 +95,6 @@ namespace Delta.CapiNet.Pem
         public static readonly PemKind PgpMessagePartXY; // How to handle this?
         public static readonly PemKind PgpMessagePartX; // How to handle this?
 
-        /// <summary>
-        /// Initializes the <see cref="PemKind"/> class.
-        /// </summary>
         static PemKind()
         {
             registry = new Dictionary<string, PemKind>();
@@ -166,51 +163,23 @@ namespace Delta.CapiNet.Pem
             registry.Add(header, this);
         }
 
-        /// <summary>
-        /// Gets or creates a custom PEM kind.
-        /// </summary>
-        /// <param name="header">The custom PEM header.</param>
-        /// <param name="description">An optional description.</param>
-        /// <returns>A <see cref="PemKind"/> instance.</returns>
+        public string Header { get; }
+        public string Description { get; }
+        public bool Obsolete { get; }
+        public bool Custom { get; }
+        public bool HasPgpChecksum { get; }
+
         public static PemKind GetCustom(string header, string description = "")
         {
             if (string.IsNullOrEmpty(header)) throw new ArgumentNullException("header");
             header = header.ToUpperInvariant();
-            if (registry.ContainsKey(header)) return registry[header];
-
-            return new PemKind(header, description, false, true);
+            return registry.ContainsKey(header) ? registry[header] : new PemKind(header, description, false, true);
         }
 
         public static PemKind Find(string header)
         {
             header = header.ToUpperInvariant();
-            if (registry.ContainsKey(header)) return registry[header];
-            return null;
+            return registry.ContainsKey(header) ? registry[header] : null;
         }
-
-        /// <summary>
-        /// Gets the PEM header associated with this kind.
-        /// </summary>
-        public string Header { get; private set; }
-
-        /// <summary>
-        /// Gets the description of the content of this kind of PEM data.
-        /// </summary>
-        public string Description { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="PemKind"/> is obsolete.
-        /// </summary>
-        public bool Obsolete { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="PemKind"/> was custom built.
-        /// </summary>
-        public bool Custom { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the last data line is a checksum (needed to support PGP ASCII-armored files).
-        /// </summary>
-        public bool HasPgpChecksum { get; private set; }
     }
 }

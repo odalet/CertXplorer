@@ -12,57 +12,49 @@ namespace Delta.CapiNet.Asn1
     /// </remarks>
     public static class TlvDecoder
     {
-        public struct Data
+        public readonly struct Data
         {
-            public byte[] Tag { get; set; }
-            public int LengthLength { get; internal set; }
-            public int Length { get; set; }
-            public byte[] Value { get; set; }
+            public Data(byte[] tag, int lengthLength, int length, byte[] value)
+            {
+                Tag = tag;
+                LengthLength = lengthLength;
+                Length = length;
+                Value = value;
+            }
+
+            public byte[] Tag { get; }
+            public int LengthLength { get; }
+            public int Length { get; }
+            public byte[] Value { get; }
         }
-        
+
         public static Data Decode(byte[] bytes)
         {
-            if (bytes == null)
-                throw new ArgumentNullException("bytes");
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
+            if (bytes.Length == 0) throw new ArgumentException("No Data", nameof(bytes));
 
-            if (bytes.Length == 0)
-                throw new ArgumentException("No Data", "bytes");
-
-            using (var stream = new MemoryStream(bytes))
-            {
-                var data = Decode(stream);
-                stream.Close();
-                return data;
-            }
+            using var stream = new MemoryStream(bytes);
+            var data = Decode(stream);
+            stream.Close();
+            return data;
         }
 
-        public static Data Decode(Stream bytes)
+        private static Data Decode(Stream bytes)
         {
-            if (bytes == null)
-                throw new ArgumentNullException("bytes");
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes));
 
             var tag = ReadTag(bytes);
-            if (tag == null)
-                throw new InvalidDataException("Invalid TLV structure: No Tag.");
-            ////var tagLength = rawTag.Length;
-            ////var tag = DecodeTag(rawTag);
-            
+            if (tag == null) throw new InvalidDataException("Invalid TLV structure: No Tag.");
+
             var rawLength = ReadLength(bytes);
-            if (rawLength == null)
-                throw new InvalidDataException("Invalid TLV structure: No Length.");
+            if (rawLength == null) throw new InvalidDataException("Invalid TLV structure: No Length.");
+
             var lengthLength = rawLength.Length;
             var length = DecodeLength(rawLength);
 
             var value = ReadValue(bytes, length);
 
-            return new Data()
-            {
-                Tag = tag,
-                ////TagLength = tagLength,
-                Length = length,
-                LengthLength = lengthLength,
-                Value = value
-            };
+            return new Data(tag, lengthLength, length, value);
         }
 
         private static byte[] ReadTag(Stream bytes)
@@ -72,26 +64,23 @@ namespace Delta.CapiNet.Asn1
             const byte multiBytesTagLastByteMask = 0x80; // 0x80: 1xxxxxxx
             const int maxTagLength = sizeof(ushort); // 2 bytes
 
-            var eos = false;
-            var firstByte = ReadNextByte(bytes, out eos);
-            if (eos) 
-                return null;
+            var firstByte = ReadNextByte(bytes, out var endOfStream);
+            if (endOfStream) return new byte[0];
 
             if ((firstByte & multiBytesTagMask) != multiBytesTagMask) // single-byte tag
                 return new byte[] { firstByte };
 
             // The tag spans multiple bytes
-            var list = new List<byte>();
-            list.Add(firstByte);
-
-            while (!eos)
+            var list = new List<byte> { firstByte };
+            while (!endOfStream)
             {
-                var currentByte = ReadNextByte(bytes, out eos);
-                if (eos) continue;
+                var currentByte = ReadNextByte(bytes, out endOfStream);
+                if (endOfStream) continue;
 
                 list.Add(currentByte);
 
-                if ((currentByte & multiBytesTagLastByteMask) != multiBytesTagLastByteMask) // This is the last byte that is part of the tag
+                // This is the last byte that is part of the tag
+                if ((currentByte & multiBytesTagLastByteMask) != multiBytesTagLastByteMask) 
                     break;
             }
 
@@ -99,10 +88,9 @@ namespace Delta.CapiNet.Asn1
                 throw new InvalidDataException("Invalid TLV structure: expecting more than one byte for this Tag.");
 
             // maxTagLength + 1 because the first byte will be ignored
-            if (list.Count > maxTagLength + 1) throw new InvalidDataException(string.Format(
-                "Invalid TLV structure: Tag Length > {0} are not supported.", maxTagLength));
-
-            return list.ToArray();
+            return list.Count > maxTagLength + 1 ?
+                throw new InvalidDataException($"Invalid TLV structure: Tag Length > {maxTagLength} are not supported.") :
+                list.ToArray();
         }
 
         private static byte[] ReadLength(Stream bytes)
@@ -111,10 +99,8 @@ namespace Delta.CapiNet.Asn1
             const byte lengthMask = 0x7F; // 0x7F: x1111111
             const int maxLengthLength = sizeof(ushort); // 2 bytes
 
-            var eos = false;
-            var firstByte = ReadNextByte(bytes, out eos);
-            if (eos) 
-                throw new InvalidDataException("Invalid TLV structure: unexpected End of Stream while determining length.");
+            var firstByte = ReadNextByte(bytes, out var eos);
+            if (eos) throw new InvalidDataException("Invalid TLV structure: unexpected End of Stream while determining length.");
 
             if (firstByte == multiBytesOrIndefiniteLengthMask)
                 throw new InvalidDataException("Invalid TLV structure: Indefinite length specification is not supported."); // for now
@@ -126,8 +112,8 @@ namespace Delta.CapiNet.Asn1
             // How many bytes should we read to complete the length array?
             var bytesToReadCount = firstByte & lengthMask;
 
-            if (bytesToReadCount > maxLengthLength) throw new InvalidDataException(string.Format(
-                "Invalid TLV structure: Length Length > {0} are not supported.", maxLengthLength));
+            if (bytesToReadCount > maxLengthLength) throw new InvalidDataException(
+                $"Invalid TLV structure: Length Length > {maxLengthLength} are not supported.");
 
             for (var i = 0; i < bytesToReadCount; i++)
             {
@@ -143,15 +129,12 @@ namespace Delta.CapiNet.Asn1
 
         private static int DecodeLength(byte[] data)
         {
-            if (data == null || data.Length == 0)
-                throw new InvalidDataException("No Raw Length data");
-
-            if (data.Length == 1)
-                return (int)data[0];
+            if (data == null || data.Length == 0) throw new InvalidDataException("No Raw Length data");
+            if (data.Length == 1) return data[0];
 
             // In multi-byte scenarios, the first byte is always the multi-byte marker and therefore is ignored.
             var result = 0;
-            for (int i = 1; i < data.Length; i++)
+            for (var i = 1; i < data.Length; i++)
             {
                 result <<= 8;
                 result |= data[i];
@@ -167,19 +150,17 @@ namespace Delta.CapiNet.Asn1
 
             var data = new byte[length];
             var readCount = bytes.Read(data, 0, length);
-            if (readCount < length) throw new InvalidDataException(string.Format(
-                "Invalid TLV structure: unexpected End of Stream while retrieving value: Read bytes count is {0} whereas expected was {1}.",
-                readCount, length));
-
-            return data;
+            return readCount < length ? throw new InvalidDataException(
+                $"Invalid TLV structure: unexpected End of Stream while retrieving value: Read bytes count is {readCount} whereas expected was {length}.") :
+                data;
         }
 
-        private static byte ReadNextByte(Stream bytes, out bool eos)
+        private static byte ReadNextByte(Stream bytes, out bool endOfStream)
         {
-            eos = false;
+            endOfStream = false;
             var current = bytes.ReadByte();
             if (current == -1) // End of stream
-                eos = true;
+                endOfStream = true;
 
             return (byte)current;
         }

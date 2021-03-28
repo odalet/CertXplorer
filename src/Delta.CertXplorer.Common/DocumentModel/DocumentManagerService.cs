@@ -1,33 +1,20 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Delta.CertXplorer.DocumentModel
 {
-    /// <summary>
-    /// Implementation of a simple Document manager service.
-    /// </summary>
-    internal class DocumentManagerService : IDocumentManagerService
+    internal sealed class DocumentManagerService : IDocumentManagerService
     {
-        private IDocumentBasedUI ownerUI = null;
+        private readonly IDocumentBasedUI ownerUI;
+        private readonly Dictionary<string, IDocumentView> views = new();
+        private readonly Func<IDocumentBasedUI, IEnumerable<IDocumentHandler>, IDocumentHandler> chooseDocumentHandler;
 
-        private Dictionary<string, IDocumentView> views = new Dictionary<string, IDocumentView>();
-
-        private Func<IDocumentBasedUI, IEnumerable<IDocumentHandler>, IDocumentHandler> chooseDocumentHandler;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DocumentManagerService"/> class.
-        /// </summary>
-        /// <param name="owner">The owner.</param>
-        public DocumentManagerService(IDocumentBasedUI owner,
+        public DocumentManagerService(
+            IDocumentBasedUI owner,
             Func<IDocumentBasedUI, IEnumerable<IDocumentHandler>, IDocumentHandler> chooseDocumentHandlerFunction)
         {
-            if (owner == null) throw new ArgumentNullException("owner");
-            ownerUI = owner;
-
+            ownerUI = owner ?? throw new ArgumentNullException(nameof(owner));
             chooseDocumentHandler = chooseDocumentHandlerFunction;
-
-            //TODO: is this useful? Or correctly placed?
             ownerUI.ActiveDocumentChanged += (s, e) =>
             {
                 var view = ownerUI.ActiveDocumentView;
@@ -36,38 +23,20 @@ namespace Delta.CertXplorer.DocumentModel
             };
         }
 
-        #region IDocumentManagerService Members
-
-        /// <summary>
-        /// Occurs when a new document is added.
-        /// </summary>
         public event DocumentEventHandler DocumentCreated;
-
-        /// <summary>
-        /// Occurs when a new document is added.
-        /// </summary>
         public event DocumentEventHandler DocumentAdded;
-
-        /// <summary>
-        /// Occurs when a document is selected.
-        /// </summary>
         public event DocumentEventHandler DocumentSelected;
-
-        /// <summary>
-        /// Occurs when a document is removed.
-        /// </summary>
         public event DocumentEventHandler DocumentRemoved;
 
         public IDocument CreateDocument(IDocumentSource source)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
             var handler = FindDocumentHandler(source);
             handler.CreateDocument(source);
             var document = handler.Document;
             if (document == null)
             {
-                This.Logger.Warning(string.Format(
-                    "Document creation failed for source {0}", source.Uri));
+                This.Logger.Warning($"Document creation failed for source {source.Uri}");
                 return null;
             }
 
@@ -75,25 +44,16 @@ namespace Delta.CertXplorer.DocumentModel
             return document;
         }
 
-        /// <summary>
-        /// Selects the specified document as the currently active document.
-        /// </summary>
-        /// <param name="document">The document.</param>
         public void SelectDocument(IDocument document)
         {
-            if (document == null) throw new ArgumentNullException("document");
-
+            if (document == null) throw new ArgumentNullException(nameof(document));
             ownerUI.ShowView(views[document.Key]);
             OnDocumentSelected(document);
         }
 
-        /// <summary>
-        /// Opens the specified document in a new view and sets it at the active document.
-        /// </summary>
-        /// <param name="document">The document.</param>
         public void OpenDocument(IDocument document)
         {
-            if (document == null) throw new ArgumentNullException("document");
+            if (document == null) throw new ArgumentNullException(nameof(document));
             if (views.ContainsKey(document.Key))
             {
                 SelectDocument(document);
@@ -103,17 +63,16 @@ namespace Delta.CertXplorer.DocumentModel
             var handler = document.Handler;
             if (handler == null)
             {
-                This.Logger.Warning(string.Format(
-                    "No handler could be found for document {0}; reverting to default view.", document.Key));
+                This.Logger.Warning($"No handler could be found for document {document.Key}; reverting to default view.");
                 handler = new DefaultDocumentHandler();
             }
 
             var view = handler.CreateView();
             if (view == null)
             {
-                var error = string.Format("Could not create a view for document {0}", document.Key);
+                var error = $"Could not create a view for document {document.Key}";
                 This.Logger.Error(error);
-                Delta.CertXplorer.UI.ErrorBox.Show(error);
+                _ = UI.ErrorBox.Show(error);
                 return;
             }
 
@@ -124,65 +83,10 @@ namespace Delta.CertXplorer.DocumentModel
             OnDocumentAdded(document);
         }
 
-        /// <summary>
-        /// Closes the specified document (and the associated view).
-        /// </summary>
-        /// <param name="document">The document.</param>
-        public void CloseDocument(IDocument document)
-        {
-            CloseDocument(document, true);
-        }
-
-        #endregion
-
-        private IDocumentHandler FindDocumentHandler(IDocumentSource source)
-        {
-            var registry = This.GetService<IDocumentHandlerRegistryService>();
-            var found = registry.Find(source);
-
-            if (found == null || found.Length == 0)
-            {
-                This.Logger.Warning(string.Format("Could not find a Document Handler for {0}", source.Uri));
-                return null;
-            }
-
-            if (found.Length > 1)
-            {
-                This.Logger.Info(string.Format(
-                    "Multiple Document Handlers are able to process Document {0}", source.Uri));
-
-                if (chooseDocumentHandler == null)
-                {
-                    This.Logger.Error(
-                        "No 'Choose Document Handler' function was provided to the Document Manager Service");
-                    return null;
-                }
-
-                IDocumentHandler chosen = null;
-                try { chosen = chooseDocumentHandler(ownerUI, found); }
-                catch (Exception ex)
-                {
-                    This.Logger.Error(string.Format(
-                        "'Choose Document Handler' function raised an error: {0}", ex.Message), ex);
-                }
-
-                if (chosen == null)
-                    This.Logger.Warning(string.Format("No Document Handler was chosen for {0}", source.Uri));
-                return chosen;
-            }
-
-            return found[0];
-        }
-
-        /// <summary>
-        /// Closes the specified document (and the associated view 
-        /// only if <paramref name="shouldCloseView"/> is <c>true</c>).
-        /// </summary>
-        /// <param name="document">The document.</param>
-        /// <param name="shouldCloseView">if set to <c>true</c> closes the view associated with the document.</param>
+        public void CloseDocument(IDocument document) => CloseDocument(document, true);
         private void CloseDocument(IDocument document, bool shouldCloseView)
         {
-            if (document == null) throw new ArgumentNullException("document");
+            if (document == null) throw new ArgumentNullException(nameof(document));
             if (!views.ContainsKey(document.Key)) return;
 
             if (shouldCloseView)
@@ -191,8 +95,45 @@ namespace Delta.CertXplorer.DocumentModel
                 CloseView(view);
             }
 
-            views.Remove(document.Key);
+            _ = views.Remove(document.Key);
             OnDocumentRemoved(document);
+        }
+
+        private IDocumentHandler FindDocumentHandler(IDocumentSource source)
+        {
+            var registry = This.GetService<IDocumentHandlerRegistryService>();
+            var found = registry.Find(source);
+
+            if (found == null || found.Length == 0)
+            {
+                This.Logger.Warning($"Could not find a Document Handler for {source.Uri}");
+                return null;
+            }
+
+            if (found.Length > 1)
+            {
+                This.Logger.Info($"Multiple Document Handlers are able to process Document {source.Uri}");
+                if (chooseDocumentHandler == null)
+                {
+                    This.Logger.Error("No 'Choose Document Handler' function was provided to the Document Manager Service");
+                    return null;
+                }
+
+                IDocumentHandler chosen = null;
+                try
+                {
+                    chosen = chooseDocumentHandler(ownerUI, found);
+                }
+                catch (Exception ex)
+                {
+                    This.Logger.Error($"'Choose Document Handler' function raised an error: {ex.Message}", ex);
+                }
+
+                if (chosen == null) This.Logger.Warning($"No Document Handler was chosen for {source.Uri}");
+                return chosen;
+            }
+
+            return found[0];
         }
 
         private void CloseView(IDocumentView view)
@@ -200,53 +141,19 @@ namespace Delta.CertXplorer.DocumentModel
             if (view == null) throw new ArgumentNullException("view");
             This.Logger.Verbose("Closing View.");
             view.Close();
-            if (view is IDisposable)
+
+            if (view is IDisposable disposable)
             {
                 var document = view.Document;
                 var viewInfo = document == null ? view.GetType() : document.GetType();
-                This.Logger.Verbose(string.Format("Disposing view {0}", viewInfo));
-                ((IDisposable)view).Dispose();
+                This.Logger.Verbose($"Disposing view {viewInfo}");
+                disposable.Dispose();
             }
         }
 
-        /// <summary>
-        /// Called when a document is created.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        private void OnDocumentCreated(IDocument document)
-        {
-            if (DocumentCreated != null)
-                DocumentCreated(this, new DocumentEventArgs(document));
-        }
-
-        /// <summary>
-        /// Called when a document is added.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        private void OnDocumentAdded(IDocument document)
-        {
-            if (DocumentAdded != null)
-                DocumentAdded(this, new DocumentEventArgs(document));
-        }
-
-        /// <summary>
-        /// Called when a document is selected.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        private void OnDocumentSelected(IDocument document)
-        {
-            if (DocumentSelected != null)
-                DocumentSelected(this, new DocumentEventArgs(document));
-        }
-
-        /// <summary>
-        /// Called when a document is removed.
-        /// </summary>
-        /// <param name="document">The document.</param>
-        private void OnDocumentRemoved(IDocument document)
-        {
-            if (DocumentRemoved != null)
-                DocumentRemoved(this, new DocumentEventArgs(document));
-        }
+        private void OnDocumentCreated(IDocument document) => DocumentCreated?.Invoke(this, new DocumentEventArgs(document));
+        private void OnDocumentAdded(IDocument document) => DocumentAdded?.Invoke(this, new DocumentEventArgs(document));
+        private void OnDocumentSelected(IDocument document) => DocumentSelected?.Invoke(this, new DocumentEventArgs(document));
+        private void OnDocumentRemoved(IDocument document) => DocumentRemoved?.Invoke(this, new DocumentEventArgs(document));
     }
 }

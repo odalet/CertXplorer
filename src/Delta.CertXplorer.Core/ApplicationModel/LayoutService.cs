@@ -39,19 +39,14 @@ namespace Delta.CertXplorer.ApplicationModel
             public string AdditionalData { get; set; }
         }
 
-        private Rectangle defaultBounds = Rectangle.Empty;
         private readonly string layoutSettingsFileName;
-        private readonly List<string> loadedForms = new List<string>();
-        private readonly Dictionary<string, Form> formsByKey = new Dictionary<string, Form>();
-        private readonly Dictionary<string, FormLayout> layouts = new Dictionary<string, FormLayout>();
-        private readonly Dictionary<string, DockPanel> workspaces = new Dictionary<string, DockPanel>();
-        private readonly Dictionary<string, Dictionary<Guid, ToolWindow>> toolWindows =
-            new Dictionary<string, Dictionary<Guid, ToolWindow>>();
+        private readonly List<string> loadedForms = new();
+        private readonly Dictionary<string, Form> formsByKey = new();
+        private readonly Dictionary<string, FormLayout> layouts = new();
+        private readonly Dictionary<string, DockPanel> workspaces = new();
+        private readonly Dictionary<string, Dictionary<Guid, ToolWindow>> toolWindows = new();
+        private Rectangle defaultBounds = Rectangle.Empty;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LayoutService"/> class.
-        /// </summary>
-        /// <param name="fileName">Name of the file containing the serialized layout information.</param>
         public LayoutService(string fileName)
         {
             layoutSettingsFileName = fileName;
@@ -79,38 +74,36 @@ namespace Delta.CertXplorer.ApplicationModel
             }
         }
 
-        private bool EventsLocked { get; set; } = false;
+        private bool EventsLocked { get; set; }
 
-        private IDisposable LockEvents() => new EventsLock(this);
-
-        /// <inheritdoc/>
         public void RegisterForm(string key, Form form, DockPanel workspace)
         {
-            if (formsByKey.ContainsKey(key)) formsByKey.Remove(key);
+            if (formsByKey.ContainsKey(key))
+                _ = formsByKey.Remove(key);
             formsByKey.Add(key, form);
             LoadForm(key);
             form.Load += (s, e) => LoadForm(key);
 
             if (workspace != null)
             {
-                if (workspaces.ContainsKey(key)) workspaces.Remove(key);
+                if (workspaces.ContainsKey(key))
+                    _ = workspaces.Remove(key);
                 workspaces.Add(key, workspace);
             }
         }
 
-        /// <inheritdoc/>
         public void RegisterToolWindow(string key, ToolWindow window)
         {
             if (window == null) throw new ArgumentNullException("window");
-            if (!workspaces.ContainsKey(key)) throw new ApplicationException(
+            if (!workspaces.ContainsKey(key)) throw new InvalidOperationException(
                 "You can't register a tool window, if a workspace was not registered first.");
 
-            Dictionary<Guid, ToolWindow> subDictionary = null;
+            Dictionary<Guid, ToolWindow> subDictionary;
             if (toolWindows.ContainsKey(key))
             {
                 subDictionary = toolWindows[key];
-                if (subDictionary.ContainsKey(window.Guid)) throw new ApplicationException(string.Format(
-                    "Tool window with Guid {0} was already registered.", window.Guid));
+                if (subDictionary.ContainsKey(window.Guid)) throw new InvalidOperationException(
+                    $"Tool window with Guid {window.Guid} was already registered.");
             }
             else
             {
@@ -121,7 +114,6 @@ namespace Delta.CertXplorer.ApplicationModel
             subDictionary.Add(window.Guid, window);
         }
 
-        /// <inheritdoc/>
         public bool RestoreDockingState(string key)
         {
             if (!layouts.ContainsKey(key)) return false;
@@ -130,98 +122,101 @@ namespace Delta.CertXplorer.ApplicationModel
             var dockingXml = layouts[key].DockingInfo;
             try
             {
-                using (var stream = new MemoryStream())
-                using (var writer = new StreamWriter(stream))
+                using var stream = new MemoryStream();
+                using var writer = new StreamWriter(stream);
+
+                writer.Write(dockingXml);
+                writer.Flush();
+                _ = stream.Seek(0L, SeekOrigin.Begin);
+                workspaces[key].LoadFromXml(stream, target =>
                 {
-                    writer.Write(dockingXml);
-                    writer.Flush();
-                    stream.Seek(0L, SeekOrigin.Begin);
-                    workspaces[key].LoadFromXml(stream, target =>
+                    var log = This.Logger;
+
+                    if (string.IsNullOrEmpty(target))
                     {
-                        Delta.CertXplorer.Logging.ILogService log = This.Logger;
+                        log.Info("Unable to load window: no guid was provided");
+                        return null;
+                    }
 
-                        if (string.IsNullOrEmpty(target))
-                        {
-                            log.Info("Unable to load window: no guid was provided");
-                            return null;
-                        }
+                    var guid = Guid.Empty;
+                    try
+                    {
+                        guid = new Guid(target);
+                    }
+                    catch (Exception ex)
+                    {
+                        var debugException = ex;
+                    }
 
-                        Guid guid = Guid.Empty;
-                        try { guid = new Guid(target); }
-                        catch (Exception ex)
-                        {
-                            var debugException = ex;
-                        }
+                    if (guid == Guid.Empty)
+                    {
+                        log.Info($"Unable to load window with guid {target}.");
+                        return null;
+                    }
 
-                        if (guid == Guid.Empty)
-                        {
-                            log.Info(string.Format("Unable to load window with guid {0}.", target));
-                            return null;
-                        }
+                    ToolWindow window = null;
+                    if (toolWindows.ContainsKey(key))
+                    {
+                        var dict = toolWindows[key];
+                        if (dict.ContainsKey(guid)) window = dict[guid];
+                    }
 
-                        ToolWindow window = null;
-                        if (toolWindows.ContainsKey(key))
-                        {
-                            var dict = toolWindows[key];
-                            if (dict.ContainsKey(guid)) window = dict[guid];
-                        }
+                    if (window == null)
+                    {
+                        log.Info($"Unable to load window with guid {target}.");
+                        return null;
+                    }
 
-                        if (window == null)
-                        {
-                            log.Info(string.Format("Unable to load window with guid {0}.", target));
-                            return null;
-                        }
-                        else return window;
+                    return window;
 
-                    }, false);
+                }, false);
 
-                    writer.Close();
-                }
+                writer.Close();
             }
             catch (Exception ex)
             {
-                This.Logger.Error(string.Format(
-                    "Unable to restore docking state from the layout key {0}.", key), ex);
+                This.Logger.Error($"Unable to restore docking state from the layout key {key}.", ex);
                 return false;
             }
 
             return true;
         }
 
+        private IDisposable LockEvents() => new EventsLock(this);
+
         private void ReadLayouts()
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
+                var doc = new XmlDocument();
                 doc.Load(layoutSettingsFileName);
                 foreach (XmlNode xn in doc.ChildNodes)
                 {
-                    if (xn.Name == "layouts")
+                    if (xn.Name != "layouts") continue;
+
+                    foreach (XmlNode xnRoot in xn.ChildNodes)
                     {
-                        foreach (XmlNode xnRoot in xn.ChildNodes)
+                        if (xnRoot.Name != "layout") continue;
+
+                        var key = GetNodeValue(xnRoot, "key");
+                        if (key == null) continue;
+
+                        try
                         {
-                            if (xnRoot.Name == "layout")
-                            {
-                                string key = GetNodeValue(xnRoot, "key");
-                                if (key != null)
-                                {
-                                    try { ReadLayout(xnRoot, key); }
-                                    catch (Exception ex)
-                                    {
-                                        This.Logger.Error(string.Format(
-                                            "Unable to deserialize layout information from file {0} for key {1}.",
-                                            layoutSettingsFileName, key), ex);
-                                    }
-                                }
-                            }
+                            ReadLayout(xnRoot, key);
+                        }
+                        catch (Exception ex)
+                        {
+                            This.Logger.Error(
+                                $"Unable to deserialize layout information from file {layoutSettingsFileName} for key {key}.", ex);
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                This.Logger.Error(string.Format(
-                    "Unable to deserialize layout information from file {0}.", layoutSettingsFileName), ex);
+                This.Logger.Error(
+                    $"Unable to deserialize layout information from file {layoutSettingsFileName}.", ex);
             }
         }
 
@@ -229,59 +224,63 @@ namespace Delta.CertXplorer.ApplicationModel
         {
             if (layouts.ContainsKey(key)) return;
 
-            var fl = new FormLayout();
+            var formLayout = new FormLayout();
             foreach (XmlNode xn in xnRoot.ChildNodes)
             {
                 if (xn.Name == "bounds")
                 {
-                    string bounds = GetNodeValue(xn, "value");
+                    var bounds = GetNodeValue(xn, "value");
                     if (bounds != null)
                     {
-                        try { fl.Bounds = bounds.ConvertToType<Rectangle>(); }
+                        try
+                        {
+                            formLayout.Bounds = bounds.ConvertToType<Rectangle>();
+                        }
                         catch (Exception ex)
                         {
-                            This.Logger.Warning(string.Format(
-                                "Invalid 'bounds' value for key {0} in layout file {1}: {2}",
-                                key, layoutSettingsFileName, bounds), ex);
-                            fl.Bounds = null;
+                            This.Logger.Warning(
+                                $"Invalid 'bounds' value for key {key} in layout file {layoutSettingsFileName}: {bounds}",
+                                ex);
+                            formLayout.Bounds = null;
                         }
                     }
                     else
                     {
-                        This.Logger.Warning(string.Format(
-                            "'bounds' value for key {0} in layout file {1} was not found.",
-                            key, layoutSettingsFileName));
-                        fl.Bounds = null;
+                        This.Logger.Warning(
+                            $"'bounds' value for key {key} in layout file {layoutSettingsFileName} was not found.");
+                        formLayout.Bounds = null;
                     }
                 }
                 else if (xn.Name == "state")
                 {
-                    string state = GetNodeValue(xn, "value");
+                    var state = GetNodeValue(xn, "value");
                     if (state != null)
                     {
-                        try { fl.WindowState = state.ConvertToType<FormWindowState>(); }
+                        try 
+                        {
+                            formLayout.WindowState = state.ConvertToType<FormWindowState>(); 
+                        }
                         catch (Exception ex)
                         {
-                            This.Logger.Warning(string.Format(
-                                "Invalid 'state' value for key {0} in layout file {1}: {2}",
-                                key, layoutSettingsFileName, state), ex);
-                            fl.WindowState = null;
+                            This.Logger.Warning(
+                                $"Invalid 'state' value for key {key} in layout file {layoutSettingsFileName}: {state}",
+                                ex);
+                            formLayout.WindowState = null;
                         }
                     }
                     else
                     {
-                        This.Logger.Warning(string.Format(
-                            "'state' value for key {0} in layout file {1} was not found.",
-                            key, layoutSettingsFileName));
-                        fl.WindowState = null;
+                        This.Logger.Warning(
+                            $"'state' value for key {key} in layout file {layoutSettingsFileName} was not found.");
+                        formLayout.WindowState = null;
                     }
                 }
-                else if (xn.Name == "docking") fl.DockingInfo = xn.InnerXml;
-                else if ((xn.Name == "additionalData") && (xn is XmlElement))
-                    fl.AdditionalData = xn.InnerText;
+                else if (xn.Name == "docking") formLayout.DockingInfo = xn.InnerXml;
+                else if (xn.Name == "additionalData" && xn is XmlElement)
+                    formLayout.AdditionalData = xn.InnerText;
             }
 
-            layouts.Add(key, fl);
+            layouts.Add(key, formLayout);
         }
 
         private string GetNodeValue(XmlNode xn, string xaName)
@@ -295,16 +294,16 @@ namespace Delta.CertXplorer.ApplicationModel
         {
             try
             {
-                XmlDocument doc = new XmlDocument();
-                doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", string.Empty));
+                var doc = new XmlDocument();
+                _ = doc.AppendChild(doc.CreateXmlDeclaration("1.0", "utf-8", string.Empty));
                 var xnRoot = doc.AppendChild(doc.CreateElement("layouts"));
-                foreach (string key in layouts.Keys)
+                foreach (var key in layouts.Keys)
                 {
                     var xn = doc.CreateElement("layout");
 
                     var xa = doc.CreateAttribute("key");
                     xa.Value = key;
-                    xn.Attributes.Append(xa);
+                    _ = xn.Attributes.Append(xa);
 
                     // mandatory, if not present, skip this node
                     var layout = layouts[key];
@@ -315,7 +314,7 @@ namespace Delta.CertXplorer.ApplicationModel
                         var xnBounds = xn.AppendChild(doc.CreateElement("bounds"));
                         var xaBoundsValue = doc.CreateAttribute("value");
                         xaBoundsValue.Value = layout.Bounds.ConvertToString();
-                        xnBounds.Attributes.Append(xaBoundsValue);
+                        _ = xnBounds.Attributes.Append(xaBoundsValue);
                     }
 
                     if (layout.WindowState.HasValue)
@@ -323,7 +322,7 @@ namespace Delta.CertXplorer.ApplicationModel
                         var xnState = xn.AppendChild(doc.CreateElement("state"));
                         var xaStateValue = doc.CreateAttribute("value");
                         xaStateValue.Value = layout.WindowState.ConvertToString();
-                        xnState.Attributes.Append(xaStateValue);
+                        _ = xnState.Attributes.Append(xaStateValue);
                     }
 
                     if (!string.IsNullOrEmpty(layout.DockingInfo))
@@ -338,7 +337,7 @@ namespace Delta.CertXplorer.ApplicationModel
                         xnAdditionalData.InnerText = layout.AdditionalData;
                     }
 
-                    xnRoot.AppendChild(xn);
+                    _ = xnRoot.AppendChild(xn);
                 }
 
                 doc.Save(layoutSettingsFileName);

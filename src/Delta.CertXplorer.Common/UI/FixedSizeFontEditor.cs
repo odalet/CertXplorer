@@ -6,20 +6,11 @@ using System.ComponentModel;
 
 namespace Delta.CertXplorer.UI
 {
-    /// <summary>
-    /// Display only fixed-size fonts
-    /// </summary>
-    internal class FixedSizeFontEditor : FontEditor
+    internal sealed class FixedSizeFontEditor : FontEditor
     {
-        // this ensures the value is not collected.
-        private object editedValue = null;
-
-        /// <summary>
-        /// Edits the value
-        /// </summary>
         public override object EditValue(ITypeDescriptorContext context, IServiceProvider provider, object value)
         {
-            editedValue = value;
+            var editedValue = value;
             using (var fontDialog = new FontDialog())
             {
                 fontDialog.ShowApply = false;
@@ -30,27 +21,16 @@ namespace Delta.CertXplorer.UI
                 fontDialog.ShowEffects = false;
                 fontDialog.ShowHelp = false;
 
-                Font font = value as Font;
-                if (font != null) fontDialog.Font = font;
+                if (value is Font font) fontDialog.Font = font;
 
                 if (fontDialog.ShowDialog() == DialogResult.OK)
                     editedValue = fontDialog.Font;
             }
 
             value = editedValue;
-            editedValue = null;
-
             return value;
         }
 
-        /// <summary>
-        /// Gets the edit style.
-        /// </summary>
-        /// <param name="context">The context.</param>
-        /// <returns></returns>
-        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context)
-        {
-            return UITypeEditorEditStyle.Modal;
-        }
+        public override UITypeEditorEditStyle GetEditStyle(ITypeDescriptorContext context) => UITypeEditorEditStyle.Modal;
     }
 }

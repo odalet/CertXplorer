@@ -1,24 +1,17 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Drawing;
+using System.Security.Permissions;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using System.ComponentModel;
-using System.Security.Permissions;
-
 using Delta.CertXplorer.Internals;
 
 // I did not write the HexViewer control, though I can't remember where it's from...
 namespace Delta.CertXplorer.UI
 {
-    /// <summary>
-    /// Represents a hex box control.
-    /// </summary>
     public partial class HexViewer : Control
     {
-        /// <summary>
-        /// Represents a position in the HexViewer control
-        /// </summary>
-        private struct BytePositionInfo
+        private readonly struct BytePositionInfo
         {
             public BytePositionInfo(long characterIndex, int characterLocation)
             {
@@ -103,7 +96,7 @@ namespace Delta.CertXplorer.UI
                         PerformScrollPageUp();
                         break;
                     case ScrollEventType.ThumbPosition:
-                        long lPos = FromScrollPos(e.NewValue);
+                        var lPos = FromScrollPos(e.NewValue);
                         PerformScrollThumpPosition(lPos);
                         break;
                     case ScrollEventType.ThumbTrack:
@@ -507,13 +500,9 @@ namespace Delta.CertXplorer.UI
 
         #region Paint methods
 
-        /// <summary>
-        /// Paints the background.
-        /// </summary>
-        /// <param name="e">A PaintEventArgs that contains the event data.</param>
-        protected override void OnPaintBackground(PaintEventArgs e)
+        protected override void OnPaintBackground(PaintEventArgs pevent)
         {
-            e.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
+            pevent.Graphics.FillRectangle(new SolidBrush(BackColor), ClientRectangle);
 
             switch (_borderStyle)
             {
@@ -523,13 +512,13 @@ namespace Delta.CertXplorer.UI
                         var element = Enabled ? VisualStyleElement.TextBox.TextEdit.Normal :
                             VisualStyleElement.TextBox.TextEdit.Disabled;
                         var renderer = new VisualStyleRenderer(element);
-                        renderer.DrawBackground(e.Graphics, ClientRectangle);
+                        renderer.DrawBackground(pevent.Graphics, ClientRectangle);
                     } // draw default border
-                    else ControlPaint.DrawBorder3D(e.Graphics, ClientRectangle, Border3DStyle.Sunken);
+                    else ControlPaint.DrawBorder3D(pevent.Graphics, ClientRectangle, Border3DStyle.Sunken);
                     break;
                 case BorderStyle.FixedSingle:
                     // draw fixed single border
-                    ControlPaint.DrawBorder(e.Graphics, ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
+                    ControlPaint.DrawBorder(pevent.Graphics, ClientRectangle, Color.Black, ButtonBorderStyle.Solid);
                     break;
             }
         }
@@ -735,7 +724,7 @@ namespace Delta.CertXplorer.UI
                                 Rectangle betweenLines = new Rectangle(
                                     _recStringView.X,
                                     (int)(startSelPointF.Y + _charSize.Height),
-                                    (int)(_recStringView.Width),
+                                    _recStringView.Width,
                                     (int)(_charSize.Height * (multiLine - 1)));
                                 if (betweenLines.IntersectsWith(_recStringView))
                                 {
@@ -863,7 +852,7 @@ namespace Delta.CertXplorer.UI
                 return;
 
             startByte = (scrollVpos + 1) * hexMaxHBytes - hexMaxHBytes;
-            endByte = (long)Math.Min(_byteProvider.Length - 1, startByte + hexMaxBytes);
+            endByte = Math.Min(_byteProvider.Length - 1, startByte + hexMaxBytes);
         }
 
         #endregion
@@ -1649,31 +1638,11 @@ namespace Delta.CertXplorer.UI
             }
         }
 
-        private bool VisualStylesEnabled()
-        {
-            return VisualStyleInformation.IsSupportedByOS &&
-                VisualStyleInformation.IsEnabledByUser &&
-                (Application.VisualStyleState == VisualStyleState.ClientAreaEnabled ||
-                Application.VisualStyleState == VisualStyleState.ClientAndNonClientAreasEnabled);
-
-            //OperatingSystem os = Environment.OSVersion;
-            //bool isAppropriateOS = os.Platform == PlatformID.Win32NT && ((os.Version.Major == 5 && os.Version.Minor >= 1) || os.Version.Major > 5);
-            //bool osFeatureThemesPresent = false;
-            //bool osThemeDLLAvailable = false;
-
-            //if (isAppropriateOS)
-            //{
-            //    Version osThemeVersion = OSFeature.Feature.GetVersionPresent(OSFeature.Themes);
-            //    osFeatureThemesPresent = osThemeVersion != null;
-
-            //    DLLVersionInfo dllVersion = new DLLVersionInfo();
-            //    dllVersion.cbSize = Marshal.SizeOf(typeof(DLLVersionInfo));
-            //    int temp = Interop.DllGetVersion(ref dllVersion);
-            //    osThemeDLLAvailable = dllVersion.dwMajorVersion >= 6;
-            //}
-
-            //return isAppropriateOS && osFeatureThemesPresent && osThemeDLLAvailable && Interop.IsAppThemed() && Interop.IsThemeActive();
-        }
+        private bool VisualStylesEnabled() =>
+            VisualStyleInformation.IsSupportedByOS &&
+            VisualStyleInformation.IsEnabledByUser &&
+            (Application.VisualStyleState == VisualStyleState.ClientAreaEnabled ||
+            Application.VisualStyleState == VisualStyleState.ClientAndNonClientAreasEnabled);
 
         /// <summary>
         /// Raises the ReadOnlyChanged event.
