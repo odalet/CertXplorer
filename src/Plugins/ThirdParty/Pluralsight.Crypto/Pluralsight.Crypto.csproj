@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.6.10">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.6.11">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
