@@ -21,7 +21,7 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="PCSC" Version="5.0.0" />
-    <PackageReference Include="PCSC.Iso7816" Version="5.0.0" />
+    <PackageReference Include="PCSC.Iso7816" Version="5.1.0" />
   </ItemGroup>
 
   <ItemGroup>
