@@ -10,7 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.8.3">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.9.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -22,8 +22,8 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="PCSC" Version="5.1.0" />
-    <PackageReference Include="PCSC.Iso7816" Version="5.1.0" />
+    <PackageReference Include="PCSC" Version="6.0.0" />
+    <PackageReference Include="PCSC.Iso7816" Version="6.0.0" />
   </ItemGroup>
   
   <ItemGroup>

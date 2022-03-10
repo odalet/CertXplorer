@@ -10,15 +10,14 @@ namespace Delta.CertXplorer.CertManager.Wrappers
     [TypeConverter(typeof(CustomExpandableObjectConverter))]
     internal abstract class X509ExtensionWrapper : IDisplayTypeWrapper
     {
-        private class X509SimpleExtensionWrapper : X509ExtensionWrapper
+        private sealed class X509SimpleExtensionWrapper : X509ExtensionWrapper
         {
             public X509SimpleExtensionWrapper(X509Extension extension) : base(extension) => Type = extension.GetType();
 
-            [SuppressMessage("Major Code Smell", "S1144:Unused private types or members should be removed", Justification = "Used by the PropertyGrid")]
             public Type Type { get; }
         }
 
-        private class X509BasicConstraintsExtensionWrapper : X509ExtensionWrapper
+        private sealed class X509BasicConstraintsExtensionWrapper : X509ExtensionWrapper
         {
             private readonly X509BasicConstraintsExtension x509;
 
@@ -35,7 +34,7 @@ namespace Delta.CertXplorer.CertManager.Wrappers
             public int PathLengthConstraint => x509.PathLengthConstraint;
         }
 
-        private class X509KeyUsageExtensionWrapper : X509ExtensionWrapper
+        private sealed class X509KeyUsageExtensionWrapper : X509ExtensionWrapper
         {
             public X509KeyUsageExtensionWrapper(X509KeyUsageExtension extension) : base(extension) => 
                 KeyUsages = extension.KeyUsages;
@@ -44,7 +43,7 @@ namespace Delta.CertXplorer.CertManager.Wrappers
             public X509KeyUsageFlags KeyUsages { get; }
         }
 
-        private class X509EnhancedKeyUsageExtensionWrapper : X509ExtensionWrapper
+        private sealed class X509EnhancedKeyUsageExtensionWrapper : X509ExtensionWrapper
         {
             public X509EnhancedKeyUsageExtensionWrapper(X509EnhancedKeyUsageExtension extension) : base(extension) => 
                 EnhancedKeyUsages = extension.EnhancedKeyUsages != null && extension.EnhancedKeyUsages.Count > 0 ?
@@ -55,7 +54,7 @@ namespace Delta.CertXplorer.CertManager.Wrappers
             public OidWrapper[] EnhancedKeyUsages { get; }
         }
 
-        private class X509SubjectKeyIdentifierExtensionWrapper : X509ExtensionWrapper
+        private sealed class X509SubjectKeyIdentifierExtensionWrapper : X509ExtensionWrapper
         {
             public X509SubjectKeyIdentifierExtensionWrapper(X509SubjectKeyIdentifierExtension extension) : base(extension) =>
                 SubjectKeyIdentifier = extension.SubjectKeyIdentifier;
