@@ -10,12 +10,12 @@ namespace PemPlugin
     internal sealed class PemData : IData
     {
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        private class ComplexPemData
+        private sealed class ComplexPemData
         {
             [TypeConverter(typeof(ExpandableObjectConverter))]
             public PemInfo Info { get; internal set; }
-                        
-            [TypeConverter(typeof(ReadOnlyDictionaryConverter))]            
+
+            [TypeConverter(typeof(ReadOnlyDictionaryConverter))]
             public IReadOnlyDictionary<string, string> AdditionalHeaders { get; internal set; }
         }
 

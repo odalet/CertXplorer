@@ -4,43 +4,19 @@ using System.Windows.Forms;
 
 namespace Delta.CertXplorer.UI
 {
-    /// <summary>
-    /// A port of the VB.NET Input box.
-    /// </summary>
     public partial class InputBox : Form
     {
         private string output = string.Empty;
 
-        #region Static interface
-
-        public static string Show(IWin32Window owner, string prompt)
-        {
-            return Show(owner, prompt, SR.Input);
-        }
-
-        public static string Show(IWin32Window owner, string prompt, string title)
-        {
-            return Show(owner, prompt, title, string.Empty);
-        }
-
-        public static string Show(IWin32Window owner, string prompt, string title, string defaultResponse)
-        {
-            return Show(owner, prompt, title, defaultResponse, -1, -1);
-        }
-
+        public static string Show(IWin32Window owner, string prompt) => Show(owner, prompt, SR.Input);
+        public static string Show(IWin32Window owner, string prompt, string title) => Show(owner, prompt, title, string.Empty);
+        public static string Show(IWin32Window owner, string prompt, string title, string defaultResponse) => Show(owner, prompt, title, defaultResponse, -1, -1);
         public static string Show(IWin32Window owner, string prompt, string title, string defaultResponse, int xpos, int ypos)
         {
-            string result = string.Empty;
-            using (var box = new InputBox(prompt, title, defaultResponse, xpos, ypos))
-            {
-                box.ShowDialog(owner);
-                result = box.output;
-            }
-
-            return result;
+            using var box = new InputBox(prompt, title, defaultResponse, xpos, ypos);
+            _ = box.ShowDialog(owner);
+            return box.output;
         }
-
-        #endregion
 
         protected string boxPrompt = string.Empty;
         protected string boxTitle = string.Empty;
@@ -61,10 +37,6 @@ namespace Delta.CertXplorer.UI
             yloc = ypos;
         }
 
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
         protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
@@ -89,13 +61,13 @@ namespace Delta.CertXplorer.UI
 
             cancelButton.Click += (s, e) => Close();
 
-            SizeF ef = SizeF.Empty;
+            SizeF ef;
             using (var graphics = label.CreateGraphics())
                 ef = graphics.MeasureString(boxPrompt, label.Font, label.Width);
             
             if (ef.Height > label.Height)
             {
-                int heightGap = ((int)Math.Round((double)ef.Height)) - label.Height;                
+                int heightGap = (int)Math.Round((double)ef.Height) - label.Height;                
                 label.Height += heightGap;
                 textBox.Top += heightGap;
                 Height += heightGap;
@@ -103,24 +75,19 @@ namespace Delta.CertXplorer.UI
 
             MinimumSize = Size;
 
-            base.SuspendLayout();
-            if ((xloc == -1) && (yloc == -1))
-            {
-                if (base.Owner != null)
-                    StartPosition = FormStartPosition.CenterParent;
-                else StartPosition = FormStartPosition.CenterScreen;
-            }
+            SuspendLayout();
+            if (xloc == -1 && yloc == -1)
+                StartPosition = Owner != null ? FormStartPosition.CenterParent : FormStartPosition.CenterScreen;
             else
             {
                 if (xloc == -1) xloc = 600;
                 if (yloc == -1) yloc = 350;
 
                 StartPosition = FormStartPosition.Manual;
-                Point point = new Point(xloc, yloc);
                 DesktopLocation = new Point(xloc, yloc);
             }
 
-            base.ResumeLayout(true);
+            ResumeLayout(true);
         }
     }
 }

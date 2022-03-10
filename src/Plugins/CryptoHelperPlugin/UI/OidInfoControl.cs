@@ -6,7 +6,7 @@ namespace CryptoHelperPlugin.UI
 {
     public partial class OidInfoControl : UserControl
     {
-        // TODO: use other OID information providers:
+        // List of other OID information providers:
         // http://www.alvestrand.no/objectid/1.2.840.113549.1.1.10.html + 
         // http://www.alvestrand.no/objectid/submissions/0.9.2342.19200300.100.1.1.html (submitted but not verified OIDs)
         // http://oid-info.com/get/1.2.840.113549.1.1.10
@@ -34,7 +34,7 @@ namespace CryptoHelperPlugin.UI
             catch (Exception ex)
             {
                 LogLn("ERROR: " + ex.Message);
-            }            
+            }
         }
 
         private void LogLn(string text = "") { Log(text + "\r\n"); }

@@ -1,9 +1,8 @@
 using System;
-using System.Drawing.Printing;
-using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing.Printing;
 using System.Runtime.InteropServices;
-
+using System.Windows.Forms;
 using Delta.CertXplorer.Internals;
 
 namespace Delta.CertXplorer.UI
@@ -28,7 +27,8 @@ namespace Delta.CertXplorer.UI
 
         private void InitializeControl()
         {
-            ratio = 14.4; //DrawingUnit.Inch.ConvertTo(0.01, DrawingUnit.Twip);
+            // The ratio comes from DrawingUnit.Inch.ConvertTo(0.01, DrawingUnit.Twip)
+            ratio = 14.4;
             Debug.Assert(ratio == 14.4);
 
             printDocument.BeginPrint += new PrintEventHandler(OnBeginPrint);
@@ -41,27 +41,28 @@ namespace Delta.CertXplorer.UI
         {
             if (showUI)
             {
-                PrintDialog dlg = new PrintDialog();
+                using var dlg = new PrintDialog();
                 dlg.Document = printDocument;
-                if (dlg.ShowDialog() == DialogResult.OK) printDocument.Print();
+                if (dlg.ShowDialog() == DialogResult.OK)
+                    printDocument.Print();
             }
             else printDocument.Print(); 
         }
 
         public void PrintPreview()
         {
-            PrintPreviewDialog dlg = new PrintPreviewDialog();
+            using var dlg = new PrintPreviewDialog();
             dlg.Document = printDocument;
             dlg.WindowState = FormWindowState.Maximized;
             dlg.ShowInTaskbar = false;            
-            dlg.ShowDialog();
+            _ = dlg.ShowDialog();
         }
 
         public void PageSetup()
         {
-            PageSetupDialog dlg = new PageSetupDialog();
+            using var dlg = new PageSetupDialog();
             dlg.Document = printDocument;
-            dlg.ShowDialog();
+            _ = dlg.ShowDialog();
         }        
 
         /// <summary>
@@ -98,8 +99,7 @@ namespace Delta.CertXplorer.UI
             fmtRange.rcPage = rectPage;     //Indicate size of page
             
             //Get the pointer to the FORMATRANGE structure in memory
-            var lparam = IntPtr.Zero;
-            lparam = Marshal.AllocCoTaskMem(Marshal.SizeOf(fmtRange));
+            var lparam = Marshal.AllocCoTaskMem(Marshal.SizeOf(fmtRange));
             Marshal.StructureToPtr(fmtRange, lparam, false);
 
             //Send the rendered data for printing 
@@ -121,16 +121,10 @@ namespace Delta.CertXplorer.UI
             lastPrintedCharIndex = Print(lastPrintedCharIndex, TextLength, e);
 
             // Check for more pages
-            e.HasMorePages = (lastPrintedCharIndex < TextLength);
+            e.HasMorePages = lastPrintedCharIndex < TextLength;
         }
 
-        private void OnBeginPrint(object sender, PrintEventArgs e)
-        {
-            lastPrintedCharIndex = 0;
-        }
-
-        private void OnEndPrint(object sender, PrintEventArgs e)
-        {
-        }
+        private void OnBeginPrint(object sender, PrintEventArgs e) => lastPrintedCharIndex = 0;
+        private void OnEndPrint(object sender, PrintEventArgs e) {  /* Nothing to do here */ }
     }
 }
