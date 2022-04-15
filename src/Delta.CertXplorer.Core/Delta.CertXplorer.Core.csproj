@@ -147,7 +147,7 @@
     <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
     <PackageReference Include="DockPanelSuite" Version="3.1.0" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.9.0">
+    <PackageReference Include="GitVersion.MsBuild" Version="5.10.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
