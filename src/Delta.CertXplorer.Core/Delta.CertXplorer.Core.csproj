@@ -144,7 +144,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
+    <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
     <PackageReference Include="DockPanelSuite" Version="3.1.0" />
     <PackageReference Include="DockPanelSuite.ThemeVS2015" Version="3.1.0" />
     <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
