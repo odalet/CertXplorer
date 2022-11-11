@@ -52,8 +52,8 @@
   </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="System.Resources.Extensions" Version="6.0.0" />
-    <PackageReference Include="GitVersion.MsBuild" Version="5.10.3">
+    <PackageReference Include="System.Resources.Extensions" Version="7.0.0" />
+    <PackageReference Include="GitVersion.MsBuild" Version="5.11.1">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
@@ -61,7 +61,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.47.0.55603">
+    <PackageReference Include="SonarAnalyzer.CSharp" Version="8.48.0.56517">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
