@@ -1396,13 +1396,8 @@ namespace Delta.CertXplorer.UI
             int match = 0;
             int bytesLength = bytes.Length;
 
-            abortFind = false;
-
-            for (long pos = startIndex; pos < _byteProvider.Length; pos++)
+            for (var pos = startIndex; pos < _byteProvider.Length; pos++)
             {
-                if (abortFind)
-                    return -2;
-
                 if (pos % 1000 == 0) // for performance reasons: DoEvents only 1 times per 1000 loops
                     Application.DoEvents();
 
@@ -1429,11 +1424,6 @@ namespace Delta.CertXplorer.UI
 
             return -1;
         }
-
-        /// <summary>
-        /// Aborts a working Find method.
-        /// </summary>
-        public void AbortFind() { abortFind = true; }
 
         #endregion
 

@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Windows.Forms;
 using Delta.CertXplorer.DocumentModel;
 
@@ -13,22 +9,16 @@ namespace Delta.CertXplorer.UI
     internal partial class ChooseDocumentHandlerDialog : Form
     {
         private IEnumerable<IDocumentHandler> handlers;
-        private List<RadioButton> buttons = new List<RadioButton>();
+        private readonly List<RadioButton> buttons = new();
 
         public ChooseDocumentHandlerDialog()
         {
             InitializeComponent();
-
             okButton.Enabled = false;
         }
 
-        public IDocumentHandler SelectedDocumentHandler
-        {
-            get
-            {
-                return buttons.SingleOrDefault(b => b.Checked).Tag as IDocumentHandler;
-            }
-        }
+        public IDocumentHandler SelectedDocumentHandler =>
+            buttons.SingleOrDefault(b => b.Checked)?.Tag as IDocumentHandler;
 
         public void SetDocumentHandlers(IEnumerable<IDocumentHandler> documentHandlers)
         {

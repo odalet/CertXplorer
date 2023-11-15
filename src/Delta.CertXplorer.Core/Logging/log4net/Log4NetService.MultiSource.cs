@@ -7,11 +7,12 @@
 
         private string currentSourceName = DefaultSourceName;
 
-        public ILogService this[string sourceName] => string.IsNullOrEmpty(sourceName) || sourceName == currentSourceName ?
-            this : new Log4NetService(configurationFileInfo, false) { currentSourceName = sourceName };
+        public ILogService this[LogSource source] => this[source?.Name];
+        public ILogService this[string sourceName] => 
+            string.IsNullOrEmpty(sourceName) || sourceName == currentSourceName 
+            ? this 
+            : new Log4NetService(configurationFileInfo, false) { currentSourceName = sourceName };
 
-        public ILogService this[LogSource source] => source != null && source.Name == currentSourceName ? this : this[source.Name];
-
-        public LogSource CurrentSource => new LogSource(currentSourceName);
+        public LogSource CurrentSource => new(currentSourceName);
     }
 }
