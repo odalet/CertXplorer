@@ -22,7 +22,7 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="PCSC" Version="6.1.3" />
+    <PackageReference Include="PCSC" Version="6.2.0" />
     <PackageReference Include="PCSC.Iso7816" Version="6.1.3" />
   </ItemGroup>
   
