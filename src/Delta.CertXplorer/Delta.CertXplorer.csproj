@@ -1,12 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net48</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
     <AssemblyName>certx</AssemblyName>
     <RootNamespace>Delta.CertXplorer</RootNamespace>
     <UseWindowsForms>true</UseWindowsForms>
-    <LangVersion>9.0</LangVersion>
     <ApplicationIcon>safe.ico</ApplicationIcon>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
   </PropertyGroup>
@@ -76,11 +75,7 @@
     <ProjectReference Include="..\plugins\PemPlugin\PemPlugin.csproj" />
     <ProjectReference Include="..\plugins\PluralSightSelfCertPlugin\PluralSightSelfCertPlugin.csproj" />
   </ItemGroup>
-  
-  <ItemGroup>
-    <Reference Include="System.Security" />
-  </ItemGroup>
-  
+    
   <ItemGroup>
     <EmbeddedResource Include="Config\certx.config" />
     <EmbeddedResource Include="Config\certx.layout.xml" />

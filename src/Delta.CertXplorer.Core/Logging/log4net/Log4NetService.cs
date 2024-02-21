@@ -17,15 +17,10 @@ namespace Delta.CertXplorer.Logging.log4net
         private static readonly Type thisServiceType = typeof(Log4NetService);
         private readonly FileInfo configurationFileInfo;
 
-        public Log4NetService() : this(null, true) { }
         public Log4NetService(FileInfo configurationFile) : this(configurationFile, true) { }
         private Log4NetService(FileInfo configurationFile, bool configure)
         {
-            if (configurationFile == null) configurationFile = new FileInfo(
-                AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-
             configurationFileInfo = configurationFile;
-
             if (configure) _ = XmlConfigurator.ConfigureAndWatch(configurationFileInfo);
         }
 

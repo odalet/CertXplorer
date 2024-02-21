@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -261,7 +261,7 @@ namespace Delta.CertXplorer.Logging
         /// <summary>
         /// Initializes a new instance of the <see cref="Delta.CertXplorerLogService"/> class.
         /// </summary>
-        public CertXplorerLogService() 
+        public CertXplorerLogService()
         {
             if (!classIsInitialized) InitializeLogger();
         }
@@ -287,16 +287,16 @@ namespace Delta.CertXplorer.Logging
                         configuration.EventLogName,
                         configuration.EventLogMachine,
                         configuration.EventSourceName);
-                    Debug.Listeners.Add(new EventLogTraceListener(eventLog));
+                    _ = Trace.Listeners.Add(new EventLogTraceListener(eventLog));
                 }
                 catch (Exception ex)
                 {
                     string error = string.Format(SR.InitializationError, ex.Message);
-                    storedLogEntries.Add(new LogEntry 
-                    { 
-                        Level = LogLevel.Error, 
-                        Message = error, 
-                        Exception = ex 
+                    storedLogEntries.Add(new LogEntry
+                    {
+                        Level = LogLevel.Error,
+                        Message = error,
+                        Exception = ex
                     });
                 }
             }
@@ -326,11 +326,11 @@ namespace Delta.CertXplorer.Logging
                 catch (Exception ex)
                 {
                     string error = string.Format(SR.InitializationError, ex.Message);
-                    storedLogEntries.Add(new LogEntry 
-                    { 
-                        Level = LogLevel.Error, 
-                        Message = error, 
-                        Exception = ex 
+                    storedLogEntries.Add(new LogEntry
+                    {
+                        Level = LogLevel.Error,
+                        Message = error,
+                        Exception = ex
                     });
                 }
             }
@@ -370,7 +370,7 @@ namespace Delta.CertXplorer.Logging
             // File logging
             try
             {
-                if (entry.Level <= configuration.TracingLogLevel) LogToTraceFile(entry);                
+                if (entry.Level <= configuration.TracingLogLevel) LogToTraceFile(entry);
             }
             catch (Exception ex)
             {
@@ -416,7 +416,7 @@ namespace Delta.CertXplorer.Logging
         private void LogToTraceFile(LogEntry entry)
         {
 
-            using (FileStream stream = new FileStream(traceFilename, 
+            using (FileStream stream = new FileStream(traceFilename,
                 FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             {
                 using (TextWriter writer = new StreamWriter(stream))
@@ -424,7 +424,7 @@ namespace Delta.CertXplorer.Logging
                     LogToWriter(writer, entry);
                     writer.Flush();
                 }
-                
+
                 stream.Close();
             }
         }
@@ -478,13 +478,13 @@ namespace Delta.CertXplorer.Logging
             MethodBase method = null;
             Type declaringType = MethodBase.GetCurrentMethod().DeclaringType;
             // TODO: remove from original code
-//#pragma warning disable 618
-//            Type traceHandlerType = typeof(Delta.CertXplorer.Diagnostics.TraceHandler);
-//#pragma warning restore
+            //#pragma warning disable 618
+            //            Type traceHandlerType = typeof(Delta.CertXplorer.Diagnostics.TraceHandler);
+            //#pragma warning restore
             for (int i = 0; i < stackTrace.FrameCount; i++)
             {
                 MethodBase current = stackTrace.GetFrame(i).GetMethod();
-                if ((current.DeclaringType != declaringType) && 
+                if ((current.DeclaringType != declaringType) &&
                     (!current.DeclaringType.FullName.Contains("Delta.CertXplorer.Logging")) &&
                     (!current.DeclaringType.FullName.Contains("Delta.CertXplorer.Diagnostics")) &&
                     (!current.DeclaringType.FullName.Contains("Delta.CertXplorer.Extensions.LoggingExtensions")))
@@ -495,7 +495,7 @@ namespace Delta.CertXplorer.Logging
             }
 
             return (method != null ?
-                string.Format("{0}.{1}", method.DeclaringType.FullName, method.Name) : 
+                string.Format("{0}.{1}", method.DeclaringType.FullName, method.Name) :
                 "?");
         }
     }
