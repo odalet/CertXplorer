@@ -64,6 +64,7 @@ jobs:
         run: dotnet sonarscanner end /d:sonar.login="${{secrets.SONAR_TOKEN}}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOTNET_ROLL_FORWARD: LatestMajor
       - name: Collect Windows executable
         uses: actions/upload-artifact@v2
         with:
